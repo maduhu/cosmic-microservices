@@ -1,0 +1,23 @@
+{
+  "spring": {
+    "datasource": {
+      "url": "jdbc:mariadb://cosmic-database:3306/cosmic?useSSL=false",
+      "username": "cosmic",
+      "password": "cosmic",
+      "driver-class-name": "org.mariadb.jdbc.Driver"
+    },
+    "rabbitmq": {
+      "host": "cosmic-message-broker",
+      "port": 5672,
+      "username": "cosmic",
+      "password": "cosmic"
+    }
+  },
+  "cosmic": {
+    "metrics-collector": {
+      "scan-interval": "0 */15 * * * *",
+      "broker-exchange": "cosmic-metrics-exchange",
+      "broker-exchange-key": "cosmic-metrics-key"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+spring:
+
+  data:
+    elasticsearch:
+      cluster-nodes: cosmic-metrics-index:9300
+
+cosmic:
+
+  usage-api:
+    scan-interval: "0 */15 * * * *"

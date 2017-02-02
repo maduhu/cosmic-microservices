@@ -1,0 +1,9 @@
+spring:
+
+  cloud:
+    config:
+      server:
+        vault:
+          scheme: https
+          host: cosmic-vault
+          port: 8200

@@ -1,0 +1,8 @@
+spring:
+
+  application:
+    name: cosmic-metrics-collector
+
+  cloud:
+    config:
+      enabled: false

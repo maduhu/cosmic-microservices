@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.missioncriticalcloud</groupId>
+    <artifactId>cosmic-microservices</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Cosmic Microservices</name>
+    <description>Microservices for the Cosmic project.</description>
+
+    <scm>
+        <connection>scm:git:git@github.com:MissionCriticalCloud/cosmic-microservices.git</connection>
+        <developerConnection>scm:git:git@github.com:MissionCriticalCloud/cosmic-microservices.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>beta-nexus</id>
+            <name>MCC Nexus</name>
+            <url>https://beta-nexus.mcc.schubergphilis.com/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>beta-nexus</id>
+            <name>MCC Nexus</name>
+            <url>https://beta-nexus.mcc.schubergphilis.com/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>Maven Central</id>
+            <url>central.maven.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+        </repository>
+    </repositories>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.1.RELEASE</version>
+        <relativePath/>
+    </parent>
+
+    <modules>
+        <module>cosmic-config-server</module>
+        <module>cosmic-metrics-collector</module>
+        <module>cosmic-usage-api</module>
+    </modules>
+
+    <properties>
+        <cosmic.timezone>UTC</cosmic.timezone>
+        <cosmic.encoding>UTF-8</cosmic.encoding>
+        <cosmic.httpPort>8080</cosmic.httpPort>
+        <cosmic.debugPort>8000</cosmic.debugPort>
+        <cosmic.containerTargetDir>/missioncriticalcloud</cosmic.containerTargetDir>
+        <cosmic.containerNetwork>cosmic-network</cosmic.containerNetwork>
+
+        <project.build.sourceEncoding>${cosmic.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${cosmic.encoding}</project.reporting.outputEncoding>
+
+        <java.version>1.8</java.version>
+        <spring-cloud.version>Camden.SR4</spring-cloud.version>
+        <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <argLine>-Duser.timezone=${cosmic.timezone} -Dfile.encoding=${cosmic.encoding}</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <configuration>
+                        <argLine>-Duser.timezone=${cosmic.timezone} -Dfile.encoding=${cosmic.encoding}</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-image</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>start-container</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop-container</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
