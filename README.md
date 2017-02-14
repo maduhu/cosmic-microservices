@@ -1,3 +1,5 @@
+[![Build Status](https://beta-jenkins.mcc.schubergphilis.com/buildStatus/icon?job=cosmic-microservices/0001-cosmic-microservices-master-build)](https://beta-jenkins.mcc.schubergphilis.com/job/cosmic-microservices/job/0001-cosmic-microservices-master-build/)
+
 # Cosmic Microservices
 
 - [Cosmic Config Server](cosmic-config-server) (powered by Spring Cloud Config Server)
