@@ -231,8 +231,8 @@ public class UsageServiceTest {
 
         final Usage usage = domainsUsage.get(0);
         assertThat(usage).isNotNull();
-        assertThat(usage.getCpu()).isEqualTo(valueOf(expectedCpu));
-        assertThat(usage.getMemory()).isEqualTo(valueOf(expectedMemory));
+        assertThat(usage.getCpu()).isEqualByComparingTo(valueOf(expectedCpu));
+        assertThat(usage.getMemory()).isEqualByComparingTo(valueOf(expectedMemory));
     }
 
     private void assertMultipleDomainsUsage(
@@ -247,13 +247,13 @@ public class UsageServiceTest {
 
         final Usage usage1 = domainsUsage.get(0);
         assertThat(usage1).isNotNull();
-        assertThat(usage1.getCpu()).isEqualTo(valueOf(expectedCpu1));
-        assertThat(usage1.getMemory()).isEqualTo(valueOf(expectedMemory1));
+        assertThat(usage1.getCpu()).isEqualByComparingTo(valueOf(expectedCpu1));
+        assertThat(usage1.getMemory()).isEqualByComparingTo(valueOf(expectedMemory1));
 
         final Usage usage2 = domainsUsage.get(1);
         assertThat(usage2).isNotNull();
-        assertThat(usage2.getCpu()).isEqualTo(valueOf(expectedCpu2));
-        assertThat(usage2.getMemory()).isEqualTo(valueOf(expectedMemory2));
+        assertThat(usage2.getCpu()).isEqualByComparingTo(valueOf(expectedCpu2));
+        assertThat(usage2.getMemory()).isEqualByComparingTo(valueOf(expectedMemory2));
     }
 
 }
