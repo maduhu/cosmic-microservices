@@ -4,6 +4,6 @@ spring:
     config:
       server:
         vault:
-          scheme: https
+          scheme: http
           host: cosmic-vault
           port: 8200

@@ -1,8 +1,10 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services.impl;
 
+import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
 import static java.math.BigDecimal.valueOf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,12 +48,12 @@ public class UsageServiceImpl implements UsageService {
                         usage.addCpu(
                                 state.getCpuAverage()
                                      .multiply(state.getSampleCount())
-                                     .divide(expectedSampleCount, BigDecimal.ROUND_HALF_EVEN)
+                                     .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
                         );
                         usage.addMemory(
                                 state.getMemoryAverage()
                                      .multiply(state.getSampleCount())
-                                     .divide(expectedSampleCount, BigDecimal.ROUND_HALF_EVEN)
+                                     .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
                         );
                     }
                 }
@@ -74,7 +76,7 @@ public class UsageServiceImpl implements UsageService {
         final Duration interval = new Duration(nextOccurrence.getTime(), followingOccurrence.getTime());
         final BigDecimal intervalInSeconds = valueOf(interval.getStandardSeconds());
 
-        return durationInSeconds.divide(intervalInSeconds, BigDecimal.ROUND_HALF_EVEN);
+        return durationInSeconds.divide(intervalInSeconds, RoundingMode.UNNECESSARY);
     }
 
 }

@@ -1,5 +1,8 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.model;
 
+import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_SCALE;
+
 import java.math.BigDecimal;
 
 public class State {
@@ -20,10 +23,10 @@ public class State {
             final BigDecimal cpuAverage,
             final BigDecimal memoryAverage
     ) {
-        this.value = value;
-        this.sampleCount = sampleCount;
-        this.cpuAverage = cpuAverage;
-        this.memoryAverage = memoryAverage;
+        setValue(value);
+        setSampleCount(sampleCount);
+        setCpuAverage(cpuAverage);
+        setMemoryAverage(memoryAverage);
     }
 
     public String getValue() {
@@ -39,7 +42,7 @@ public class State {
     }
 
     public void setSampleCount(final BigDecimal sampleCount) {
-        this.sampleCount = sampleCount;
+        this.sampleCount = sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public BigDecimal getCpuAverage() {
@@ -47,7 +50,7 @@ public class State {
     }
 
     public void setCpuAverage(final BigDecimal cpuAverage) {
-        this.cpuAverage = cpuAverage;
+        this.cpuAverage = cpuAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public BigDecimal getMemoryAverage() {
@@ -55,7 +58,7 @@ public class State {
     }
 
     public void setMemoryAverage(final BigDecimal memoryAverage) {
-        this.memoryAverage = memoryAverage;
+        this.memoryAverage = memoryAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
 }
