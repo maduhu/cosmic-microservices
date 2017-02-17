@@ -77,7 +77,6 @@
         <spring-cloud.version>Camden.SR4</spring-cloud.version>
         <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
         <cs.jacoco-maven-plugin.version>0.7.6.201602180812</cs.jacoco-maven-plugin.version>
-        <cs.maven-resources-plugin.version>3.0.1</cs.maven-resources-plugin.version>
         <cs.org.jacoco.agent.version>0.7.6.201602180812</cs.org.jacoco.agent.version>
         <cs.sonar-maven-plugin.version>3.0.2</cs.sonar-maven-plugin.version>
     </properties>
@@ -97,20 +96,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <!--<argLine>-Duser.timezone=${cosmic.timezone} -Dfile.encoding=${cosmic.encoding}</argLine>-->
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <configuration>
-                        <!--<argLine>-Duser.timezone=${cosmic.timezone} -Dfile.encoding=${cosmic.encoding}</argLine>-->
-                    </configuration>
-                </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
@@ -199,8 +184,7 @@
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-resources-plugin</artifactId>
-                            <version>${cs.maven-resources-plugin.version}</version>
+                            <artifactId>maven-surefire-plugin</artifactId>
                         </plugin>
                     </plugins>
                 </pluginManagement>
