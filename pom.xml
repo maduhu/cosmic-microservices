@@ -153,7 +153,9 @@
                 <sonar.jacoco.itReportPath>${integration.tests.report}</sonar.jacoco.itReportPath>
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.language>java</sonar.language>
-
+                <sonar.links.homepage>https://github.com/MissionCriticalCloud</sonar.links.homepage>
+                <sonar.links.ci>https://beta-jenkins.mcc.schubergphilis.com/job/cosmic-microservices/</sonar.links.ci>
+                <sonar.links.scm>https://github.com/MissionCriticalCloud/cosmic-microservices</sonar.links.scm>
                 <sonar.host.url>https://beta-sonar.mcc.schubergphilis.com</sonar.host.url>
                 <sonar.login>sonar-runner</sonar.login>
                 <sonar.password>${ci.sonar-runner.password}</sonar.password>
