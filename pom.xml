@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -47,7 +45,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.1.RELEASE</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <modules>
@@ -77,8 +75,9 @@
         <spring-cloud.version>Camden.SR4</spring-cloud.version>
         <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
         <cs.jacoco-maven-plugin.version>0.7.6.201602180812</cs.jacoco-maven-plugin.version>
-        <cs.org.jacoco.agent.version>0.7.6.201602180812</cs.org.jacoco.agent.version>
+        <cs.maven-release-plugin.version>2.5.3</cs.maven-release-plugin.version>
         <cs.org.jacoco.agent.rt.version>0.7.6.201602180812</cs.org.jacoco.agent.rt.version>
+        <cs.org.jacoco.agent.version>0.7.6.201602180812</cs.org.jacoco.agent.version>
         <cs.sonar-maven-plugin.version>3.0.2</cs.sonar-maven-plugin.version>
     </properties>
 
@@ -97,6 +96,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${cs.maven-release-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
