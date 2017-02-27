@@ -78,6 +78,7 @@
         <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
         <cs.jacoco-maven-plugin.version>0.7.6.201602180812</cs.jacoco-maven-plugin.version>
         <cs.org.jacoco.agent.version>0.7.6.201602180812</cs.org.jacoco.agent.version>
+        <cs.org.jacoco.agent.rt.version>0.7.6.201602180812</cs.org.jacoco.agent.rt.version>
         <cs.sonar-maven-plugin.version>3.0.2</cs.sonar-maven-plugin.version>
     </properties>
 
