@@ -221,6 +221,62 @@
                             <showLogs>true</showLogs>
                             <images>
                                 <image>
+                                    <name>%g/cosmic-vault:%l</name>
+                                    <alias>cosmic-vault</alias>
+                                    <build>
+                                        <from>vault:latest</from>
+                                        <env>
+                                            <VAULT_DEV_ROOT_TOKEN_ID>cosmic-vault-token</VAULT_DEV_ROOT_TOKEN_ID>
+                                            <VAULT_TOKEN>cosmic-vault-token</VAULT_TOKEN>
+                                            <VAULT_ADDR>http://127.0.0.1:8200</VAULT_ADDR>
+                                        </env>
+                                        <ports>
+                                            <port>8200</port>
+                                        </ports>
+                                        <assembly>
+                                            <targetDir>${cosmic.containerTargetDir}</targetDir>
+                                            <inline>
+                                                <fileSets>
+                                                    <fileSet>
+                                                        <directory>src/main/resources/vault/</directory>
+                                                        <outputDirectory>/</outputDirectory>
+                                                        <includes>
+                                                            <include>*.json</include>
+                                                        </includes>
+                                                    </fileSet>
+                                                </fileSets>
+                                                <files>
+                                                    <file>
+                                                        <source>src/main/resources/vault/init.sh</source>
+                                                        <fileMode>0755</fileMode>
+                                                        <outputDirectory>/</outputDirectory>
+                                                    </file>
+                                                </files>
+                                            </inline>
+                                        </assembly>
+                                    </build>
+                                    <run>
+                                        <namingStrategy>alias</namingStrategy>
+                                        <network>
+                                            <mode>custom</mode>
+                                            <name>${cosmic.containerNetwork}</name>
+                                        </network>
+                                        <capAdd>
+                                            <add>IPC_LOCK</add>
+                                        </capAdd>
+                                        <wait>
+                                            <time>30000</time>
+                                            <log>Vault server started</log>
+                                            <exec>
+                                                <postStart>${cosmic.containerTargetDir}/init.sh</postStart>
+                                            </exec>
+                                        </wait>
+                                        <ports>
+                                            <port>8200:8200</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                                <image>
                                     <name>%g/%a:%l</name>
                                     <build>
                                         <from>openjdk:8-jre</from>
