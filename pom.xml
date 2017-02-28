@@ -70,7 +70,6 @@
         <unit.tests.report>${coverage.reports.dir}/jacoco-ut.exec</unit.tests.report>
         <integration.tests.report>${coverage.reports.dir}/jacoco-it-merged.exec</integration.tests.report>
 
-
         <java.version>1.8</java.version>
         <spring-cloud.version>Camden.SR4</spring-cloud.version>
         <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
@@ -149,10 +148,7 @@
                 <sonar.host.url>https://beta-sonar.mcc.schubergphilis.com</sonar.host.url>
                 <sonar.login>sonar-runner</sonar.login>
                 <sonar.password>${ci.sonar-runner.password}</sonar.password>
-
-                <sonar.exclusions>
-                    **/target/**.java,
-                </sonar.exclusions>
+                <sonar.exclusions>**/target/**.java</sonar.exclusions>
             </properties>
             <dependencies>
                 <dependency>
