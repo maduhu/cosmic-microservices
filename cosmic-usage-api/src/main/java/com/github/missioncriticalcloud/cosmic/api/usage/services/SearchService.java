@@ -6,6 +6,6 @@ import org.joda.time.DateTime;
 
 public interface SearchService {
 
-    SearchResult search(DateTime from, DateTime to) throws NoMetricsFoundException;
+    SearchResult search(DateTime from, DateTime to, String path) throws NoMetricsFoundException;
 
 }

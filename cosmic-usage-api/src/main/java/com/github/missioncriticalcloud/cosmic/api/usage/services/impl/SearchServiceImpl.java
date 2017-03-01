@@ -5,46 +5,66 @@ import static java.math.BigDecimal.valueOf;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.avg;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.Resource;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.SearchResult;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.State;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.metrics.avg.Avg;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 
+    private final DomainsRepository domainsRepository;
+
     private final Client client;
 
     @Autowired
-    public SearchServiceImpl(final Client client) {
+    public SearchServiceImpl(final DomainsRepository domainsRepository, final Client client) {
+        this.domainsRepository = domainsRepository;
         this.client = client;
     }
 
     @Override
-    public SearchResult search(final DateTime from, final DateTime to) throws NoMetricsFoundException {
-        final SearchResponse response = client.prepareSearch("cosmic-metrics-*")
+    public SearchResult search(final DateTime from, final DateTime to, final String path) throws NoMetricsFoundException {
+        final List<Domain> domains = getDomains(path);
+
+        final SearchRequestBuilder request = client.prepareSearch("cosmic-metrics-*")
                 .setTypes("metric")
-                .setSize(0)
-                .setQuery(boolQuery()
-                        .must(rangeQuery("@timestamp")
-                                .gte(DATE_FORMATTER.print(from))
-                                .lt(DATE_FORMATTER.print(to))
-                        )
-                        .must(termQuery("resourceType", "VirtualMachine"))
+                .setSize(0);
+
+        final BoolQueryBuilder queryBuilder = boolQuery()
+                .must(rangeQuery("@timestamp")
+                        .gte(DATE_FORMATTER.print(from))
+                        .lt(DATE_FORMATTER.print(to))
                 )
+                .must(termQuery("resourceType", "VirtualMachine"));
+
+        if (!CollectionUtils.isEmpty(domains)) {
+            queryBuilder.must(termsQuery("domainUuid", domains.stream().map(Domain::getUuid).collect(Collectors.toList())));
+        }
+
+        final SearchResponse response = request.setQuery(queryBuilder)
                 .addAggregation(terms("domains").field("domainUuid").size(250)
                         .subAggregation(terms("resources").field("resourceUuid").size(2500)
                                 .subAggregation(terms("states").field("payload.state").size(2)
@@ -56,6 +76,20 @@ public class SearchServiceImpl implements SearchService {
                 .get();
 
         return parseResponse(response);
+    }
+
+    private List<Domain> getDomains(final String path) throws NoMetricsFoundException {
+        List<Domain> domains = null;
+
+        if (StringUtils.hasText(path)) {
+            domains = domainsRepository.list(path);
+
+            if (CollectionUtils.isEmpty(domains)) {
+                throw new NoMetricsFoundException();
+            }
+        }
+
+        return domains;
     }
 
     private SearchResult parseResponse(final SearchResponse response) throws NoMetricsFoundException {
