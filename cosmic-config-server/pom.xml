@@ -37,7 +37,6 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
-                            <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                             <showLogs>true</showLogs>
                             <images>
                                 <image>
@@ -101,7 +100,6 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
-                            <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                             <showLogs>true</showLogs>
                             <images>
                                 <image>
