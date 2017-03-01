@@ -5,7 +5,7 @@
 
     <groupId>com.github.missioncriticalcloud</groupId>
     <artifactId>cosmic-microservices</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Cosmic Microservices</name>
@@ -14,7 +14,7 @@
     <scm>
         <connection>scm:git:git@github.com:MissionCriticalCloud/cosmic-microservices.git</connection>
         <developerConnection>scm:git:git@github.com:MissionCriticalCloud/cosmic-microservices.git</developerConnection>
-        <tag>cosmic-microservices-0.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
