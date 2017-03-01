@@ -6,6 +6,21 @@
 - [Cosmic Metrics Collector](cosmic-metrics-collector) (powered by Spring Boot)
 - [Cosmic Usage API](cosmic-usage-api) (powered by Spring Boot)
 
+## Requirements
+
+### Software requirements:
+
+- Java 8
+- Git
+- Maven
+- Docker
+
+### Docker:
+
+Please create a Docker network called `cosmic-network`.
+
+    docker network create cosmic-network
+
 ## [Cosmic Config Server](cosmic-config-server)
 
 Locally it runs by default at [http://localhost:7001](http://localhost:7001).
