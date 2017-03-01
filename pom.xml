@@ -73,7 +73,7 @@
 
         <java.version>1.8</java.version>
         <spring-cloud.version>Camden.SR4</spring-cloud.version>
-        <docker-maven-plugin.version>0.18.1</docker-maven-plugin.version>
+        <docker-maven-plugin.version>0.20.0</docker-maven-plugin.version>
         <cs.jacoco-maven-plugin.version>0.7.6.201602180812</cs.jacoco-maven-plugin.version>
         <cs.maven-release-plugin.version>2.5.3</cs.maven-release-plugin.version>
         <cs.org.jacoco.agent.rt.version>0.7.6.201602180812</cs.org.jacoco.agent.rt.version>
