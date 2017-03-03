@@ -49,7 +49,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchResult search(final DateTime from, final DateTime to, final String path) throws NoMetricsFoundException {
+    public SearchResult search(final DateTime from, final DateTime to, final String path) {
         final Map<String, Domain> domainsMap = getDomainsMap(path);
 
         final SearchRequestBuilder request = client.prepareSearch("cosmic-metrics-*")
@@ -81,7 +81,7 @@ public class SearchServiceImpl implements SearchService {
         return parseResponse(domainsMap, response);
     }
 
-    private Map<String, Domain> getDomainsMap(final String path) throws NoMetricsFoundException {
+    private Map<String, Domain> getDomainsMap(final String path) {
         final Map<String, Domain> domainsMap = new HashMap<>();
 
         if (StringUtils.hasText(path)) {
@@ -97,7 +97,7 @@ public class SearchServiceImpl implements SearchService {
         return domainsMap;
     }
 
-    private SearchResult parseResponse(final Map<String, Domain> domainsMap, final SearchResponse response) throws NoMetricsFoundException {
+    private static SearchResult parseResponse(final Map<String, Domain> domainsMap, final SearchResponse response) {
         final long totalHits = response.getHits().getTotalHits();
         final SearchResult searchResult = new SearchResult(valueOf(totalHits));
 
@@ -106,7 +106,7 @@ public class SearchServiceImpl implements SearchService {
         }
 
         final Terms domains = response.getAggregations().get("domains");
-        for (final Bucket domainBucket : domains.getBuckets()) {
+        domains.getBuckets().forEach(domainBucket -> {
 
             final Domain domain = !CollectionUtils.isEmpty(domainsMap) && domainsMap.containsKey(domainBucket.getKeyAsString())
                     ? domainsMap.get(domainBucket.getKeyAsString())
@@ -116,7 +116,7 @@ public class SearchServiceImpl implements SearchService {
             searchResult.getDomains().add(domain);
 
             final Terms resources = domainBucket.getAggregations().get("resources");
-            for (final Bucket resourceBucket : resources.getBuckets()) {
+            resources.getBuckets().forEach(resourceBucket -> {
 
                 final Resource resource = new Resource();
                 resource.setUuid(resourceBucket.getKeyAsString());
@@ -124,7 +124,7 @@ public class SearchServiceImpl implements SearchService {
                 domain.getResources().add(resource);
 
                 final Terms states = resourceBucket.getAggregations().get("states");
-                for (final Bucket stateBucket : states.getBuckets()) {
+                states.getBuckets().forEach(stateBucket -> {
 
                     final State state = new State();
                     state.setValue(stateBucket.getKeyAsString());
@@ -136,9 +136,9 @@ public class SearchServiceImpl implements SearchService {
 
                     state.setCpuAverage(valueOf(cpuAverage.getValue()));
                     state.setMemoryAverage(valueOf(memoryAverage.getValue()));
-                }
-            }
-        }
+                });
+            });
+        });
 
         return searchResult;
     }

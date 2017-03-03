@@ -21,7 +21,9 @@ public class Domain {
     @JsonIgnore
     private final List<Resource> resources = new LinkedList<>();
 
-    public Domain() {}
+    public Domain() {
+        // Empty constructor
+    }
 
     public Domain(final String uuid) {
         setUuid(uuid);

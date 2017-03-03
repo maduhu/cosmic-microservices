@@ -11,7 +11,9 @@ public class Usage {
     private BigDecimal cpu = BigDecimal.ZERO;
     private BigDecimal memory = BigDecimal.ZERO;
 
-    public Usage() {}
+    public Usage() {
+        // Empty constructor
+    }
 
     public Usage(
             final Domain domain,
