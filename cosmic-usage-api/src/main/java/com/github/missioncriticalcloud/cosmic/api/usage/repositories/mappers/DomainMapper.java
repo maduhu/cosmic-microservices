@@ -13,6 +13,8 @@ public class DomainMapper implements RowMapper<Domain> {
         final Domain domain = new Domain();
 
         domain.setUuid(resultSet.getString("uuid"));
+        domain.setName(resultSet.getString("name"));
+        domain.setPath(resultSet.getString("path"));
 
         return domain;
     }

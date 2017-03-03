@@ -26,7 +26,7 @@ public class DomainsJdbcRepository implements DomainsRepository {
     @Override
     public List<Domain> list(@NotNull final String path) {
         final String sql = "SELECT " +
-                    "uuid " +
+                    "uuid, name, path " +
                 "FROM domain " +
                 "WHERE " +
                     "state = 'Active' " +

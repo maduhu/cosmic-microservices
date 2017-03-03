@@ -40,7 +40,7 @@ public class UsageServiceImpl implements UsageService {
 
         for (final Domain domain : domains) {
             final Usage usage = new Usage();
-            usage.setAggregateId(domain.getUuid());
+            usage.setDomain(domain);
 
             for (final Resource resource : domain.getResources()) {
                 for (final State state : resource.getStates()) {

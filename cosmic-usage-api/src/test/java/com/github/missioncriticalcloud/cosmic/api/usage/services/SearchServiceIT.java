@@ -63,9 +63,7 @@ public class SearchServiceIT {
         assertThat(searchResult).isNotNull();
 
         final List<Domain> domains = searchResult.getDomains();
-        assertThat(domains).isNotNull();
-        assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(2);
+        assertDomains(domains, 2);
     }
 
     @Test
@@ -81,9 +79,7 @@ public class SearchServiceIT {
         assertThat(searchResult).isNotNull();
 
         final List<Domain> domains = searchResult.getDomains();
-        assertThat(domains).isNotNull();
-        assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(2);
+        assertDomains(domains, 2);
     }
 
     @Test
@@ -99,9 +95,7 @@ public class SearchServiceIT {
         assertThat(searchResult).isNotNull();
 
         final List<Domain> domains = searchResult.getDomains();
-        assertThat(domains).isNotNull();
-        assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(1);
+        assertDomains(domains, 1);
     }
 
     @Test(expected = NoMetricsFoundException.class)
@@ -176,6 +170,20 @@ public class SearchServiceIT {
               .indices()
               .prepareRefresh()
               .get();
+    }
+
+    private void assertDomains(final List<Domain> domains, final int size) {
+        assertThat(domains).isNotNull();
+        assertThat(domains).isNotEmpty();
+        assertThat(domains).hasSize(size);
+
+        domains.forEach(domain -> {
+            assertThat(domain).isNotNull();
+            assertThat(domain.getUuid()).isNotNull();
+            assertThat(domain.getSampleCount()).isNotNull();
+            assertThat(domain.getSampleCount()).isPositive();
+            assertThat(domain.getResources().isEmpty());
+        });
     }
 
 }

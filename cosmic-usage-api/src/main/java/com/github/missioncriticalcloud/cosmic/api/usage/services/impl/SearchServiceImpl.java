@@ -9,7 +9,10 @@ import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.avg;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
@@ -47,7 +50,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public SearchResult search(final DateTime from, final DateTime to, final String path) throws NoMetricsFoundException {
-        final List<Domain> domains = getDomains(path);
+        final Map<String, Domain> domainsMap = getDomainsMap(path);
 
         final SearchRequestBuilder request = client.prepareSearch("cosmic-metrics-*")
                 .setTypes("metric")
@@ -60,8 +63,8 @@ public class SearchServiceImpl implements SearchService {
                 )
                 .must(termQuery("resourceType", "VirtualMachine"));
 
-        if (!CollectionUtils.isEmpty(domains)) {
-            queryBuilder.must(termsQuery("domainUuid", domains.stream().map(Domain::getUuid).collect(Collectors.toList())));
+        if (!CollectionUtils.isEmpty(domainsMap)) {
+            queryBuilder.must(termsQuery("domainUuid", domainsMap.keySet()));
         }
 
         final SearchResponse response = request.setQuery(queryBuilder)
@@ -75,24 +78,26 @@ public class SearchServiceImpl implements SearchService {
                 )
                 .get();
 
-        return parseResponse(response);
+        return parseResponse(domainsMap, response);
     }
 
-    private List<Domain> getDomains(final String path) throws NoMetricsFoundException {
-        List<Domain> domains = null;
+    private Map<String, Domain> getDomainsMap(final String path) throws NoMetricsFoundException {
+        final Map<String, Domain> domainsMap = new HashMap<>();
 
         if (StringUtils.hasText(path)) {
-            domains = domainsRepository.list(path);
+            final List<Domain> domains = domainsRepository.list(path);
 
             if (CollectionUtils.isEmpty(domains)) {
                 throw new NoMetricsFoundException();
             }
+
+            domainsMap.putAll(domains.stream().collect(Collectors.toMap(Domain::getUuid, Function.identity())));
         }
 
-        return domains;
+        return domainsMap;
     }
 
-    private SearchResult parseResponse(final SearchResponse response) throws NoMetricsFoundException {
+    private SearchResult parseResponse(final Map<String, Domain> domainsMap, final SearchResponse response) throws NoMetricsFoundException {
         final long totalHits = response.getHits().getTotalHits();
         final SearchResult searchResult = new SearchResult(valueOf(totalHits));
 
@@ -103,8 +108,10 @@ public class SearchServiceImpl implements SearchService {
         final Terms domains = response.getAggregations().get("domains");
         for (final Bucket domainBucket : domains.getBuckets()) {
 
-            final Domain domain = new Domain();
-            domain.setUuid(domainBucket.getKeyAsString());
+            final Domain domain = !CollectionUtils.isEmpty(domainsMap) && domainsMap.containsKey(domainBucket.getKeyAsString())
+                    ? domainsMap.get(domainBucket.getKeyAsString())
+                    : new Domain(domainBucket.getKeyAsString());
+
             domain.setSampleCount(valueOf(domainBucket.getDocCount()));
             searchResult.getDomains().add(domain);
 
