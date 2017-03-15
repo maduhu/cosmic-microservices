@@ -1,6 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.metricscollector.tasks;
 
-public interface MetricCollector {
+public interface MetricsCollector {
 
     void run();
 

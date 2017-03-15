@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.missioncriticalcloud.cosmic.metricscollector.exceptions.FailedToCollectMetricsException;
 import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
-import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.VirtualMachineMetricsRepository;
+import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.StorageMetricsRepository;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Component
-public class VirtualMachineMetricCollector implements MetricCollector {
+public class StorageMetricsCollector implements MetricsCollector {
 
-    private static final Logger LOG = Logger.getLogger(VirtualMachineMetricCollector.class.getName());
+    private static final Logger LOG = Logger.getLogger(StorageMetricsCollector.class.getName());
 
-    private final VirtualMachineMetricsRepository virtualMachineMetricsRepository;
+    private final StorageMetricsRepository storageMetricsRepository;
     private final AmqpTemplate amqpTemplate;
     private final ObjectWriter metricWriter;
 
@@ -28,30 +28,29 @@ public class VirtualMachineMetricCollector implements MetricCollector {
     private final String brokerExchangeKey;
 
     @Autowired
-    public VirtualMachineMetricCollector(
-            final VirtualMachineMetricsRepository virtualMachineMetricsRepository,
+    public StorageMetricsCollector(
+            final StorageMetricsRepository storageMetricsRepository,
             final AmqpTemplate amqpTemplate,
             final ObjectWriter metricWriter,
-
-            @Value("${cosmic.metrics-collector.broker-exchange:'cosmic-metrics-exchange'}")
+            @Value("${cosmic.metrics-collector.broker-exchange}")
             final String brokerExchange,
-
-            @Value("${cosmic.metrics-collector.broker-exchange-key:'cosmic-metrics-key'}")
+            @Value("${cosmic.metrics-collector.broker-exchange-key}")
             final String brokerExchangeKey
     ) {
-        this.virtualMachineMetricsRepository = virtualMachineMetricsRepository;
+        this.storageMetricsRepository = storageMetricsRepository;
         this.amqpTemplate = amqpTemplate;
         this.metricWriter = metricWriter;
         this.brokerExchange = brokerExchange;
         this.brokerExchangeKey = brokerExchangeKey;
     }
 
-    @Scheduled(cron = "${cosmic.metrics-collector.scan-interval:'0 */15 * * * *'}")
+    @Override
+    @Scheduled(cron = "${cosmic.metrics-collector.scan-interval}")
     public void run() {
-        final StopWatch stopWatch = new StopWatch(VirtualMachineMetricCollector.class.getSimpleName());
+        final StopWatch stopWatch = new StopWatch(StorageMetricsCollector.class.getSimpleName());
 
-        stopWatch.start("Collecting virtual machine metrics from the database");
-        final List<Metric> metrics = virtualMachineMetricsRepository.getMetrics();
+        stopWatch.start("Collecting storage size metrics from the database");
+        final List<Metric> metrics = storageMetricsRepository.getMetrics();
         stopWatch.stop();
 
         stopWatch.start("Sending metrics to the message queue");
@@ -69,7 +68,7 @@ public class VirtualMachineMetricCollector implements MetricCollector {
         stopWatch.stop();
 
         LOG.info(stopWatch.prettyPrint());
-        LOG.info(String.format("Collected %d virtual machine metrics.", metrics.size()));
+        LOG.info(String.format("Collected %d storage size metrics.", metrics.size()));
     }
 
 }
