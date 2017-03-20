@@ -1,10 +1,10 @@
-package com.github.missioncriticalcloud.cosmic.metricscollector.repository.jdbc;
+package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.jdbc;
 
 import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
-import com.github.missioncriticalcloud.cosmic.metricscollector.repository.VirtualMachineMetricsRepository;
-import com.github.missioncriticalcloud.cosmic.metricscollector.repository.mappers.VirtualMachineMetricsMapper;
+import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.VirtualMachineMetricsRepository;
+import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.mappers.VirtualMachineMetricsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;

@@ -10,7 +10,6 @@ import java.util.List;
 public class SearchResult {
 
     private BigDecimal sampleCount = BigDecimal.ZERO;
-
     private final List<Domain> domains = new LinkedList<>();
 
     public SearchResult() {}
