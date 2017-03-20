@@ -1,11 +1,13 @@
 package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.jdbc;
 
 import java.util.List;
+import java.util.Properties;
 
 import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
 import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.VirtualMachineMetricsRepository;
 import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.mappers.VirtualMachineMetricsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,32 +15,17 @@ import org.springframework.stereotype.Repository;
 public class VirtualMachineMetricsJdbcRepository implements VirtualMachineMetricsRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final Properties queries;
 
     @Autowired
-    public VirtualMachineMetricsJdbcRepository(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public VirtualMachineMetricsJdbcRepository(final NamedParameterJdbcTemplate jdbcTemplate, @Qualifier("queries") final Properties queries) {
         this.jdbcTemplate = jdbcTemplate;
+        this.queries = queries;
     }
 
     @Override
     public List<Metric> getMetrics() {
-        final String sql = "SELECT " +
-                    "d.uuid domainUuid, a.uuid accountUuid, vm.uuid resourceUuid, " +
-                    "vm.state state, so.cpu cpu, so.ram_size memory " +
-                "FROM vm_instance vm " +
-                "JOIN domain d " +
-                    "ON d.id = vm.domain_id " +
-                "JOIN account a " +
-                    "ON a.id = vm.account_id " +
-                "JOIN service_offering so " +
-                    "ON so.id = vm.service_offering_id " +
-                "WHERE " +
-                    "vm.type = 'User' " +
-                "AND " +
-                    "vm.state IN ('Running', 'Stopped') " +
-                "AND " +
-                    "vm.removed IS NULL";
-
-        return jdbcTemplate.query(sql, new VirtualMachineMetricsMapper());
+        return jdbcTemplate.query(queries.getProperty("virtual-machine-metrics-repository.get-metrics"), new VirtualMachineMetricsMapper());
     }
 
 }
