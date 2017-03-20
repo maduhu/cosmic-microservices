@@ -13,7 +13,9 @@ public class Resource {
     private BigDecimal sampleCount = BigDecimal.ZERO;
     private final List<State> states = new LinkedList<>();
 
-    public Resource() {}
+    public Resource() {
+        // Empty constructor
+    }
 
     public Resource(final String uuid, final BigDecimal sampleCount) {
         setUuid(uuid);

@@ -47,7 +47,7 @@ public class VirtualMachineMetricCollector implements MetricCollector {
     }
 
     @Scheduled(cron = "${cosmic.metrics-collector.scan-interval:'0 */15 * * * *'}")
-    public void collect() throws FailedToCollectMetricsException {
+    public void run() {
         final StopWatch stopWatch = new StopWatch(VirtualMachineMetricCollector.class.getSimpleName());
 
         stopWatch.start("Collecting virtual machine metrics from the database");
