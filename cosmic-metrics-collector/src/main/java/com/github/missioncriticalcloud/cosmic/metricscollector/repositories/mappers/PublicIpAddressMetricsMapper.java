@@ -1,15 +1,12 @@
 package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.mappers;
 
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.ResourceType;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Created by ikrstic on 14/03/2017.
- */
-public class PublicIPAddressMetricsMapper extends MetricsMapper {
+import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
+import com.github.missioncriticalcloud.cosmic.metricscollector.model.ResourceType;
+
+public class PublicIpAddressMetricsMapper extends MetricsMapper {
 
     @Override
     public Metric mapRow(final ResultSet resultSet, final int i) throws SQLException {

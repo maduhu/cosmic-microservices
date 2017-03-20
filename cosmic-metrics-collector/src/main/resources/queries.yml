@@ -29,3 +29,5 @@ public-ip-address-metrics-repository:
           ON a.id = ip.account_id
         WHERE
           ip.removed IS NULL
+        AND
+          ip.state = 'Allocated'
