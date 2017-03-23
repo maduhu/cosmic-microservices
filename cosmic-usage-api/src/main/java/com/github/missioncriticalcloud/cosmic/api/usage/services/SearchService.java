@@ -1,10 +1,12 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.SearchResult;
+import java.util.List;
+
+import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
 import org.joda.time.DateTime;
 
 public interface SearchService {
 
-    SearchResult search(DateTime from, DateTime to, String path);
+    List<Domain> search(DateTime from, DateTime to, String path);
 
 }
