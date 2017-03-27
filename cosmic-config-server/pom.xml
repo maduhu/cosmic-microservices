@@ -211,6 +211,7 @@
                         <configuration>
                             <profiles>
                                 <profile>production</profile>
+                                <profile>vault</profile>
                             </profiles>
                         </configuration>
                     </plugin>
@@ -293,7 +294,7 @@
                                                 <arg>-jar</arg>
                                                 <arg>-Duser.timezone=${cosmic.timezone}</arg>
                                                 <arg>-Dfile.encoding=${cosmic.encoding}</arg>
-                                                <arg>-Dspring.profiles.active=production</arg>
+                                                <arg>-Dspring.profiles.active=production,vault</arg>
                                                 <arg>${cosmic.containerTargetDir}/${project.build.finalName}.jar</arg>
                                             </exec>
                                         </entryPoint>
