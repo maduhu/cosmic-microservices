@@ -4,7 +4,7 @@ import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils
 
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.SearchResult;
+import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.Usage;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
@@ -35,8 +35,8 @@ public class MainController {
         final DateTime from = DATE_FORMATTER.parseDateTime(fromAsString);
         final DateTime to = DATE_FORMATTER.parseDateTime(toAsString);
 
-        final SearchResult searchResult = searchService.search(from, to, path);
-        return usageService.calculateDomainsUsage(searchResult.getDomains(), from, to);
+        final List<Domain> domains = searchService.search(from, to, path);
+        return usageService.calculateDomainsUsage(domains, from, to);
     }
 
 }

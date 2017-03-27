@@ -1,8 +1,8 @@
 {
   "spring": {
-    "data": {
-      "elasticsearch": {
-        "cluster-nodes": "cosmic-metrics-index:9300"
+    "elasticsearch": {
+      "jest": {
+        "uris": "http://cosmic-metrics-index:9200"
       }
     }
   },

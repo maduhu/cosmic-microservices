@@ -9,6 +9,8 @@ import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.avg;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +20,16 @@ import java.util.stream.Collectors;
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.Resource;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.SearchResult;
 import com.github.missioncriticalcloud.cosmic.api.usage.model.State;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+import io.searchbox.core.search.aggregation.AvgAggregation;
+import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.metrics.avg.Avg;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,21 +41,20 @@ public class SearchServiceImpl implements SearchService {
 
     private final DomainsRepository domainsRepository;
 
-    private final Client client;
+    private final JestClient client;
 
     @Autowired
-    public SearchServiceImpl(final DomainsRepository domainsRepository, final Client client) {
+    public SearchServiceImpl(final DomainsRepository domainsRepository, final JestClient client) {
         this.domainsRepository = domainsRepository;
         this.client = client;
     }
 
     @Override
-    public SearchResult search(final DateTime from, final DateTime to, final String path) {
+    public List<Domain> search(final DateTime from, final DateTime to, final String path) {
         final Map<String, Domain> domainsMap = getDomainsMap(path);
 
-        final SearchRequestBuilder request = client.prepareSearch("cosmic-metrics-*")
-                .setTypes("metric")
-                .setSize(0);
+        final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.size(0);
 
         final BoolQueryBuilder queryBuilder = boolQuery()
                 .must(rangeQuery("@timestamp")
@@ -67,18 +67,28 @@ public class SearchServiceImpl implements SearchService {
             queryBuilder.must(termsQuery("domainUuid", domainsMap.keySet()));
         }
 
-        final SearchResponse response = request.setQuery(queryBuilder)
-                .addAggregation(terms("domains").field("domainUuid").size(250)
+        searchSourceBuilder.query(queryBuilder)
+                .aggregation(terms("domains").field("domainUuid").size(250)
                         .subAggregation(terms("resources").field("resourceUuid").size(2500)
                                 .subAggregation(terms("states").field("payload.state").size(2)
                                         .subAggregation(avg("cpuAverage").field("payload.cpu"))
                                         .subAggregation(avg("memoryAverage").field("payload.memory"))
                                 )
                         )
-                )
-                .get();
+                );
 
-        return parseResponse(domainsMap, response);
+        try {
+            final SearchResult searchResult = client.execute(
+                    new Search.Builder(searchSourceBuilder.toString())
+                            .addIndex("cosmic-metrics-*")
+                            .addType("metric")
+                            .build()
+            );
+            return parseResponse(domainsMap, searchResult);
+        } catch (IOException e) {
+            throw new NoMetricsFoundException(e.getMessage(), e);
+        }
+
     }
 
     private Map<String, Domain> getDomainsMap(final String path) {
@@ -97,50 +107,49 @@ public class SearchServiceImpl implements SearchService {
         return domainsMap;
     }
 
-    private static SearchResult parseResponse(final Map<String, Domain> domainsMap, final SearchResponse response) {
-        final long totalHits = response.getHits().getTotalHits();
-        final SearchResult searchResult = new SearchResult(valueOf(totalHits));
-
-        if (totalHits == 0) {
+    private static List<Domain> parseResponse(final Map<String, Domain> domainsMap, final SearchResult searchResult) {
+        if (searchResult.getTotal() == 0) {
             throw new NoMetricsFoundException();
         }
 
-        final Terms domains = response.getAggregations().get("domains");
-        domains.getBuckets().forEach(domainBucket -> {
+        final List<Domain> domains = new ArrayList<>();
 
-            final Domain domain = !CollectionUtils.isEmpty(domainsMap) && domainsMap.containsKey(domainBucket.getKeyAsString())
-                    ? domainsMap.get(domainBucket.getKeyAsString())
-                    : new Domain(domainBucket.getKeyAsString());
+        final TermsAggregation domainsAggregation = searchResult.getAggregations().getTermsAggregation("domains");
+        domainsAggregation.getBuckets().forEach(domainBucket -> {
 
-            domain.setSampleCount(valueOf(domainBucket.getDocCount()));
-            searchResult.getDomains().add(domain);
+            final Domain domain = !CollectionUtils.isEmpty(domainsMap) && domainsMap.containsKey(domainBucket.getKey())
+                    ? domainsMap.get(domainBucket.getKey())
+                    : new Domain(domainBucket.getKey());
 
-            final Terms resources = domainBucket.getAggregations().get("resources");
-            resources.getBuckets().forEach(resourceBucket -> {
+            domain.setSampleCount(valueOf(domainBucket.getCount()));
+            domains.add(domain);
+
+            final TermsAggregation resourcesAggregation = domainBucket.getTermsAggregation("resources");
+            resourcesAggregation.getBuckets().forEach(resourceBucket -> {
 
                 final Resource resource = new Resource();
-                resource.setUuid(resourceBucket.getKeyAsString());
-                resource.setSampleCount(valueOf(resourceBucket.getDocCount()));
+                resource.setUuid(resourceBucket.getKey());
+                resource.setSampleCount(valueOf(resourceBucket.getCount()));
                 domain.getResources().add(resource);
 
-                final Terms states = resourceBucket.getAggregations().get("states");
-                states.getBuckets().forEach(stateBucket -> {
+                final TermsAggregation statesAggregation = resourceBucket.getTermsAggregation("states");
+                statesAggregation.getBuckets().forEach(stateBucket -> {
 
                     final State state = new State();
-                    state.setValue(stateBucket.getKeyAsString());
-                    state.setSampleCount(valueOf(stateBucket.getDocCount()));
+                    state.setValue(stateBucket.getKey());
+                    state.setSampleCount(valueOf(stateBucket.getCount()));
                     resource.getStates().add(state);
 
-                    final Avg cpuAverage = stateBucket.getAggregations().get("cpuAverage");
-                    final Avg memoryAverage = stateBucket.getAggregations().get("memoryAverage");
+                    final AvgAggregation cpuAverage = stateBucket.getAvgAggregation("cpuAverage");
+                    final AvgAggregation memoryAverage = stateBucket.getAvgAggregation("memoryAverage");
 
-                    state.setCpuAverage(valueOf(cpuAverage.getValue()));
-                    state.setMemoryAverage(valueOf(memoryAverage.getValue()));
+                    state.setCpuAverage(valueOf(cpuAverage.getAvg()));
+                    state.setMemoryAverage(valueOf(memoryAverage.getAvg()));
                 });
             });
         });
 
-        return searchResult;
+        return domains;
     }
 
 }

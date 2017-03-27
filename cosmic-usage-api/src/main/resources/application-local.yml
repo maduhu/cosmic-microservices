@@ -6,9 +6,9 @@ spring:
     password: cosmic
     driver-class-name: org.mariadb.jdbc.Driver
 
-  data:
-    elasticsearch:
-      cluster-nodes: localhost:9300
+  elasticsearch:
+    jest:
+      uris: http://localhost:9200
 
 cosmic:
 
