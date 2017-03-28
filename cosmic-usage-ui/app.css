@@ -1,0 +1,28 @@
+body {
+    margin-top: 50px;
+}
+
+#ui-title-row {
+    margin-bottom: 50px;
+}
+
+#ui-month-selector {
+    margin-left: 25px;
+    font-size: 115%;
+}
+
+#ui-form {
+    margin-top: 10px;
+}
+
+#ui-print-info {
+    margin-bottom: 35px;
+}
+
+#ui-domains-table-title {
+    margin-bottom: 25px;
+}
+
+#ui-domains-list-no-data {
+    padding: 50px 0;
+}

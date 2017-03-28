@@ -10,11 +10,13 @@ import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 public class MainController {
 
     private final SearchService searchService;
