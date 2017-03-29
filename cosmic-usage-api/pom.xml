@@ -9,11 +9,9 @@
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
+    <name>Cosmic Usage API</name>
     <artifactId>cosmic-usage-api</artifactId>
     <packaging>jar</packaging>
-
-    <name>Cosmic Usage API</name>
-    <description>Cosmic Usage API for the Cosmic microservices.</description>
 
     <profiles>
         <profile>

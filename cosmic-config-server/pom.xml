@@ -9,11 +9,9 @@
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
+    <name>Cosmic Config Server</name>
     <artifactId>cosmic-config-server</artifactId>
     <packaging>jar</packaging>
-
-    <name>Cosmic Config Server</name>
-    <description>Spring Cloud Config Server for the Cosmic microservices.</description>
 
     <profiles>
         <profile>

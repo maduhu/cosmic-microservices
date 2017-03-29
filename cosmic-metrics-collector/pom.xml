@@ -9,11 +9,9 @@
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
+    <name>Cosmic Metrics Collector</name>
     <artifactId>cosmic-metrics-collector</artifactId>
     <packaging>jar</packaging>
-
-    <name>Cosmic Metrics Collector</name>
-    <description>Cosmic Metrics Collector for the Cosmic microservices.</description>
 
     <profiles>
         <profile>
