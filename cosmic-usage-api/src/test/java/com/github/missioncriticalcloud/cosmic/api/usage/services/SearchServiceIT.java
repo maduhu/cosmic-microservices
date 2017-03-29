@@ -1,6 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DATE_FORMATTER;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
@@ -127,7 +127,6 @@ public class SearchServiceIT {
                                                 .startObject("payload")
                                                         .field("cpu", 2)
                                                         .field("memory", 2048)
-                                                        .field("state", "Running")
                                                 .endObject()
                                         .endObject()
                                         .string()
@@ -145,7 +144,6 @@ public class SearchServiceIT {
                                                 .startObject("payload")
                                                         .field("cpu", 4)
                                                         .field("memory", 4096)
-                                                        .field("state", "Running")
                                                 .endObject()
                                         .endObject()
                                         .string()

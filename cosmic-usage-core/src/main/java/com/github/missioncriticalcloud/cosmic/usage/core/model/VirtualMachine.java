@@ -1,42 +1,39 @@
-package com.github.missioncriticalcloud.cosmic.api.usage.model;
+package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_SCALE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
 
 import java.math.BigDecimal;
 
-public class State {
+public class VirtualMachine {
 
-    public static final String RUNNING = "Running";
-    public static final String STOPPED = "Stopped";
-
-    private String value;
+    private String uuid;
     private BigDecimal sampleCount = BigDecimal.ZERO;
     private BigDecimal cpuAverage = BigDecimal.ZERO;
     private BigDecimal memoryAverage = BigDecimal.ZERO;
 
-    public State() {
+    public VirtualMachine() {
         // Empty constructor
     }
 
-    public State(
-            final String value,
+    public VirtualMachine(
+            final String uuid,
             final BigDecimal sampleCount,
             final BigDecimal cpuAverage,
             final BigDecimal memoryAverage
     ) {
-        setValue(value);
+        setUuid(uuid);
         setSampleCount(sampleCount);
         setCpuAverage(cpuAverage);
         setMemoryAverage(memoryAverage);
     }
 
-    public String getValue() {
-        return value;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
+    public void setUuid(final String uuid) {
+        this.uuid = uuid;
     }
 
     public BigDecimal getSampleCount() {

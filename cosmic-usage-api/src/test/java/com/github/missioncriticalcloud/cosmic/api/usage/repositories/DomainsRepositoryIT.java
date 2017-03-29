@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("local")

@@ -3,7 +3,7 @@ package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.map
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.joda.time.DateTime;
 import org.springframework.jdbc.core.RowMapper;
 

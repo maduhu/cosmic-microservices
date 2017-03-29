@@ -3,7 +3,7 @@ package com.github.missioncriticalcloud.cosmic.api.usage.repositories;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 
 public interface DomainsRepository {
 

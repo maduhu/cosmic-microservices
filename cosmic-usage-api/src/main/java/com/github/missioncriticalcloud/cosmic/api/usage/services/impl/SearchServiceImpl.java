@@ -1,6 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services.impl;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DATE_FORMATTER;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER;
 import static java.math.BigDecimal.valueOf;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
@@ -18,11 +18,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Resource;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.State;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
@@ -70,10 +69,8 @@ public class SearchServiceImpl implements SearchService {
         searchSourceBuilder.query(queryBuilder)
                 .aggregation(terms("domains").field("domainUuid").size(250)
                         .subAggregation(terms("resources").field("resourceUuid").size(2500)
-                                .subAggregation(terms("states").field("payload.state").size(2)
-                                        .subAggregation(avg("cpuAverage").field("payload.cpu"))
-                                        .subAggregation(avg("memoryAverage").field("payload.memory"))
-                                )
+                                .subAggregation(avg("cpuAverage").field("payload.cpu"))
+                                .subAggregation(avg("memoryAverage").field("payload.memory"))
                         )
                 );
 
@@ -127,25 +124,17 @@ public class SearchServiceImpl implements SearchService {
             final TermsAggregation resourcesAggregation = domainBucket.getTermsAggregation("resources");
             resourcesAggregation.getBuckets().forEach(resourceBucket -> {
 
-                final Resource resource = new Resource();
+                final VirtualMachine resource = new VirtualMachine();
                 resource.setUuid(resourceBucket.getKey());
                 resource.setSampleCount(valueOf(resourceBucket.getCount()));
+
+                final AvgAggregation cpuAverage = resourceBucket.getAvgAggregation("cpuAverage");
+                final AvgAggregation memoryAverage = resourceBucket.getAvgAggregation("memoryAverage");
+
+                resource.setCpuAverage(valueOf(cpuAverage.getAvg()));
+                resource.setMemoryAverage(valueOf(memoryAverage.getAvg()));
+
                 domain.getResources().add(resource);
-
-                final TermsAggregation statesAggregation = resourceBucket.getTermsAggregation("states");
-                statesAggregation.getBuckets().forEach(stateBucket -> {
-
-                    final State state = new State();
-                    state.setValue(stateBucket.getKey());
-                    state.setSampleCount(valueOf(stateBucket.getCount()));
-                    resource.getStates().add(state);
-
-                    final AvgAggregation cpuAverage = stateBucket.getAvgAggregation("cpuAverage");
-                    final AvgAggregation memoryAverage = stateBucket.getAvgAggregation("memoryAverage");
-
-                    state.setCpuAverage(valueOf(cpuAverage.getAvg()));
-                    state.setMemoryAverage(valueOf(memoryAverage.getAvg()));
-                });
             });
         });
 

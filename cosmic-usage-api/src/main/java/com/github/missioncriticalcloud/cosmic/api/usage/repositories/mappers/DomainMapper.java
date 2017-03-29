@@ -3,7 +3,7 @@ package com.github.missioncriticalcloud.cosmic.api.usage.repositories.mappers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import org.springframework.jdbc.core.RowMapper;
 
 public class DomainMapper implements RowMapper<Domain> {

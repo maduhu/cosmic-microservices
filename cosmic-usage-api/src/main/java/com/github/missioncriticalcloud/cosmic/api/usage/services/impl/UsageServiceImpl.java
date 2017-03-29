@@ -1,6 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services.impl;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
 import static java.math.BigDecimal.valueOf;
 
 import java.math.BigDecimal;
@@ -9,11 +9,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Resource;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.State;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Usage;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,23 +40,18 @@ public class UsageServiceImpl implements UsageService {
             final Usage usage = new Usage();
             usage.setDomain(domain);
 
-            domain.getResources().forEach(resource ->
-                    resource.getStates()
-                            .stream()
-                            .filter(state -> State.RUNNING.equals(state.getValue()))
-                            .forEach(state -> {
-                                usage.addCpu(
-                                        state.getCpuAverage()
-                                             .multiply(state.getSampleCount())
-                                             .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                                );
-                                usage.addMemory(
-                                        state.getMemoryAverage()
-                                             .multiply(state.getSampleCount())
-                                             .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                                );
-                            })
-            );
+            domain.getResources().forEach(resource -> {
+                    usage.addCpu(
+                            resource.getCpuAverage()
+                                 .multiply(resource.getSampleCount())
+                                 .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
+                    );
+                    usage.addMemory(
+                            resource.getMemoryAverage()
+                                 .multiply(resource.getSampleCount())
+                                 .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
+                    );
+            });
 
             domainsUsage.add(usage);
         });

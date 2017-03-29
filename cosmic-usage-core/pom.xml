@@ -10,7 +10,22 @@
     </parent>
 
     <name>Cosmic Usage Model</name>
-    <artifactId>cosmic-usage-model</artifactId>
+    <artifactId>cosmic-usage-core</artifactId>
     <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

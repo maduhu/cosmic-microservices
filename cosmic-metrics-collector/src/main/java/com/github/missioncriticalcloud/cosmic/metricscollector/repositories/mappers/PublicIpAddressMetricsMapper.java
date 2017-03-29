@@ -3,8 +3,8 @@ package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.map
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.ResourceType;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.ResourceType;
 
 public class PublicIpAddressMetricsMapper extends MetricsMapper {
 
@@ -17,4 +17,5 @@ public class PublicIpAddressMetricsMapper extends MetricsMapper {
 
         return metric;
     }
+
 }

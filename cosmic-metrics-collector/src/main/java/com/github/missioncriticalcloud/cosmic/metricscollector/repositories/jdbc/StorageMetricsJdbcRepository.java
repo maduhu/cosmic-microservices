@@ -3,9 +3,9 @@ package com.github.missioncriticalcloud.cosmic.metricscollector.repositories.jdb
 import java.util.List;
 import java.util.Properties;
 
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
 import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.StorageMetricsRepository;
 import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.mappers.StorageMetricsMapper;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

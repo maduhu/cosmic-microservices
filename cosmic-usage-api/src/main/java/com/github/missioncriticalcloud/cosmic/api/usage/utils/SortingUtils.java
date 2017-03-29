@@ -2,7 +2,7 @@ package com.github.missioncriticalcloud.cosmic.api.usage.utils;
 
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 
 public class SortingUtils {
 
