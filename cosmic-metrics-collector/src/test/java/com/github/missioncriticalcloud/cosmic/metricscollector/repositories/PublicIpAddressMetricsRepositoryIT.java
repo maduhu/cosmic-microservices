@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

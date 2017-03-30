@@ -1,4 +1,4 @@
-package com.github.missioncriticalcloud.cosmic.api.usage.utils;
+package com.github.missioncriticalcloud.cosmic.usage.core.utils;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

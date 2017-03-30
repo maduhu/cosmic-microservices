@@ -3,13 +3,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Cosmic Microservices</name>
     <groupId>com.github.missioncriticalcloud</groupId>
     <artifactId>cosmic-microservices</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <name>Cosmic Microservices</name>
-    <description>Microservices for the Cosmic project.</description>
 
     <scm>
         <connection>scm:git:git@github.com:MissionCriticalCloud/cosmic-microservices.git</connection>
@@ -51,6 +49,7 @@
     <modules>
         <module>cosmic-config-server</module>
         <module>cosmic-metrics-collector</module>
+        <module>cosmic-usage-core</module>
         <module>cosmic-usage-api</module>
     </modules>
 

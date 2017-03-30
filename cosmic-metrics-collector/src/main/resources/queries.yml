@@ -13,7 +13,7 @@ virtual-machine-metrics-repository:
     WHERE
       vm.type = 'User'
     AND
-      vm.state IN ('Running', 'Stopped')
+      vm.state = 'Running'
     AND
       vm.removed IS NULL
 
@@ -41,6 +41,6 @@ public-ip-address-metrics-repository:
         JOIN account a
           ON a.id = ip.account_id
         WHERE
-          ip.removed IS NULL
-        AND
           ip.state = 'Allocated'
+        AND
+          ip.removed IS NULL

@@ -6,16 +6,18 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.missioncriticalcloud.cosmic.metricscollector.exceptions.FailedToCollectMetricsException;
-import com.github.missioncriticalcloud.cosmic.metricscollector.model.Metric;
 import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.VirtualMachineMetricsRepository;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Component
+@ConditionalOnExpression("${cosmic.metrics-collector.enabled-collectors:true}")
 public class VirtualMachineMetricsCollector implements MetricsCollector {
 
     private static final Logger LOG = Logger.getLogger(VirtualMachineMetricsCollector.class.getName());

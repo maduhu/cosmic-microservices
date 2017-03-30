@@ -1,7 +1,7 @@
-package com.github.missioncriticalcloud.cosmic.api.usage.model;
+package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_SCALE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ public class Domain {
     private BigDecimal sampleCount = BigDecimal.ZERO;
 
     @JsonIgnore
-    private final List<Resource> resources = new LinkedList<>();
+    private final List<VirtualMachine> resources = new LinkedList<>();
 
     public Domain() {
         // Empty constructor
@@ -73,7 +73,7 @@ public class Domain {
         this.sampleCount = sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    public List<Resource> getResources() {
+    public List<VirtualMachine> getResources() {
         return resources;
     }
 

@@ -1,16 +1,15 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DATE_FORMATTER;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER;
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Resource;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.State;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -151,9 +150,9 @@ public class UsageServiceTest {
     }
 
     private List<Domain> setupSingleDomain(
-            final long runningSampleCount,
-            final double runningCpu,
-            final double runningMemory
+            final long sampleCount,
+            final double cpu,
+            final double memory
     ) {
         final List<Domain> domains = new ArrayList<>(1);
 
@@ -161,28 +160,24 @@ public class UsageServiceTest {
         domain.setUuid("1");
         domains.add(domain);
 
-        final Resource resource = new Resource();
-        resource.setUuid("1");
-        domain.getResources().add(resource);
-
-        final State running = new State(
-                State.RUNNING,
-                valueOf(runningSampleCount),
-                valueOf(runningCpu),
-                valueOf(runningMemory)
+        final VirtualMachine resource = new VirtualMachine(
+                "1",
+                valueOf(sampleCount),
+                valueOf(cpu),
+                valueOf(memory)
         );
-        resource.getStates().add(running);
+        domain.getResources().add(resource);
 
         return domains;
     }
 
     private List<Domain> setupMultipleDomains(
-            final long runningSampleCount1,
-            final double runningCpu1,
-            final double runningMemory1,
-            final long runningSampleCount2,
-            final double runningCpu2,
-            final double runningMemory2
+            final long sampleCount1,
+            final double cpu1,
+            final double memory1,
+            final long sampleCount2,
+            final double cpu2,
+            final double memory2
     ) {
         final List<Domain> domains = new ArrayList<>(2);
 
@@ -190,33 +185,25 @@ public class UsageServiceTest {
         domain1.setUuid("1");
         domains.add(domain1);
 
-        final Resource resource1 = new Resource();
-        resource1.setUuid("1");
-        domain1.getResources().add(resource1);
-
-        final State running1 = new State(
-                State.RUNNING,
-                valueOf(runningSampleCount1),
-                valueOf(runningCpu1),
-                valueOf(runningMemory1)
+        final VirtualMachine resource1 = new VirtualMachine(
+                "1",
+                valueOf(sampleCount1),
+                valueOf(cpu1),
+                valueOf(memory1)
         );
-        resource1.getStates().add(running1);
+        domain1.getResources().add(resource1);
 
         final Domain domain2 = new Domain();
         domain2.setUuid("2");
         domains.add(domain2);
 
-        final Resource resource2 = new Resource();
-        resource2.setUuid("2");
-        domain2.getResources().add(resource2);
-
-        final State running2 = new State(
-                State.RUNNING,
-                valueOf(runningSampleCount2),
-                valueOf(runningCpu2),
-                valueOf(runningMemory2)
+        final VirtualMachine resource2 = new VirtualMachine(
+                "2",
+                valueOf(sampleCount2),
+                valueOf(cpu2),
+                valueOf(memory2)
         );
-        resource2.getStates().add(running2);
+        domain2.getResources().add(resource2);
 
         return domains;
     }

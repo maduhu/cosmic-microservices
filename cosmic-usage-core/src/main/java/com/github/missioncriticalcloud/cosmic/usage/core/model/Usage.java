@@ -1,7 +1,7 @@
-package com.github.missioncriticalcloud.cosmic.api.usage.model;
+package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.FormatUtils.DEFAULT_SCALE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
 
 import java.math.BigDecimal;
 

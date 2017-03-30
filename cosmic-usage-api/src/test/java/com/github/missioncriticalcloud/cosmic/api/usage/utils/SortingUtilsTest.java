@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Domain;
-import com.github.missioncriticalcloud.cosmic.api.usage.model.Usage;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 

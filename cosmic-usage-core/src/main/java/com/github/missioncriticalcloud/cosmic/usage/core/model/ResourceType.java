@@ -1,4 +1,4 @@
-package com.github.missioncriticalcloud.cosmic.metricscollector.model;
+package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
