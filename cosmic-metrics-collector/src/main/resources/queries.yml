@@ -17,6 +17,19 @@ virtual-machine-metrics-repository:
     AND
       vm.removed IS NULL
 
+storage-metrics-repository:
+  get-metrics:
+    SELECT
+      d.uuid domainUuid, a.uuid accountUuid, v.uuid resourceUuid,
+      v.size size
+    FROM volumes v
+    JOIN domain d
+      ON d.id = v.domain_id
+    JOIN account a
+      ON a.id = v.account_id
+    WHERE
+      v.removed IS NULL
+
 public-ip-address-metrics-repository:
   get-metrics: |
     SELECT

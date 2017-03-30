@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum ResourceType {
 
     VIRTUAL_MACHINE("VirtualMachine"),
-    PUBLIC_IP_ADDRESS("PublicIpAddress");
+    PUBLIC_IP_ADDRESS("PublicIpAddress"),
+    STORAGE("Storage");
 
     private final String value;
 
