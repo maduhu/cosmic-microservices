@@ -5,6 +5,7 @@
 - [Cosmic Config Server](cosmic-config-server) (powered by Spring Cloud Config Server)
 - [Cosmic Metrics Collector](cosmic-metrics-collector) (powered by Spring Boot)
 - [Cosmic Usage API](cosmic-usage-api) (powered by Spring Boot)
+- [Cosmic Usage UI](cosmic-usage-ui) (simple single-page app)
 
 ## Requirements
 
@@ -15,16 +16,19 @@
 - Maven
 - Docker
 
+
 ### Docker:
 
 Please create a Docker network called `cosmic-network`.
 
     docker network create cosmic-network
 
+
 ## [Cosmic Config Server](cosmic-config-server)
 
 Locally it runs by default at [http://localhost:7001](http://localhost:7001).
 Local debugging port is `8001`.
+
 
 Depends on:
 - Cosmic Vault (powered by Hashicorp Vault)
@@ -37,6 +41,7 @@ Depends on:
 - [Cosmic Config Server](cosmic-config-server)
 - Cosmic Database (powered by MariaDB)
 
+
 ## [Cosmic Usage API](cosmic-usage-api)
 
 Locally it runs by default at [http://localhost:7003](http://localhost:7003).
@@ -45,3 +50,11 @@ Local debugging port is `8003`.
 Depends on:
 - [Cosmic Config Server](cosmic-config-server)
 - Cosmic Metrics Index (powered by Elasticsearch)
+
+
+## [Cosmic Usage UI](cosmic-usage-ui)
+
+Locally it runs by default at [http://localhost:7004](http://localhost:7004).
+
+Depends on:
+- [Cosmic Usage API](cosmic-usage-api)
