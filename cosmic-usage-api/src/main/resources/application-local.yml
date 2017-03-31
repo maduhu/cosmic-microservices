@@ -13,4 +13,4 @@ spring:
 cosmic:
 
   usage-api:
-    scan-interval: "*/10 * * * * *"
+    scan-interval: "0 */15 * * * *"

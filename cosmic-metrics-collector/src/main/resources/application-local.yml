@@ -15,6 +15,6 @@ spring:
 cosmic:
 
   metrics-collector:
-    scan-interval: "*/10 * * * * *"
+    scan-interval: "0 */15 * * * *"
     broker-exchange: cosmic-metrics-exchange
     broker-exchange-key: cosmic-metrics-key

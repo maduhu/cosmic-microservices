@@ -2,7 +2,6 @@ package com.github.missioncriticalcloud.cosmic.api.usage.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
@@ -22,12 +21,6 @@ public class DomainsRepositoryIT {
     @Autowired
     private DomainsRepository domainsRepository;
 
-    @Test(expected = ConstraintViolationException.class)
-    @Sql(value = "/test-schema.sql")
-    public void test1() {
-        domainsRepository.list(null);
-    }
-
     @Test
     @Sql(value = "/test-schema.sql")
     public void testEmptyDatabase() {
@@ -44,10 +37,7 @@ public class DomainsRepositoryIT {
         assertThat(domains).isNotEmpty();
         assertThat(domains).hasSize(3);
 
-        domains.forEach(domain -> {
-            assertThat(domain).isNotNull();
-            assertThat(domain.getUuid()).isNotNull();
-        });
+        domains.forEach(this::assertDomain);
     }
 
     @Test
@@ -58,10 +48,7 @@ public class DomainsRepositoryIT {
         assertThat(domains).isNotEmpty();
         assertThat(domains).hasSize(2);
 
-        domains.forEach(domain -> {
-            assertThat(domain).isNotNull();
-            assertThat(domain.getUuid()).isNotNull();
-        });
+        domains.forEach(this::assertDomain);
     }
 
     @Test
@@ -72,10 +59,7 @@ public class DomainsRepositoryIT {
         assertThat(domains).isNotEmpty();
         assertThat(domains).hasSize(1);
 
-        domains.forEach(domain -> {
-            assertThat(domain).isNotNull();
-            assertThat(domain.getUuid()).isNotNull();
-        });
+        domains.forEach(this::assertDomain);
     }
 
     @Test
@@ -84,6 +68,13 @@ public class DomainsRepositoryIT {
         final List<Domain> domains = domainsRepository.list("/level1/level2/level3");
         assertThat(domains).isNotNull();
         assertThat(domains).isEmpty();
+    }
+
+    private void assertDomain(final Domain domain) {
+        assertThat(domain).isNotNull();
+        assertThat(domain.getUuid()).isNotNull();
+        assertThat(domain.getPath()).isNotNull();
+        assertThat(domain.getName()).isNotNull();
     }
 
 }

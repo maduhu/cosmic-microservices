@@ -1,16 +1,12 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.controllers;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.sort;
 import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER;
 
-import java.util.List;
-
-import com.github.missioncriticalcloud.cosmic.api.usage.services.SearchService;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
+import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,17 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class MainController {
 
-    private final SearchService searchService;
     private final UsageService usageService;
 
     @Autowired
-    public MainController(final SearchService searchService, final UsageService usageService) {
-        this.searchService = searchService;
+    public MainController(final UsageService usageService) {
         this.usageService = usageService;
     }
 
-    @RequestMapping("/")
-    public List<Usage> defaultEndpoint(
+    @RequestMapping("/general")
+    public GeneralUsage general(
             @RequestParam("from") final String fromAsString,
             @RequestParam("to") final String toAsString,
             @RequestParam("path") final String path,
@@ -42,11 +36,10 @@ public class MainController {
         final DateTime from = DATE_FORMATTER.parseDateTime(fromAsString);
         final DateTime to = DATE_FORMATTER.parseDateTime(toAsString);
 
-        final List<Domain> domains = searchService.search(from, to, path);
-        final List<Usage> domainsUsage = usageService.calculateDomainsUsage(domains, from, to);
-        sort(domainsUsage, sortBy, sortOrder);
+        final GeneralUsage generalUsage = usageService.calculateGeneralUsage(from, to, path);
+        SortingUtils.sort(generalUsage, sortBy, sortOrder);
 
-        return domainsUsage;
+        return generalUsage;
     }
 
 }

@@ -5,10 +5,8 @@ import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtil
 
 import java.math.BigDecimal;
 
-public class VirtualMachine {
+public class VirtualMachine extends Resource {
 
-    private String uuid;
-    private BigDecimal sampleCount = BigDecimal.ZERO;
     private BigDecimal cpuAverage = BigDecimal.ZERO;
     private BigDecimal memoryAverage = BigDecimal.ZERO;
 
@@ -26,22 +24,6 @@ public class VirtualMachine {
         setSampleCount(sampleCount);
         setCpuAverage(cpuAverage);
         setMemoryAverage(memoryAverage);
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(final String uuid) {
-        this.uuid = uuid;
-    }
-
-    public BigDecimal getSampleCount() {
-        return sampleCount;
-    }
-
-    public void setSampleCount(final BigDecimal sampleCount) {
-        this.sampleCount = sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public BigDecimal getCpuAverage() {
