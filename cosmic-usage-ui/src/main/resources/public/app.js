@@ -6,7 +6,8 @@ const app = {
     API_DATE_FORMAT: 'YYYY-MM-DD',
     MONTH_SELECTOR_FORMAT: 'YYYY-MM',
     SELECTED_MONTH_HUMAN_FORMAT: 'MMMM YYYY',
-    USAGE_API_URL: 'http://localhost:8080/?from={{& from }}&to={{& to }}&path={{& path }}',
+    USAGE_API_BASE_URL: undefined,
+    USAGE_API_URL_PARAMS: '?from={{& from }}&to={{& to }}&path={{& path }}',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
 
     // Templates
@@ -24,9 +25,11 @@ const app = {
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
 
-    init: function() {
+    init: function(baseUrl) {
         numeral.locale(this.DECIMAL_LOCALE);
         numeral.defaultFormat(this.DECIMAL_FORMAT);
+
+        this.USAGE_API_BASE_URL = baseUrl;
 
         _.bindAll(this, ... _.functions(this));
 
@@ -75,7 +78,7 @@ const app = {
 
         const path = $(this.domainPathField).val();
 
-        const renderedUrl = Mustache.render(this.USAGE_API_URL, {
+        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.USAGE_API_URL_PARAMS, {
             from: from,
             to: to,
             path: path
