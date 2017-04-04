@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 COPY . /usr/src/app
 
-RUN apk update && apk upgrade && \
+RUN sleep 5 && apk update && apk upgrade && \
     apk add --no-cache bash git && \
     npm install --global bower http-server && \
     bower install --allow-root

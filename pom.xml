@@ -51,6 +51,7 @@
         <module>cosmic-metrics-collector</module>
         <module>cosmic-usage-core</module>
         <module>cosmic-usage-api</module>
+        <module>cosmic-usage-ui</module>
     </modules>
 
     <properties>
