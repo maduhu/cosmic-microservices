@@ -10,7 +10,7 @@
         <link href="public/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="public/libs/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
         <link href="public/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-        <link href="public/app.css" rel="stylesheet">
+        <link href="public/app/main.css" rel="stylesheet">
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -42,7 +42,7 @@
                 <div class="col-md-9">
                     <form id="ui-form" class="form-horizontal">
                         <div class="form-group form-group-lg">
-                            <label class="col-sm-2 control-label" for="domain-path">Domain path</label>
+                            <label class="col-sm-2 control-label" for="ui-domain-path">Domain path</label>
                             <div class="col-sm-10">
                                 <input id="ui-domain-path" class="form-control"
                                                            type="text"
@@ -51,18 +51,34 @@
                             </div>
                         </div>
                         <div class="form-group form-group-sm">
-                            <label class="col-sm-2 control-label" for="cpu-price">CPU unit price</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-3 control-label" for="ui-cpu-price">CPU price (unit)</label>
+                            <div class="col-sm-3">
                                 <input id="ui-cpu-price" class="form-control"
                                                          type="text"
-                                                         placeholder="CPU price per unit"
+                                                         placeholder="CPU price (unit)"
                                                          value="1,00">
                             </div>
-                            <label class="col-sm-2 control-label" for="memory-price">Memory unit price</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-3 control-label" for="ui-memory-price">Memory price (MB)</label>
+                            <div class="col-sm-3">
                                 <input id="ui-memory-price" class="form-control"
                                                             type="text"
-                                                            placeholder="Memory price per unit"
+                                                            placeholder="Memory price (MB)"
+                                                            value="1,00">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <label class="col-sm-3 control-label" for="ui-storage-price">Storage price (GB)</label>
+                            <div class="col-sm-3">
+                                <input id="ui-storage-price" class="form-control"
+                                                         type="text"
+                                                         placeholder="Storage price (GB)"
+                                                         value="1,00">
+                            </div>
+                            <label class="col-sm-3 control-label" for="ui-ip-address-price">IP address price (unit)</label>
+                            <div class="col-sm-3">
+                                <input id="ui-ip-address-price" class="form-control"
+                                                            type="text"
+                                                            placeholder="IP address price (unit)"
                                                             value="1,00">
                             </div>
                         </div>
@@ -81,13 +97,12 @@
                     <table id="ui-domains-table" class="table table-striped">
                         <thead>
                             <tr>
-                                <th>UUID</th>
-                                <th>Domain</th>
+                                <th class="text-uppercase">Domain</th>
                                 <th>CPU</th>
-                                <th>Cost</th>
                                 <th>Memory</th>
-                                <th>Cost</th>
-                                <th>TOTAL</th>
+                                <th>Storage</th>
+                                <th>IP Addresses</th>
+                                <th class="text-uppercase">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,8 +128,24 @@
             {{^ selectedMonth }}
                 <h2>No month selected</h2>
             {{/ selectedMonth }}
-            <h3>CPU unit price: &euro; {{ cpuPrice }}</h3>
-            <h3>Memory unit price: &euro; {{ memoryPrice }}</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CPU price (unit)</th>
+                        <th>Memory price (MB)</th>
+                        <th>Storage price (GB)</th>
+                        <th>IP address price (unit)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ cpuPrice }} &euro;</td>
+                        <td>{{ memoryPrice }} &euro;</td>
+                        <td>{{ storagePrice }} &euro;</td>
+                        <td>{{ ipAddressPrice }} &euro;</td>
+                    </tr>
+                </tbody>
+            </table>
         <%={{ }}=%>
         </script>
 
@@ -122,18 +153,34 @@
         {{=<% %>=}}
             {{# domains }}
                 <tr>
-                    <td>{{ domain.uuid }}</td>
-                    <td>{{ domain.path }}</td>
-                    <td>{{ cpu }} units</td>
-                    <th role="row">&euro; {{ cpuCost }}</th>
-                    <td>{{ memory }} MB</td>
-                    <th role="row">&euro; {{ memoryCost }}</th>
-                    <th role="row">&euro; {{ totalCost }}</th>
+                    <td>
+                        <strong>{{ domain.path }}</strong><br>
+                        {{ domain.uuid }}
+                    </td>
+                    <td>
+                        {{ compute.cpu }} units<br>
+                        <strong>{{ costs.compute.cpu }} &euro;</strong>
+                    </td>
+                    <td>
+                        {{ compute.memory }} MB<br>
+                        <strong>{{ costs.compute.memory }} &euro;</strong>
+                    </td>
+                    <td>
+                        {{ storage }} GB<br>
+                        <strong>{{ costs.storage }} &euro;</strong>
+                    </td>
+                    <td>
+                        {{ network.ipAddresses }} units<br>
+                        <strong>{{ costs.network.ipAddresses }} &euro;</strong>
+                    </td>
+                    <td>
+                        <strong>{{ costs.total }} &euro;</strong>
+                    </td>
                 </tr>
             {{/ domains }}
             {{^ domains }}
                 <tr>
-                    <td id="ui-domains-list-no-data" class="text-center" colspan="7">No data</td>
+                    <td id="ui-domains-list-no-data" class="text-center" colspan="6">No data</td>
                 </tr>
             {{/ domains }}
         <%={{ }}=%>
@@ -147,7 +194,7 @@
         <script src="public/libs/numeral/min/numeral.min.js"></script>
         <script src="public/libs/numeral/min/locales/nl-nl.min.js"></script>
         <script src="public/libs/underscore/underscore-min.js"></script>
-        <script src="public/app.js"></script>
+        <script src="public/app/main.js"></script>
         <script>$(function() { app.init("{{{ baseUrl }}}"); });</script>
     </body>
 </html>

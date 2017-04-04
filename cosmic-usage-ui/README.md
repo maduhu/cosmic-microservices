@@ -18,7 +18,7 @@ In order to build and run the Cosmic Usage UI, please follow the following steps
 
 Build a Docker image for the Cosmic Usage UI:
 
-    docker build -t missioncriticalcloud/cosmic-usage-ui .
+    mvn clean package -DskipTests
 
 Start a Docker container running the Cosmic Usage UI:
 
@@ -31,8 +31,8 @@ The service should be available at: [http://localhost:7004/](http://localhost:70
 
 One-liner:
 
-    docker build \
-           -t missioncriticalcloud/cosmic-usage-ui . && \
+    mvn clean package \
+        -DskipTests && \
     docker run --rm -p 7004:8080 \
         --network cosmic-network \
         --name cosmic-usage-ui \
