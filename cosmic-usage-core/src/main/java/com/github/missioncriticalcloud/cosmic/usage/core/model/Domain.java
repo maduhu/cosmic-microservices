@@ -1,11 +1,8 @@
 package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
-import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
-import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
-
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,12 +11,16 @@ public class Domain {
     private String uuid;
     private String name;
     private String path;
+    private Usage usage = new Usage();
 
     @JsonIgnore
-    private BigDecimal sampleCount = BigDecimal.ZERO;
+    private final List<VirtualMachine> virtualMachines = new LinkedList<>();
 
     @JsonIgnore
-    private final List<VirtualMachine> resources = new LinkedList<>();
+    private final List<Storage> storageItems = new LinkedList<>();
+
+    @JsonIgnore
+    private final List<IpAddress> ipAddresses = new LinkedList<>();
 
     public Domain() {
         // Empty constructor
@@ -27,18 +28,6 @@ public class Domain {
 
     public Domain(final String uuid) {
         setUuid(uuid);
-    }
-
-    public Domain(
-            final String uuid,
-            final String name,
-            final String path,
-            final BigDecimal sampleCount
-    ) {
-        setUuid(uuid);
-        setName(name);
-        setPath(path);
-        setSampleCount(sampleCount);
     }
 
     public String getUuid() {
@@ -65,16 +54,37 @@ public class Domain {
         this.path = path;
     }
 
-    public BigDecimal getSampleCount() {
-        return sampleCount;
+    public Usage getUsage() {
+        return usage;
     }
 
-    public void setSampleCount(final BigDecimal sampleCount) {
-        this.sampleCount = sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    public List<VirtualMachine> getVirtualMachines() {
+        return virtualMachines;
     }
 
-    public List<VirtualMachine> getResources() {
-        return resources;
+    public List<Storage> getStorageItems() {
+        return storageItems;
+    }
+
+    public List<IpAddress> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Domain)) {
+            return false;
+        }
+        final Domain domain = (Domain) o;
+        return Objects.equals(getUuid(), domain.getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUuid());
     }
 
 }

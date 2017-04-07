@@ -7,54 +7,32 @@ import java.math.BigDecimal;
 
 public class Usage {
 
-    private Domain domain;
-    private BigDecimal cpu = BigDecimal.ZERO;
-    private BigDecimal memory = BigDecimal.ZERO;
+    private Compute compute = new Compute();
+    private BigDecimal storage = BigDecimal.ZERO;
+    private Network network = new Network();
 
     public Usage() {
         // Empty constructor
     }
 
-    public Usage(
-            final Domain domain,
-            final BigDecimal cpu,
-            final BigDecimal memory
-    ) {
-        setDomain(domain);
-        setCpu(cpu);
-        setMemory(memory);
+    public Compute getCompute() {
+        return compute;
     }
 
-    public Domain getDomain() {
-        return domain;
+    public BigDecimal getStorage() {
+        return storage;
     }
 
-    public void setDomain(final Domain domain) {
-        this.domain = domain;
+    public void setStorage(final BigDecimal storage) {
+        this.storage = storage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    public BigDecimal getCpu() {
-        return cpu;
+    public void addStorage(final BigDecimal amountToAdd) {
+        storage = storage.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    public void setCpu(final BigDecimal cpu) {
-        this.cpu = cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
-    }
-
-    public void addCpu(final BigDecimal amountToAdd) {
-        cpu = cpu.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
-    }
-
-    public BigDecimal getMemory() {
-        return memory;
-    }
-
-    public void setMemory(final BigDecimal memory) {
-        this.memory = memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
-    }
-
-    public void addMemory(final BigDecimal amountToAdd) {
-        memory = memory.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    public Network getNetwork() {
+        return network;
     }
 
 }
