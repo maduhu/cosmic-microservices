@@ -1,7 +1,5 @@
 'use strict';
 
-const PORT = 8080;
-
 const express = require('express');
 const fs = require('fs');
 const mustache = require('mustache');
@@ -16,6 +14,8 @@ app.get('/', function(req, res) {
         }));
     });
 });
+
+const PORT = 8080;
 
 app.listen(PORT, function() {
     console.log('Listening on port: ' + PORT);
