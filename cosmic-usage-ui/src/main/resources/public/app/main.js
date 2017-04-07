@@ -7,7 +7,7 @@ const app = {
     MONTH_SELECTOR_FORMAT: 'YYYY-MM',
     SELECTED_MONTH_HUMAN_FORMAT: 'MMMM YYYY',
     USAGE_API_BASE_URL: undefined,
-    USAGE_API_URL_PARAMS: '?from={{& from }}&to={{& to }}&path={{& path }}',
+    GENERAL_USAGE_PATH: '/general?from={{& from }}&to={{& to }}&path={{& path }}',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
 
     // Templates
@@ -21,6 +21,8 @@ const app = {
     domainPathField: '#ui-domain-path',
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
+    storagePriceField: '#ui-storage-price',
+    ipAddressPriceField: '#ui-ip-address-price',
     generateReportButton: '#ui-generate-report-btn',
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
@@ -48,12 +50,16 @@ const app = {
 
         const cpuPriceFormatted = numeral($(this.cpuPriceField).val()).format();
         const memoryPriceFormatted = numeral($(this.memoryPriceField).val()).format();
+        const storagePriceFormatted = numeral($(this.storagePriceField).val()).format();
+        const ipAddressPriceFormatted = numeral($(this.ipAddressPriceField).val()).format();
 
         const html = $(this.printingHeadersTemplate).html();
         const rendered = Mustache.render(html, {
             selectedMonth: selectedMonthFormatted,
             cpuPrice: cpuPriceFormatted,
-            memoryPrice: memoryPriceFormatted
+            memoryPrice: memoryPriceFormatted,
+            storagePrice: storagePriceFormatted,
+            ipAddressPrice: ipAddressPriceFormatted
         });
         $(this.printingHeadersContainer).html(rendered);
     },
@@ -78,7 +84,7 @@ const app = {
 
         const path = $(this.domainPathField).val();
 
-        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.USAGE_API_URL_PARAMS, {
+        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.GENERAL_USAGE_PATH, {
             from: from,
             to: to,
             path: path
@@ -112,16 +118,36 @@ const app = {
     calculateDomainCosts: function(domain) {
         const cpuPrice = numeral($(this.cpuPriceField).val());
         const memoryPrice = numeral($(this.memoryPriceField).val());
+        const storagePrice = numeral($(this.storagePriceField).val());
+        const ipAddressPrice = numeral($(this.ipAddressPriceField).val());
 
-        domain.cpuCost = numeral(cpuPrice.value()).multiply(domain.cpu);
-        domain.memoryCost = numeral(memoryPrice.value()).multiply(domain.memory);
-        domain.totalCost = numeral(domain.cpuCost.value()).add(domain.memoryCost.value());
+        domain.costs = {
+            compute: {
+                cpu: numeral(cpuPrice.value()).multiply(domain.compute.cpu),
+                memory: numeral(memoryPrice.value()).multiply(domain.compute.memory)
+            },
+            storage: numeral(storagePrice.value()).multiply(domain.storage),
+            network: {
+                ipAddresses: numeral(ipAddressPrice.value()).multiply(domain.network.ipAddresses)
+            }
+        };
 
-        domain.cpu = numeral(domain.cpu).format();
-        domain.memory = numeral(domain.memory).format();
-        domain.cpuCost = domain.cpuCost.format();
-        domain.memoryCost = domain.memoryCost.format();
-        domain.totalCost = domain.totalCost.format();
+        domain.costs.total = numeral(domain.costs.compute.cpu.value())
+                              .add(domain.costs.compute.memory.value())
+                              .add(domain.costs.storage.value())
+                              .add(domain.costs.network.ipAddresses.value());
+
+        domain.compute.cpu = numeral(domain.compute.cpu).format();
+        domain.compute.memory = numeral(domain.compute.memory).format();
+        domain.storage = numeral(domain.storage).format();
+        domain.network.ipAddresses = numeral(domain.network.ipAddresses).format();
+
+        domain.costs.compute.cpu = domain.costs.compute.cpu.format();
+        domain.costs.compute.memory = domain.costs.compute.memory.format();
+        domain.costs.storage = domain.storage.format();
+        domain.costs.network.ipAddresses = domain.costs.network.ipAddresses.format();
+
+        domain.costs.total = domain.costs.total.format();
     },
 
     renderErrorMessage: function(errorMessage) {
