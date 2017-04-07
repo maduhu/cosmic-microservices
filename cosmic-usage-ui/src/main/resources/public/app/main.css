@@ -26,3 +26,7 @@ body {
 #ui-domains-list-no-data {
     padding: 50px 0;
 }
+
+#ui-domains-list-template .ui-domain-total {
+    font-size: 150%;
+}
