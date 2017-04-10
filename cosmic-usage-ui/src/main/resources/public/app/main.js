@@ -93,10 +93,10 @@ const app = {
             .fail(this.parseErrorResponse);
     },
 
-    parseDomainsResult: function(domains) {
+    parseDomainsResult: function(data) {
         this.renderPrintingHeaders();
-        this.calculateDomainsCosts(domains);
-        this.renderDomainsList(domains);
+        this.calculateDomainsCosts(data.domains);
+        this.renderDomainsList(data.domains);
     },
 
     parseErrorResponse: function(response) {
@@ -122,29 +122,29 @@ const app = {
 
         domain.costs = {
             compute: {
-                cpu: numeral(cpuPrice.value()).multiply(domain.compute.cpu),
-                memory: numeral(memoryPrice.value()).multiply(domain.compute.memory)
+                cpu: numeral(cpuPrice.value()).multiply(domain.usage.compute.cpu),
+                memory: numeral(memoryPrice.value()).multiply(domain.usage.compute.memory)
             },
-            storage: numeral(storagePrice.value()).multiply(domain.storage),
+            storage: numeral(storagePrice.value()).multiply(domain.usage.storage),
             network: {
-                ipAddresses: numeral(ipAddressPrice.value()).multiply(domain.network.ipAddresses)
+                publicIps: numeral(ipAddressPrice.value()).multiply(domain.usage.network.publicIps)
             }
         };
 
         domain.costs.total = numeral(domain.costs.compute.cpu.value())
-                              .add(domain.costs.compute.memory.value())
-                              .add(domain.costs.storage.value())
-                              .add(domain.costs.network.ipAddresses.value());
+                                .add(domain.costs.compute.memory.value())
+                                .add(domain.costs.storage.value())
+                                .add(domain.costs.network.publicIps.value());
 
-        domain.compute.cpu = numeral(domain.compute.cpu).format();
-        domain.compute.memory = numeral(domain.compute.memory).format();
-        domain.storage = numeral(domain.storage).format();
-        domain.network.ipAddresses = numeral(domain.network.ipAddresses).format();
+        domain.usage.compute.cpu = numeral(domain.usage.compute.cpu).format();
+        domain.usage.compute.memory = numeral(domain.usage.compute.memory).format();
+        domain.usage.storage = numeral(domain.usage.storage).format();
+        domain.usage.network.publicIps = numeral(domain.usage.network.publicIps).format();
 
         domain.costs.compute.cpu = domain.costs.compute.cpu.format();
         domain.costs.compute.memory = domain.costs.compute.memory.format();
-        domain.costs.storage = domain.storage.format();
-        domain.costs.network.ipAddresses = domain.costs.network.ipAddresses.format();
+        domain.costs.storage = domain.costs.storage.format();
+        domain.costs.network.publicIps = domain.costs.network.publicIps.format();
 
         domain.costs.total = domain.costs.total.format();
     },

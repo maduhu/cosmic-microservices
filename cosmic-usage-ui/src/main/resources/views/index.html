@@ -154,27 +154,27 @@
             {{# domains }}
                 <tr>
                     <td>
-                        <strong>{{ domain.path }}</strong><br>
-                        {{ domain.uuid }}
+                        <strong>{{ path }}</strong><br>
+                        {{ uuid }}
                     </td>
                     <td>
-                        {{ compute.cpu }} units<br>
+                        {{ usage.compute.cpu }} units<br>
                         <strong>{{ costs.compute.cpu }} &euro;</strong>
                     </td>
                     <td>
-                        {{ compute.memory }} MB<br>
+                        {{ usage.compute.memory }} MB<br>
                         <strong>{{ costs.compute.memory }} &euro;</strong>
                     </td>
                     <td>
-                        {{ storage }} GB<br>
+                        {{ usage.storage }} GB<br>
                         <strong>{{ costs.storage }} &euro;</strong>
                     </td>
                     <td>
-                        {{ network.ipAddresses }} units<br>
-                        <strong>{{ costs.network.ipAddresses }} &euro;</strong>
+                        {{ usage.network.publicIps }} units<br>
+                        <strong>{{ costs.network.publicIps }} &euro;</strong>
                     </td>
                     <td>
-                        <strong>{{ costs.total }} &euro;</strong>
+                        <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
                     </td>
                 </tr>
             {{/ domains }}
