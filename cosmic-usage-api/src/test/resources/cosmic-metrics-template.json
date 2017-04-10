@@ -39,6 +39,23 @@
         "@timestamp": {
           "type": "date",
           "format": "strict_date_optional_time||epoch_millis"
+        },
+        "payload": {
+          "properties": {
+            "memory": {
+              "type": "double"
+            },
+            "cpu": {
+              "type": "double"
+            },
+            "size": {
+              "type": "double"
+            },
+            "state": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
         }
       }
     }
