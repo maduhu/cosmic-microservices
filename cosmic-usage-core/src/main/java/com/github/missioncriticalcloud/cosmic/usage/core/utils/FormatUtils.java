@@ -12,7 +12,8 @@ public class FormatUtils {
     public static final int DEFAULT_SCALE = 2;
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
+    public static final String DATE_FORMATTER_STRING = "yyyy-MM-dd";
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern(DATE_FORMATTER_STRING);
 
     private FormatUtils() {
         // Empty constructor

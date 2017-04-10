@@ -6,11 +6,13 @@ import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 public class SortingUtils {
 
     public enum SortBy {
-        DOMAIN_PATH, CPU, MEMORY, STORAGE, IP_ADDRESS
+        DOMAIN_PATH, CPU, MEMORY, STORAGE, IP_ADDRESS;
+        public static final String DEFAULT = "DOMAIN_PATH";
     }
 
     public enum SortOrder {
-        ASC, DESC
+        ASC, DESC;
+        public static final String DEFAULT = "ASC";
     }
 
     private SortingUtils() {
