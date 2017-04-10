@@ -1,7 +1,8 @@
+'use strict';
+
 const app = {
 
     // Constants
-    DECIMAL_LOCALE: 'nl-nl',
     DECIMAL_FORMAT: '0,0.00',
     API_DATE_FORMAT: 'YYYY-MM-DD',
     MONTH_SELECTOR_FORMAT: 'YYYY-MM',
@@ -28,11 +29,9 @@ const app = {
     domainsTable: '#ui-domains-table',
 
     init: function(baseUrl) {
-        numeral.locale(this.DECIMAL_LOCALE);
-        numeral.defaultFormat(this.DECIMAL_FORMAT);
-
         this.USAGE_API_BASE_URL = baseUrl;
 
+        numeral.defaultFormat(this.DECIMAL_FORMAT);
         _.bindAll(this, ... _.functions(this));
 
         $(this.monthSelectorComponent).datepicker('setDate', new Date());
