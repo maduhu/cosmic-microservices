@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>cosmic-microservices</artifactId>
         <groupId>com.github.missioncriticalcloud</groupId>
+        <artifactId>cosmic-microservices</artifactId>
         <version>0.0.2-SNAPSHOT</version>
     </parent>
 
-    <name>Cosmic Usage Model</name>
+    <name>Cosmic Usage Core</name>
     <artifactId>cosmic-usage-core</artifactId>
     <packaging>jar</packaging>
 

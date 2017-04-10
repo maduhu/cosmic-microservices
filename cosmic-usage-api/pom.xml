@@ -336,7 +336,6 @@
         <dependency>
             <groupId>com.github.missioncriticalcloud</groupId>
             <artifactId>cosmic-usage-core</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
