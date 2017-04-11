@@ -14,7 +14,6 @@ public abstract class MetricsMapper implements RowMapper<Metric> {
         final Metric metric = new Metric();
 
         metric.setDomainUuid(resultSet.getString("domainUuid"));
-        metric.setAccountUuid(resultSet.getString("accountUuid"));
         metric.setResourceUuid(resultSet.getString("resourceUuid"));
 
         metric.setTimestamp(new DateTime());
