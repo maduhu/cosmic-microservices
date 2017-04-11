@@ -40,7 +40,6 @@ public class StorageMetricsJdbcRepositoryIT {
         metrics.forEach(metric -> {
             assertThat(metric).isNotNull();
             assertThat(metric.getDomainUuid()).isNotNull();
-            assertThat(metric.getAccountUuid()).isNotNull();
             assertThat(metric.getResourceUuid()).isNotNull();
             assertThat(metric.getTimestamp()).isNotNull();
             assertThat(metric.getPayload()).isNotNull();

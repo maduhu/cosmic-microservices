@@ -40,7 +40,6 @@ public class PublicIpAddressMetricsRepositoryIT {
         metrics.forEach(metric -> {
             assertThat(metric).isNotNull();
             assertThat(metric.getDomainUuid()).isNotNull();
-            assertThat(metric.getAccountUuid()).isNotNull();
             assertThat(metric.getResourceUuid()).isNotNull();
             assertThat(metric.getResourceType()).isNotNull();
             assertThat(metric.getTimestamp()).isNotNull();

@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 public class Metric {
 
     private String domainUuid;
-    private String accountUuid;
     private String resourceUuid;
 
     private ResourceType resourceType;
@@ -25,14 +24,6 @@ public class Metric {
 
     public void setDomainUuid(final String domainUuid) {
         this.domainUuid = domainUuid;
-    }
-
-    public String getAccountUuid() {
-        return accountUuid;
-    }
-
-    public void setAccountUuid(final String accountUuid) {
-        this.accountUuid = accountUuid;
     }
 
     public String getResourceUuid() {
