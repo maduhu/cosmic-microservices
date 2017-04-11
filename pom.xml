@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -52,6 +53,7 @@
         <module>cosmic-usage-core</module>
         <module>cosmic-usage-api</module>
         <module>cosmic-usage-ui</module>
+        <module>cosmic-usage-reporter</module>
     </modules>
 
     <properties>
@@ -78,6 +80,7 @@
         <cs.org.jacoco.agent.rt.version>0.7.6.201602180812</cs.org.jacoco.agent.rt.version>
         <cs.org.jacoco.agent.version>0.7.6.201602180812</cs.org.jacoco.agent.version>
         <cs.sonar-maven-plugin.version>3.0.2</cs.sonar-maven-plugin.version>
+        <cs.pdfbox.version>2.0.4</cs.pdfbox.version>
     </properties>
 
     <dependencyManagement>
@@ -93,6 +96,11 @@
                 <groupId>com.github.missioncriticalcloud</groupId>
                 <artifactId>cosmic-usage-core</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${cs.pdfbox.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
