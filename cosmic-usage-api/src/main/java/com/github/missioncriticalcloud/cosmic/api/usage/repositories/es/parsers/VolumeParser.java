@@ -1,23 +1,22 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.CPU_AVERAGE_AGGREGATION;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.DOMAINS_AGGREGATION;
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.MEMORY_AVERAGE_AGGREGATION;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.RESOURCES_AGGREGATION;
+import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.VOLUME_AVERAGE_AGGREGATION;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.VirtualMachineAggregation;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.VolumeAggregation;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.AvgAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VirtualMachineParser implements Parser {
+public class VolumeParser implements Parser {
 
     public List<DomainAggregation> parse(final SearchResult searchResult) {
         final List<DomainAggregation> domainAggregations = new LinkedList<>();
@@ -34,17 +33,14 @@ public class VirtualMachineParser implements Parser {
             final TermsAggregation resourcesAggregation = domainBucket.getTermsAggregation(RESOURCES_AGGREGATION);
             resourcesAggregation.getBuckets().forEach(resourceBucket -> {
 
-                final VirtualMachineAggregation virtualMachineAggregation = new VirtualMachineAggregation();
-                virtualMachineAggregation.setUuid(resourceBucket.getKey());
-                virtualMachineAggregation.setSampleCount(BigDecimal.valueOf(resourceBucket.getCount()));
+                final VolumeAggregation volumeAggregation = new VolumeAggregation();
+                volumeAggregation.setUuid(resourceBucket.getKey());
+                volumeAggregation.setSampleCount(BigDecimal.valueOf(resourceBucket.getCount()));
 
-                final AvgAggregation cpuAverage = resourceBucket.getAvgAggregation(CPU_AVERAGE_AGGREGATION);
-                final AvgAggregation memoryAverage = resourceBucket.getAvgAggregation(MEMORY_AVERAGE_AGGREGATION);
+                final AvgAggregation sizeAverage = resourceBucket.getAvgAggregation(VOLUME_AVERAGE_AGGREGATION);
+                volumeAggregation.setSize(BigDecimal.valueOf(sizeAverage.getAvg()));
 
-                virtualMachineAggregation.setCpuAverage(BigDecimal.valueOf(cpuAverage.getAvg()));
-                virtualMachineAggregation.setMemoryAverage(BigDecimal.valueOf(memoryAverage.getAvg()));
-
-                domainAggregation.getVirtualMachineAggregations().add(virtualMachineAggregation);
+                domainAggregation.getVolumeAggregations().add(volumeAggregation);
             });
 
             domainAggregations.add(domainAggregation);

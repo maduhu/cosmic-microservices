@@ -15,19 +15,18 @@ public abstract class ResourcesEsRepository {
 
     public static final String CPU_AVERAGE_AGGREGATION = "cpuAverage";
     public static final String MEMORY_AVERAGE_AGGREGATION = "memoryAverage";
-    public static final String STORAGE_AVERAGE_AGGREGATION = "storageAverage";
-
-    public static final String IP_ADDRESSES_COUNT_AGGREGATION = "ipAddressesCount";
+    public static final String VOLUME_AVERAGE_AGGREGATION = "volumeAverage";
+    public static final String PUBLIC_IPS_COUNT_AGGREGATION = "publicIpsCount";
 
     public static final String TIMESTAMP_FIELD = "@timestamp";
     public static final String RESOURCE_TYPE_FIELD = "resourceType";
     public static final String DOMAIN_UUID_FIELD = "domainUuid";
     public static final String RESOURCE_UUID_FIELD = "resourceUuid";
 
-    public static final String PAYLOAD_CPU_FIELD = "payload.cpu";
-    public static final String PAYLOAD_MEMORY_FIELD = "payload.memory";
-    public static final String PAYLOAD_SIZE_FIELD = "payload.size";
-    public static final String PAYLOAD_STATE_FIELD = "payload.state";
+    static final String PAYLOAD_CPU_FIELD = "payload.cpu";
+    static final String PAYLOAD_MEMORY_FIELD = "payload.memory";
+    static final String PAYLOAD_SIZE_FIELD = "payload.size";
+    static final String PAYLOAD_STATE_FIELD = "payload.state";
 
     private final JestClient client;
 
@@ -35,10 +34,10 @@ public abstract class ResourcesEsRepository {
         this.client = client;
     }
 
-    protected SearchResult search(final SearchSourceBuilder searchSourceBuilder) {
+    SearchResult search(final SearchSourceBuilder searchBuilder) {
         try {
             return client.execute(
-                    new Search.Builder(searchSourceBuilder.toString())
+                    new Search.Builder(searchBuilder.toString())
                             .addIndex("cosmic-metrics-*")
                             .addType("metric")
                             .build()

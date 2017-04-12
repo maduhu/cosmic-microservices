@@ -8,12 +8,13 @@ import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.avg;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.VirtualMachineParser;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.ResourceType;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.SearchResult;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -34,7 +35,7 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
     }
 
     @Override
-    public void list(final Map<String, Domain> domainsMap, final DateTime from, final DateTime to) {
+    public List<DomainAggregation> list(final Set<String> domainUuids, final DateTime from, final DateTime to) {
 
         final SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
         searchBuilder.size(0);
@@ -46,8 +47,8 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
                 )
                 .must(termQuery(RESOURCE_TYPE_FIELD, ResourceType.VIRTUAL_MACHINE.getValue()));
 
-        if (!domainsMap.isEmpty()) {
-            queryBuilder.must(termsQuery(DOMAIN_UUID_FIELD, domainsMap.keySet()));
+        if (!domainUuids.isEmpty()) {
+            queryBuilder.must(termsQuery(DOMAIN_UUID_FIELD, domainUuids));
         }
 
         searchBuilder.query(queryBuilder)
@@ -67,7 +68,7 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
                      );
 
         final SearchResult result = search(searchBuilder);
-        vmParser.parse(domainsMap, result);
+        return vmParser.parse(result);
     }
 
 }

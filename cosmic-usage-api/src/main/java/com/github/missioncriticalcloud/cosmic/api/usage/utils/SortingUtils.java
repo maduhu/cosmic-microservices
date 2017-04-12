@@ -1,12 +1,12 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.utils;
 
-import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 
 public class SortingUtils {
 
     public enum SortBy {
-        DOMAIN_PATH, CPU, MEMORY, STORAGE, IP_ADDRESS;
+        DOMAIN_PATH, CPU, MEMORY, VOLUME, PUBLIC_IP;
         public static final String DEFAULT = "DOMAIN_PATH";
     }
 
@@ -19,8 +19,8 @@ public class SortingUtils {
         // Empty constructor
     }
 
-    public static void sort(final GeneralUsage generalUsage, final SortBy sortBy, final SortOrder sortOrder) {
-        generalUsage.getDomains().sort((domain1, domain2) -> {
+    public static void sort(final Report report, final SortBy sortBy, final SortOrder sortOrder) {
+        report.getDomains().sort((domain1, domain2) -> {
             final Usage usage1 = domain1.getUsage();
             final Usage usage2 = domain2.getUsage();
 
@@ -31,20 +31,20 @@ public class SortingUtils {
                             : domain1.getPath().compareToIgnoreCase(domain2.getPath());
                 case CPU:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getCompute().getCpu().compareTo(usage1.getCompute().getCpu())
-                            : usage1.getCompute().getCpu().compareTo(usage2.getCompute().getCpu());
+                            ? usage2.getCompute().getTotal().getCpu().compareTo(usage1.getCompute().getTotal().getCpu())
+                            : usage1.getCompute().getTotal().getCpu().compareTo(usage2.getCompute().getTotal().getCpu());
                 case MEMORY:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getCompute().getMemory().compareTo(usage1.getCompute().getMemory())
-                            : usage1.getCompute().getMemory().compareTo(usage2.getCompute().getMemory());
-                case STORAGE:
+                            ? usage2.getCompute().getTotal().getMemory().compareTo(usage1.getCompute().getTotal().getMemory())
+                            : usage1.getCompute().getTotal().getMemory().compareTo(usage2.getCompute().getTotal().getMemory());
+                case VOLUME:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getStorage().compareTo(usage1.getStorage())
-                            : usage1.getStorage().compareTo(usage2.getStorage());
-                case IP_ADDRESS:
+                            ? usage2.getStorage().getTotal().compareTo(usage1.getStorage().getTotal())
+                            : usage1.getStorage().getTotal().compareTo(usage2.getStorage().getTotal());
+                case PUBLIC_IP:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getNetwork().getPublicIps().compareTo(usage1.getNetwork().getPublicIps())
-                            : usage1.getNetwork().getPublicIps().compareTo(usage2.getNetwork().getPublicIps());
+                            ? usage2.getNetworking().getTotal().getPublicIps().compareTo(usage1.getNetworking().getTotal().getPublicIps())
+                            : usage1.getNetworking().getTotal().getPublicIps().compareTo(usage2.getNetworking().getTotal().getPublicIps());
                 default:
                     return 0;
             }

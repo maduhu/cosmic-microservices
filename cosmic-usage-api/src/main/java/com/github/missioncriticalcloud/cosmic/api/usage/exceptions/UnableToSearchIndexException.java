@@ -3,7 +3,7 @@ package com.github.missioncriticalcloud.cosmic.api.usage.exceptions;
 public class UnableToSearchIndexException extends RuntimeException {
 
     public UnableToSearchIndexException() {
-        super("Unable to search on the index.");
+        super("Unable to search on the index");
     }
 
     public UnableToSearchIndexException(final String message) {

@@ -5,9 +5,7 @@ import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.R
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.RESOURCE_UUID_FIELD;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.TIMESTAMP_FIELD;
 import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER;
-import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,16 +14,17 @@ import java.util.List;
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Compute;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Network;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.ResourceType;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Networking;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Delete;
 import io.searchbox.core.Index;
 import io.searchbox.indices.Refresh;
 import io.searchbox.indices.template.PutTemplate;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,17 +81,16 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/";
 
-        final GeneralUsage generalUsage = usageService.calculateGeneralUsage(from, to, path);
-        assertThat(generalUsage).isNotNull();
+        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        assertThat(report).isNotNull();
 
-        final List<Domain> domains = generalUsage.getDomains();
+        final List<Domain> domains = report.getDomains();
         assertThat(domains).isNotNull();
         assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(3);
+        assertThat(domains).hasSize(2);
 
         assertDomain1(domains);
         assertDomain2(domains);
-        assertDomain3(domains);
     }
 
     @Test
@@ -104,19 +102,18 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1";
 
-        final GeneralUsage generalUsage = usageService.calculateGeneralUsage(from, to, path);
-        assertThat(generalUsage).isNotNull();
+        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        assertThat(report).isNotNull();
 
-        final List<Domain> domains = generalUsage.getDomains();
+        final List<Domain> domains = report.getDomains();
         assertThat(domains).isNotNull();
         assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(2);
+        assertThat(domains).hasSize(1);
 
         assertDomain2(domains);
-        assertDomain3(domains);
     }
 
-    @Test
+    @Test(expected = NoMetricsFoundException.class)
     public void testLevel2Path() throws Exception {
         setupIndex();
         setupData();
@@ -125,15 +122,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1/level2";
 
-        final GeneralUsage generalUsage = usageService.calculateGeneralUsage(from, to, path);
-        assertThat(generalUsage).isNotNull();
-
-        final List<Domain> domains = generalUsage.getDomains();
-        assertThat(domains).isNotNull();
-        assertThat(domains).isNotEmpty();
-        assertThat(domains).hasSize(1);
-
-        assertDomain3(domains);
+        usageService.calculateGeneralUsage(from, to, path);
     }
 
     private void setupIndex() throws IOException {
@@ -159,7 +148,7 @@ public class UsageServiceIT {
                         .defaultType("metric")
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "1")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VIRTUAL_MACHINE.getValue())
@@ -175,7 +164,7 @@ public class UsageServiceIT {
                         )
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "2")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VIRTUAL_MACHINE.getValue())
@@ -191,10 +180,10 @@ public class UsageServiceIT {
                         )
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "1")
-                                                .field(RESOURCE_TYPE_FIELD, ResourceType.STORAGE.getValue())
+                                                .field(RESOURCE_TYPE_FIELD, ResourceType.VOLUME.getValue())
                                                 .field(RESOURCE_UUID_FIELD, "3")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
@@ -206,10 +195,10 @@ public class UsageServiceIT {
                         )
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "2")
-                                                .field(RESOURCE_TYPE_FIELD, ResourceType.STORAGE.getValue())
+                                                .field(RESOURCE_TYPE_FIELD, ResourceType.VOLUME.getValue())
                                                 .field(RESOURCE_UUID_FIELD, "4")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
@@ -221,10 +210,10 @@ public class UsageServiceIT {
                         )
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "1")
-                                                .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP_ADDRESS.getValue())
+                                                .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP.getValue())
                                                 .field(RESOURCE_UUID_FIELD, "5")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
@@ -236,10 +225,10 @@ public class UsageServiceIT {
                         )
                         .addAction(
                                 new Index.Builder(
-                                        jsonBuilder()
+                                        XContentFactory.jsonBuilder()
                                         .startObject()
                                                 .field(DOMAIN_UUID_FIELD, "2")
-                                                .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP_ADDRESS.getValue())
+                                                .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP.getValue())
                                                 .field(RESOURCE_UUID_FIELD, "6")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
@@ -268,8 +257,8 @@ public class UsageServiceIT {
             assertThat(usage).isNotNull();
 
             assertCompute(usage.getCompute(), 2, 400);
-            assertThat(usage.getStorage()).isEqualByComparingTo(valueOf(1500));
-            assertNetwork(usage.getNetwork(), 0.01);
+            assertThat(usage.getStorage().getTotal()).isEqualByComparingTo(BigDecimal.valueOf(1500));
+            assertNetwork(usage.getNetworking(), 0.01);
         });
     }
 
@@ -283,44 +272,29 @@ public class UsageServiceIT {
             assertThat(usage).isNotNull();
 
             assertCompute(usage.getCompute(), 4, 800);
-            assertThat(usage.getStorage()).isEqualByComparingTo(valueOf(3000));
-            assertNetwork(usage.getNetwork(), 0.01);
-        });
-    }
-
-    private void assertDomain3(final List<Domain> domains) {
-        domains.stream().filter(domain -> "3".equals(domain.getUuid())).forEach(domain -> {
-            assertThat(domain.getName()).isNotNull();
-            assertThat(domain.getName()).isEqualTo("level2");
-            assertThat(domain.getPath()).isEqualTo("/level1/level2");
-
-            final Usage usage = domain.getUsage();
-            assertThat(usage).isNotNull();
-
-            assertCompute(usage.getCompute(), 0, 0);
-            assertThat(usage.getStorage()).isEqualByComparingTo(BigDecimal.ZERO);
-            assertNetwork(usage.getNetwork(), 0);
+            assertThat(usage.getStorage().getTotal()).isEqualByComparingTo(BigDecimal.valueOf(3000));
+            assertNetwork(usage.getNetworking(), 0.01);
         });
     }
 
     private void assertCompute(final Compute compute, double expectedCpu, double expectedMemory) {
         assertThat(compute).isNotNull();
 
-        final BigDecimal cpu = compute.getCpu();
+        final BigDecimal cpu = compute.getTotal().getCpu();
         assertThat(cpu).isNotNull();
-        assertThat(cpu).isEqualByComparingTo(valueOf(expectedCpu));
+        assertThat(cpu).isEqualByComparingTo(BigDecimal.valueOf(expectedCpu));
 
-        final BigDecimal memory = compute.getMemory();
+        final BigDecimal memory = compute.getTotal().getMemory();
         assertThat(memory).isNotNull();
-        assertThat(memory).isEqualByComparingTo(valueOf(expectedMemory));
+        assertThat(memory).isEqualByComparingTo(BigDecimal.valueOf(expectedMemory));
     }
 
-    private void assertNetwork(final Network network, double expectedPublicIps) {
-        assertThat(network).isNotNull();
+    private void assertNetwork(final Networking networking, double expectedPublicIps) {
+        assertThat(networking).isNotNull();
 
-        final BigDecimal publicIps = network.getPublicIps();
+        final BigDecimal publicIps = networking.getTotal().getPublicIps();
         assertThat(publicIps).isNotNull();
-        assertThat(publicIps).isEqualByComparingTo(valueOf(expectedPublicIps));
+        assertThat(publicIps).isEqualByComparingTo(BigDecimal.valueOf(expectedPublicIps));
     }
 
 }

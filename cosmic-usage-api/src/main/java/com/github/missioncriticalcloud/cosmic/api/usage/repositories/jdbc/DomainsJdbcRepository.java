@@ -17,16 +17,22 @@ public class DomainsJdbcRepository implements DomainsRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final Properties queries;
+    private final DomainMapper domainMapper;
 
     @Autowired
-    public DomainsJdbcRepository(final NamedParameterJdbcTemplate jdbcTemplate, @Qualifier("queries") final Properties queries) {
+    public DomainsJdbcRepository(
+            final NamedParameterJdbcTemplate jdbcTemplate,
+            @Qualifier("queries") final Properties queries,
+            final DomainMapper domainMapper
+    ) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
+        this.domainMapper = domainMapper;
     }
 
     @Override
     public List<Domain> list(final String path) {
-        return jdbcTemplate.query(queries.getProperty("domains-repository.list-domains"), new MapSqlParameterSource("path", path + "%"), new DomainMapper());
+        return jdbcTemplate.query(queries.getProperty("domains-repository.list-domains"), new MapSqlParameterSource("path", path + "%"), domainMapper);
     }
 
 }

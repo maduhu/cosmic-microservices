@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NoMetricsFoundException extends RuntimeException {
 
     public NoMetricsFoundException() {
-        super("No metrics found.");
+        super("No metrics found");
     }
 
     public NoMetricsFoundException(final String message) {

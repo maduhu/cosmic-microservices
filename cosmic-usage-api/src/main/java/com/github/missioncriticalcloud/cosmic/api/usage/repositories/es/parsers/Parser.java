@@ -1,12 +1,12 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers;
 
-import java.util.Map;
+import java.util.List;
 
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import io.searchbox.core.SearchResult;
 
 public interface Parser {
 
-    void parse(Map<String, Domain> domainsMap, SearchResult searchResult);
+    List<DomainAggregation> parse(SearchResult searchResult);
 
 }
