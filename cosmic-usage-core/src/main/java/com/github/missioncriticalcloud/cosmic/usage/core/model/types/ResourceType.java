@@ -1,12 +1,12 @@
-package com.github.missioncriticalcloud.cosmic.usage.core.model;
+package com.github.missioncriticalcloud.cosmic.usage.core.model.types;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ResourceType {
 
     VIRTUAL_MACHINE("VirtualMachine"),
-    PUBLIC_IP_ADDRESS("PublicIpAddress"),
-    STORAGE("Storage");
+    VOLUME("Volume"),
+    PUBLIC_IP("PublicIp");
 
     private final String value;
 
