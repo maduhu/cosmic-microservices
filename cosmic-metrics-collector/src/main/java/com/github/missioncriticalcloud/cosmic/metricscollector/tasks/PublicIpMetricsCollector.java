@@ -5,11 +5,12 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.github.missioncriticalcloud.cosmic.metricscollector.exceptions.FailedToCollectMetricsException;
-import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.PublicIpAddressMetricsRepository;
+import com.github.missioncriticalcloud.cosmic.metricscollector.exceptions.UnableToCollectMetricsException;
+import com.github.missioncriticalcloud.cosmic.metricscollector.repositories.MetricsRepository;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,11 +19,11 @@ import org.springframework.util.StopWatch;
 
 @Component
 @ConditionalOnExpression("${cosmic.metrics-collector.enabled-collectors:true}")
-public class PublicIpAddressMetricsCollector implements MetricsCollector {
+public class PublicIpMetricsCollector implements MetricsCollector {
 
-    private static final Logger LOG = Logger.getLogger(PublicIpAddressMetricsCollector.class.getName());
+    private static final Logger LOG = Logger.getLogger(PublicIpMetricsCollector.class.getName());
 
-    private final PublicIpAddressMetricsRepository publicIpAddressMetricsRepository;
+    private final MetricsRepository metricsRepository;
     private final AmqpTemplate amqpTemplate;
     private final ObjectWriter metricWriter;
 
@@ -30,18 +31,14 @@ public class PublicIpAddressMetricsCollector implements MetricsCollector {
     private final String brokerExchangeKey;
 
     @Autowired
-    public PublicIpAddressMetricsCollector(
-            final PublicIpAddressMetricsRepository publicIpAddressMetricsRepository,
+    public PublicIpMetricsCollector(
+            @Qualifier("publicIpMetricsRepository") final MetricsRepository metricsRepository,
             final AmqpTemplate amqpTemplate,
             final ObjectWriter metricWriter,
-
-            @Value("${cosmic.metrics-collector.broker-exchange}")
-            final String brokerExchange,
-
-            @Value("${cosmic.metrics-collector.broker-exchange-key}")
-            final String brokerExchangeKey
+            @Value("${cosmic.metrics-collector.broker-exchange}") final String brokerExchange,
+            @Value("${cosmic.metrics-collector.broker-exchange-key}") final String brokerExchangeKey
     ) {
-        this.publicIpAddressMetricsRepository = publicIpAddressMetricsRepository;
+        this.metricsRepository = metricsRepository;
         this.amqpTemplate = amqpTemplate;
         this.metricWriter = metricWriter;
 
@@ -51,13 +48,13 @@ public class PublicIpAddressMetricsCollector implements MetricsCollector {
 
     @Scheduled(cron = "${cosmic.metrics-collector.scan-interval}")
     public void run() {
-        final StopWatch stopWatch = new StopWatch(PublicIpAddressMetricsCollector.class.getSimpleName());
+        final StopWatch stopWatch = new StopWatch(PublicIpMetricsCollector.class.getSimpleName());
 
-        stopWatch.start("Collecting public IP addresses metrics from the database");
-        final List<Metric> metrics = publicIpAddressMetricsRepository.getMetrics();
+        stopWatch.start("Collecting public IP metrics from the database");
+        final List<Metric> metrics = metricsRepository.getMetrics();
         stopWatch.stop();
 
-        stopWatch.start("Sending metrics to the message queue");
+        stopWatch.start("Sending public IP metrics to the message queue");
         metrics.forEach(metric -> {
             try {
                 amqpTemplate.convertAndSend(
@@ -66,14 +63,13 @@ public class PublicIpAddressMetricsCollector implements MetricsCollector {
                         metricWriter.writeValueAsString(metric)
                 );
             } catch (final JsonProcessingException e) {
-                throw new FailedToCollectMetricsException(e.getMessage(), e);
+                throw new UnableToCollectMetricsException(e.getMessage(), e);
             }
         });
         stopWatch.stop();
 
         LOG.info(stopWatch.prettyPrint());
-        LOG.info(String.format("Collected %d public IP addresses metrics.", metrics.size()));
-
+        LOG.info(String.format("Collected %d public IP metrics", metrics.size()));
     }
 
 }

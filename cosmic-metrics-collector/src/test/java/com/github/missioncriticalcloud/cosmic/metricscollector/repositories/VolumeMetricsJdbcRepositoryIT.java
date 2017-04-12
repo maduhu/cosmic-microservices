@@ -8,6 +8,7 @@ import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -16,36 +17,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("local")
-public class StorageMetricsJdbcRepositoryIT {
+public class VolumeMetricsJdbcRepositoryIT extends MetricsRepositoryIT {
 
     @Autowired
-    private StorageMetricsRepository storageMetricsRepository;
+    @Qualifier("volumeMetricsRepository")
+    private MetricsRepository metricsRepository;
 
     @Test
     @Sql(value = "/test-schema.sql")
     public void testEmptyDatabase() {
-        final List<Metric> metrics = storageMetricsRepository.getMetrics();
+        final List<Metric> metrics = metricsRepository.getMetrics();
         assertThat(metrics).isNotNull();
         assertThat(metrics).isEmpty();
     }
 
     @Test
-    @Sql(value = {"/test-schema.sql", "/test-storage-data.sql"})
+    @Sql(value = {"/test-schema.sql", "/test-volume-data.sql"})
     public void testNonEmptyDatabase() {
-        final List<Metric> metrics = storageMetricsRepository.getMetrics();
-        assertThat(metrics).isNotNull();
-        assertThat(metrics).isNotEmpty();
-        assertThat(metrics).hasSize(1);
-
-        metrics.forEach(metric -> {
-            assertThat(metric).isNotNull();
-            assertThat(metric.getDomainUuid()).isNotNull();
-            assertThat(metric.getResourceUuid()).isNotNull();
-            assertThat(metric.getTimestamp()).isNotNull();
-            assertThat(metric.getPayload()).isNotNull();
-            assertThat(metric.getPayload()).isNotEmpty();
-            assertThat(metric.getResourceType()).isNotNull();
-        });
+        final List<Metric> metrics = metricsRepository.getMetrics();
+        assertMetrics(metrics);
     }
 
 }

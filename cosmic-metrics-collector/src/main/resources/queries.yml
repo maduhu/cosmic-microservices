@@ -1,13 +1,33 @@
 virtual-machine-metrics-repository:
   get-metrics: |
     SELECT
-      d.uuid domainUuid, vm.uuid resourceUuid,
-      vm.state state, so.cpu cpu, so.ram_size memory
-    FROM vm_instance vm
-    JOIN domain d
-      ON d.id = vm.domain_id
-    JOIN service_offering so
-      ON so.id = vm.service_offering_id
+      d.uuid domainUuid,
+      vm.uuid resourceUuid,
+      vm.state state,
+      so.cpu cpu,
+      so.ram_size memory,
+      (
+        CASE
+          WHEN LOWER( vt.name ) LIKE '%win%' then 'Windows'
+          WHEN LOWER( vt.name ) LIKE '%rhel%' then 'RedHat'
+          WHEN LOWER( vt.name ) LIKE '%redhat%' then 'RedHat'
+          ELSE 'OpenSource'
+        END
+      ) AS osType
+    FROM
+      vm_instance vm
+    JOIN
+      domain d
+    ON
+      d.id = vm.domain_id
+    JOIN
+      service_offering so
+    ON
+      so.id = vm.service_offering_id
+    JOIN
+      vm_template vt
+    ON
+      vt.id = vm.vm_template_id
     WHERE
       vm.type = 'User'
     AND
@@ -15,26 +35,41 @@ virtual-machine-metrics-repository:
     AND
       vm.removed IS NULL
 
-storage-metrics-repository:
+volume-metrics-repository:
   get-metrics:
     SELECT
-      d.uuid domainUuid, v.uuid resourceUuid,
-      v.size size
-    FROM volumes v
-    JOIN domain d
-      ON d.id = v.domain_id
+      d.uuid domainUuid,
+      v.uuid resourceUuid,
+      v.size size,
+      vm.uuid instanceUuid
+    FROM
+      volumes v
+    JOIN
+      domain d
+    ON
+      d.id = v.domain_id
+    LEFT JOIN
+      vm_instance vm
+    ON
+      vm.id = v.instance_id
     WHERE
+      v.state IN ('Ready', 'Allocated')
+    AND
       v.removed IS NULL
 
-public-ip-address-metrics-repository:
+public-ip-metrics-repository:
   get-metrics: |
     SELECT
-          d.uuid domainUuid, ip.uuid resourceUuid,
-          ip.state state
-        FROM user_ip_address ip
-        JOIN domain d
-          ON d.id = ip.domain_id
-        WHERE
-          ip.state = 'Allocated'
-        AND
-          ip.removed IS NULL
+      d.uuid domainUuid,
+      ip.uuid resourceUuid,
+      ip.state state
+    FROM
+      user_ip_address ip
+    JOIN
+      domain d
+    ON
+      d.id = ip.domain_id
+    WHERE
+      ip.state = 'Allocated'
+    AND
+      ip.removed IS NULL

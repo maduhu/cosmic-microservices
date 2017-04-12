@@ -193,3 +193,43 @@ CREATE TABLE IF NOT EXISTS `volumes` (
   KEY `i_volumes__state` (`state`),
   KEY `i_volumes__update_count` (`update_count`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `vm_template`;
+CREATE TABLE `vm_template` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `unique_name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `uuid` varchar(40) DEFAULT NULL,
+  `public` int(1) unsigned NOT NULL,
+  `featured` int(1) unsigned NOT NULL,
+  `type` varchar(32) DEFAULT NULL,
+  `hvm` int(1) unsigned NOT NULL,
+  `bits` int(6) unsigned NOT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `format` varchar(32) NOT NULL,
+  `created` datetime NOT NULL,
+  `removed` datetime DEFAULT NULL,
+  `account_id` bigint(20) unsigned DEFAULT NULL,
+  `checksum` varchar(255) DEFAULT NULL,
+  `display_text` varchar(4096) DEFAULT NULL,
+  `enable_password` int(1) unsigned NOT NULL DEFAULT '1',
+  `enable_sshkey` int(1) unsigned NOT NULL DEFAULT '0',
+  `guest_os_id` bigint(20) unsigned NOT NULL,
+  `bootable` int(1) unsigned NOT NULL DEFAULT '1',
+  `prepopulate` int(1) unsigned NOT NULL DEFAULT '0',
+  `cross_zones` int(1) unsigned NOT NULL DEFAULT '0',
+  `extractable` int(1) unsigned NOT NULL DEFAULT '0',
+  `hypervisor_type` varchar(32) DEFAULT NULL,
+  `source_template_id` bigint(20) unsigned DEFAULT NULL,
+  `template_tag` varchar(255) DEFAULT NULL,
+  `sort_key` int(32) NOT NULL DEFAULT '0',
+  `size` bigint(20) unsigned DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `update_count` bigint(20) unsigned DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
+  `dynamically_scalable` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uc_vm_template__uuid` (`uuid`),
+  KEY `i_vm_template__removed` (`removed`),
+  KEY `i_vm_template__public` (`public`)
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8;

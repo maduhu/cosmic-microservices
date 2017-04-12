@@ -4,8 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Metric;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.ResourceType;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class VirtualMachineMetricsMapper extends MetricsMapper {
 
     @Override
@@ -13,9 +15,10 @@ public class VirtualMachineMetricsMapper extends MetricsMapper {
         final Metric metric = super.mapRow(resultSet, i);
 
         metric.setResourceType(ResourceType.VIRTUAL_MACHINE);
-        metric.getPayload().put("state", resultSet.getString("state"));
         metric.getPayload().put("cpu", resultSet.getInt("cpu"));
         metric.getPayload().put("memory", resultSet.getInt("memory"));
+        metric.getPayload().put("state", resultSet.getString("state"));
+        metric.getPayload().put("osType", resultSet.getString("osType"));
 
         return metric;
     }
