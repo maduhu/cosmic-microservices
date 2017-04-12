@@ -74,11 +74,11 @@
                                                          placeholder="Storage price (GB)"
                                                          value="1.00">
                             </div>
-                            <label class="col-sm-3 control-label" for="ui-ip-address-price">IP address price (unit)</label>
+                            <label class="col-sm-3 control-label" for="ui-public-ip-price">Public IP price (unit)</label>
                             <div class="col-sm-3">
-                                <input id="ui-ip-address-price" class="form-control"
+                                <input id="ui-public-ip-price" class="form-control"
                                                             type="text"
-                                                            placeholder="IP address price (unit)"
+                                                            placeholder="Public IP price (unit)"
                                                             value="1.00">
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                                 <th>CPU</th>
                                 <th>Memory</th>
                                 <th>Storage</th>
-                                <th>IP Addresses</th>
+                                <th>Public IPs</th>
                                 <th class="text-uppercase">Total</th>
                             </tr>
                         </thead>
@@ -134,7 +134,7 @@
                         <th>CPU price (unit)</th>
                         <th>Memory price (MB)</th>
                         <th>Storage price (GB)</th>
-                        <th>IP address price (unit)</th>
+                        <th>Public IP price (unit)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,7 +142,7 @@
                         <td>{{ cpuPrice }} &euro;</td>
                         <td>{{ memoryPrice }} &euro;</td>
                         <td>{{ storagePrice }} &euro;</td>
-                        <td>{{ ipAddressPrice }} &euro;</td>
+                        <td>{{ publicIpPrice }} &euro;</td>
                     </tr>
                 </tbody>
             </table>
@@ -158,20 +158,20 @@
                         {{ uuid }}
                     </td>
                     <td>
-                        {{ usage.compute.cpu }} units<br>
-                        <strong>{{ costs.compute.cpu }} &euro;</strong>
+                        <strong>{{ costs.compute.cpu }} &euro;</strong><br>
+                        {{ usage.compute.total.cpu }} units
                     </td>
                     <td>
-                        {{ usage.compute.memory }} MB<br>
-                        <strong>{{ costs.compute.memory }} &euro;</strong>
+                        <strong>{{ costs.compute.memory }} &euro;</strong><br>
+                        {{ usage.compute.total.memory }} MB
                     </td>
                     <td>
-                        {{ usage.storage }} GB<br>
-                        <strong>{{ costs.storage }} &euro;</strong>
+                        <strong>{{ costs.storage }} &euro;</strong><br>
+                        {{ usage.storage.total }} GB
                     </td>
                     <td>
-                        {{ usage.network.publicIps }} units<br>
-                        <strong>{{ costs.network.publicIps }} &euro;</strong>
+                        <strong>{{ costs.networking.publicIps }} &euro;</strong><br>
+                        {{ usage.networking.total.publicIps }} units
                     </td>
                     <td>
                         <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>

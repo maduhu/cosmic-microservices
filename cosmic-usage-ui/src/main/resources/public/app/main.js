@@ -23,7 +23,7 @@ const app = {
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
     storagePriceField: '#ui-storage-price',
-    ipAddressPriceField: '#ui-ip-address-price',
+    publicIpPriceField: '#ui-public-ip-price',
     generateReportButton: '#ui-generate-report-btn',
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
@@ -50,7 +50,7 @@ const app = {
         const cpuPriceFormatted = numeral($(this.cpuPriceField).val()).format();
         const memoryPriceFormatted = numeral($(this.memoryPriceField).val()).format();
         const storagePriceFormatted = numeral($(this.storagePriceField).val()).format();
-        const ipAddressPriceFormatted = numeral($(this.ipAddressPriceField).val()).format();
+        const publicIpPriceFormatted = numeral($(this.publicIpPriceField).val()).format();
 
         const html = $(this.printingHeadersTemplate).html();
         const rendered = Mustache.render(html, {
@@ -58,7 +58,7 @@ const app = {
             cpuPrice: cpuPriceFormatted,
             memoryPrice: memoryPriceFormatted,
             storagePrice: storagePriceFormatted,
-            ipAddressPrice: ipAddressPriceFormatted
+            publicIpPrice: publicIpPriceFormatted
         });
         $(this.printingHeadersContainer).html(rendered);
     },
@@ -118,33 +118,33 @@ const app = {
         const cpuPrice = numeral($(this.cpuPriceField).val());
         const memoryPrice = numeral($(this.memoryPriceField).val());
         const storagePrice = numeral($(this.storagePriceField).val());
-        const ipAddressPrice = numeral($(this.ipAddressPriceField).val());
+        const publicIpPrice = numeral($(this.publicIpPriceField).val());
 
         domain.costs = {
             compute: {
-                cpu: numeral(cpuPrice.value()).multiply(domain.usage.compute.cpu),
-                memory: numeral(memoryPrice.value()).multiply(domain.usage.compute.memory)
+                cpu: numeral(cpuPrice.value()).multiply(domain.usage.compute.total.cpu),
+                memory: numeral(memoryPrice.value()).multiply(domain.usage.compute.total.memory)
             },
-            storage: numeral(storagePrice.value()).multiply(domain.usage.storage),
-            network: {
-                publicIps: numeral(ipAddressPrice.value()).multiply(domain.usage.network.publicIps)
+            storage: numeral(storagePrice.value()).multiply(domain.usage.storage.total),
+            networking: {
+                publicIps: numeral(publicIpPrice.value()).multiply(domain.usage.networking.total.publicIps)
             }
         };
 
         domain.costs.total = numeral(domain.costs.compute.cpu.value())
                                 .add(domain.costs.compute.memory.value())
                                 .add(domain.costs.storage.value())
-                                .add(domain.costs.network.publicIps.value());
+                                .add(domain.costs.networking.publicIps.value());
 
-        domain.usage.compute.cpu = numeral(domain.usage.compute.cpu).format();
-        domain.usage.compute.memory = numeral(domain.usage.compute.memory).format();
-        domain.usage.storage = numeral(domain.usage.storage).format();
-        domain.usage.network.publicIps = numeral(domain.usage.network.publicIps).format();
+        domain.usage.compute.total.cpu = numeral(domain.usage.compute.total.cpu).format();
+        domain.usage.compute.total.memory = numeral(domain.usage.compute.total.memory).format();
+        domain.usage.storage.total = numeral(domain.usage.storage.total).format();
+        domain.usage.networking.total.publicIps = numeral(domain.usage.networking.total.publicIps).format();
 
         domain.costs.compute.cpu = domain.costs.compute.cpu.format();
         domain.costs.compute.memory = domain.costs.compute.memory.format();
         domain.costs.storage = domain.costs.storage.format();
-        domain.costs.network.publicIps = domain.costs.network.publicIps.format();
+        domain.costs.networking.publicIps = domain.costs.networking.publicIps.format();
 
         domain.costs.total = domain.costs.total.format();
     },
