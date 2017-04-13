@@ -26,12 +26,12 @@ import org.springframework.stereotype.Repository;
 @Repository("networkingRepository")
 public class NetworkingEsRepository extends ResourcesEsRepository implements ResourcesRepository {
 
-    private PublicIpParser ipParser;
+    private PublicIpParser publicIpParser;
 
     @Autowired
-    public NetworkingEsRepository(final JestClient client, final PublicIpParser ipParser) {
+    public NetworkingEsRepository(final JestClient client, final PublicIpParser publicIpParser) {
         super(client);
-        this.ipParser = ipParser;
+        this.publicIpParser = publicIpParser;
     }
 
     @Override
@@ -54,10 +54,10 @@ public class NetworkingEsRepository extends ResourcesEsRepository implements Res
         searchBuilder.query(queryBuilder)
                      .aggregation(terms(DOMAINS_AGGREGATION)
                              .field(DOMAIN_UUID_FIELD)
-                             .size(250)
+                             .size(MAX_DOMAIN_AGGREGATIONS)
                              .subAggregation(terms(RESOURCES_AGGREGATION)
                                      .field(RESOURCE_UUID_FIELD)
-                                     .size(2500)
+                                     .size(MAX_RESOURCE_AGGREGATIONS)
                                      .subAggregation(count(PUBLIC_IPS_COUNT_AGGREGATION)
                                              .field(PAYLOAD_STATE_FIELD)
                                      )
@@ -65,7 +65,7 @@ public class NetworkingEsRepository extends ResourcesEsRepository implements Res
                      );
 
         final SearchResult result = search(searchBuilder);
-        return ipParser.parse(result);
+        return publicIpParser.parse(result);
     }
 
 }
