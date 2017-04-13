@@ -7,9 +7,16 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.GeneralView;
+
 public class Storage {
 
+    @JsonView(DetailedView.class)
     private List<Volume> volumes = new LinkedList<>();
+
+    @JsonView({GeneralView.class, DetailedView.class})
     private BigDecimal total = BigDecimal.ZERO;
 
     public List<Volume> getVolumes() {

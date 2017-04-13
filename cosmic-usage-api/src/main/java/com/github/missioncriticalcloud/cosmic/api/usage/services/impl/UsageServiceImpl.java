@@ -82,6 +82,11 @@ public class UsageServiceImpl implements UsageService {
         return report;
     }
 
+    @Override
+    public Report calculateDetailedUsage(final DateTime from, final DateTime to, final String path) {
+        return null;
+    }
+
     private Map<String, Domain> getDomainsMap(final String path) {
         final Map<String, Domain> domainsMap = new HashMap<>();
 

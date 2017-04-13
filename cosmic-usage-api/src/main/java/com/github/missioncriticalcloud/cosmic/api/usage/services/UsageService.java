@@ -7,4 +7,6 @@ public interface UsageService {
 
     Report calculateGeneralUsage(DateTime from, DateTime to, String path);
 
+    Report calculateDetailedUsage(DateTime from, DateTime to, String path);
+
 }

@@ -2,11 +2,22 @@ package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.GeneralView;
+
 public class Domain {
 
+    @JsonView({GeneralView.class, DetailedView.class})
     private String uuid;
+
+    @JsonView({GeneralView.class, DetailedView.class})
     private String name;
+
+    @JsonView({GeneralView.class, DetailedView.class})
     private String path;
+
+    @JsonView({GeneralView.class, DetailedView.class})
     private Usage usage = new Usage();
 
     public Domain(final String uuid) {
