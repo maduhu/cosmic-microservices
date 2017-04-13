@@ -33,11 +33,11 @@ public class Networking {
         private BigDecimal publicIps = BigDecimal.ZERO;
 
         public BigDecimal getPublicIps() {
-            return publicIps;
+            return publicIps.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
         }
 
         public void addPublicIps(final BigDecimal amountToAdd) {
-            publicIps = publicIps.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            publicIps = publicIps.add(amountToAdd);
         }
 
     }

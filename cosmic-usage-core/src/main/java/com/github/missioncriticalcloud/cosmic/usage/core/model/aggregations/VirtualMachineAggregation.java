@@ -11,19 +11,19 @@ public class VirtualMachineAggregation extends ResourceAggregation {
     private BigDecimal memoryAverage = BigDecimal.ZERO;
 
     public BigDecimal getCpuAverage() {
-        return cpuAverage;
+        return cpuAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setCpuAverage(final BigDecimal cpuAverage) {
-        this.cpuAverage = cpuAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.cpuAverage = cpuAverage;
     }
 
     public BigDecimal getMemoryAverage() {
-        return memoryAverage;
+        return memoryAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setMemoryAverage(final BigDecimal memoryAverage) {
-        this.memoryAverage = memoryAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.memoryAverage = memoryAverage;
     }
 
 }

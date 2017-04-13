@@ -24,11 +24,11 @@ public class Storage {
     }
 
     public BigDecimal getTotal() {
-        return total;
+        return total.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void addTotal(final BigDecimal amountToAdd) {
-        total = total.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        total = total.add(amountToAdd);
     }
 
 }

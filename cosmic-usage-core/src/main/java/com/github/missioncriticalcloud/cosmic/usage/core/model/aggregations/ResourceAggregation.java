@@ -19,11 +19,11 @@ public abstract class ResourceAggregation {
     }
 
     public BigDecimal getSampleCount() {
-        return sampleCount;
+        return sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setSampleCount(final BigDecimal sampleCount) {
-        this.sampleCount = sampleCount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.sampleCount = sampleCount;
     }
 
 }

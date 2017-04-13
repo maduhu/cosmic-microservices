@@ -10,11 +10,11 @@ public class PublicIpAggregation extends ResourceAggregation {
     private BigDecimal count = BigDecimal.ZERO;
 
     public BigDecimal getCount() {
-        return count;
+        return count.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setCount(final BigDecimal count) {
-        this.count = count.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.count = count;
     }
 
 }

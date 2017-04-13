@@ -25,11 +25,11 @@ public class Volume extends Resource {
     }
 
     public BigDecimal getSize() {
-        return size;
+        return size.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setSize(final BigDecimal size) {
-        this.size = size.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.size = size;
     }
 
 }

@@ -40,19 +40,19 @@ public class VirtualMachine extends Resource {
     }
 
     public BigDecimal getCpu() {
-        return cpu;
+        return cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setCpu(final BigDecimal cpu) {
-        this.cpu = cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.cpu = cpu;
     }
 
     public BigDecimal getMemory() {
-        return memory;
+        return memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setMemory(final BigDecimal memory) {
-        this.memory = memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.memory = memory;
     }
 
 }
