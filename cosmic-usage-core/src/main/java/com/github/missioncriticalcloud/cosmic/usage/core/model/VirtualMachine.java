@@ -5,41 +5,45 @@ import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtil
 
 import java.math.BigDecimal;
 
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.OsType;
+
 public class VirtualMachine extends Resource {
 
-    private BigDecimal cpuAverage = BigDecimal.ZERO;
-    private BigDecimal memoryAverage = BigDecimal.ZERO;
+    private String hostname;
+    private OsType osType;
+    private BigDecimal cpu = BigDecimal.ZERO;
+    private BigDecimal memory = BigDecimal.ZERO;
 
-    public VirtualMachine() {
-        // Empty constructor
+    public String getHostname() {
+        return hostname;
     }
 
-    public VirtualMachine(
-            final String uuid,
-            final BigDecimal sampleCount,
-            final BigDecimal cpuAverage,
-            final BigDecimal memoryAverage
-    ) {
-        setUuid(uuid);
-        setSampleCount(sampleCount);
-        setCpuAverage(cpuAverage);
-        setMemoryAverage(memoryAverage);
+    public void setHostname(final String hostname) {
+        this.hostname = hostname;
     }
 
-    public BigDecimal getCpuAverage() {
-        return cpuAverage;
+    public OsType getOsType() {
+        return osType;
     }
 
-    public void setCpuAverage(final BigDecimal cpuAverage) {
-        this.cpuAverage = cpuAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    public void setOsType(final OsType osType) {
+        this.osType = osType;
     }
 
-    public BigDecimal getMemoryAverage() {
-        return memoryAverage;
+    public BigDecimal getCpu() {
+        return cpu;
     }
 
-    public void setMemoryAverage(final BigDecimal memoryAverage) {
-        this.memoryAverage = memoryAverage.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    public void setCpu(final BigDecimal cpu) {
+        this.cpu = cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    }
+
+    public BigDecimal getMemory() {
+        return memory;
+    }
+
+    public void setMemory(final BigDecimal memory) {
+        this.memory = memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
 }

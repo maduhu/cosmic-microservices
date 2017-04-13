@@ -1,8 +1,7 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.CPU_AVERAGE_AGGREGATION;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.DOMAINS_AGGREGATION;
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.MEMORY_AVERAGE_AGGREGATION;
+import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.PUBLIC_IPS_COUNT_AGGREGATION;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.RESOURCES_AGGREGATION;
 
 import java.math.BigDecimal;
@@ -10,14 +9,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.VirtualMachineAggregation;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.PublicIpAggregation;
 import io.searchbox.core.SearchResult;
-import io.searchbox.core.search.aggregation.AvgAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import io.searchbox.core.search.aggregation.ValueCountAggregation;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VirtualMachineParser implements Parser {
+public class PublicIpParser implements Parser {
 
     public List<DomainAggregation> parse(final SearchResult searchResult) {
         final List<DomainAggregation> domainAggregations = new LinkedList<>();
@@ -34,17 +33,14 @@ public class VirtualMachineParser implements Parser {
             final TermsAggregation resourcesAggregation = domainBucket.getTermsAggregation(RESOURCES_AGGREGATION);
             resourcesAggregation.getBuckets().forEach(resourceBucket -> {
 
-                final VirtualMachineAggregation virtualMachineAggregation = new VirtualMachineAggregation();
-                virtualMachineAggregation.setUuid(resourceBucket.getKey());
-                virtualMachineAggregation.setSampleCount(BigDecimal.valueOf(resourceBucket.getCount()));
+                final PublicIpAggregation publicIpAggregation = new PublicIpAggregation();
+                publicIpAggregation.setUuid(resourceBucket.getKey());
+                publicIpAggregation.setSampleCount(BigDecimal.valueOf(resourceBucket.getCount()));
 
-                final AvgAggregation cpuAverage = resourceBucket.getAvgAggregation(CPU_AVERAGE_AGGREGATION);
-                final AvgAggregation memoryAverage = resourceBucket.getAvgAggregation(MEMORY_AVERAGE_AGGREGATION);
+                final ValueCountAggregation count = resourceBucket.getValueCountAggregation(PUBLIC_IPS_COUNT_AGGREGATION);
+                publicIpAggregation.setCount(BigDecimal.valueOf(count.getValueCount()));
 
-                virtualMachineAggregation.setCpuAverage(BigDecimal.valueOf(cpuAverage.getAvg()));
-                virtualMachineAggregation.setMemoryAverage(BigDecimal.valueOf(memoryAverage.getAvg()));
-
-                domainAggregation.getVirtualMachineAggregations().add(virtualMachineAggregation);
+                domainAggregation.getPublicIpAggregations().add(publicIpAggregation);
             });
 
             domainAggregations.add(domainAggregation);

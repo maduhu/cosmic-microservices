@@ -22,14 +22,14 @@ Build a Docker image for the Cosmic Metrics Collector:
 
 Start a Docker container running the Cosmic Metrics Collector:
 
-    docker run --rm \
+    docker run -it --rm \
         --network cosmic-network \
         --name cosmic-metrics-collector \
         missioncriticalcloud/cosmic-metrics-collector
 
 Alternatively, if you want to access the container locally:
 
-    docker run --rm -p 8002:8000 \
+    docker run -it --rm -p 8002:8000 \
         --network cosmic-network \
         --name cosmic-metrics-collector \
         missioncriticalcloud/cosmic-metrics-collector
@@ -38,7 +38,7 @@ One-liner:
 
     mvn clean package \
         -P local -DskipTests && \
-    docker run --rm -p 8002:8000 \
+    docker run -it --rm -p 8002:8000 \
         --network cosmic-network \
         --name cosmic-metrics-collector \
         missioncriticalcloud/cosmic-metrics-collector

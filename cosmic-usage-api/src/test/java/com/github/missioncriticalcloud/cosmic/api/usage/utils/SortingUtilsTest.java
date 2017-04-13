@@ -1,14 +1,11 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.utils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -16,147 +13,147 @@ public class SortingUtilsTest {
 
     @Test
     public void sortByDomainPath() {
-        final GeneralUsage generalUsage = new GeneralUsage();
+        final Report report = new Report();
 
-        Domain domain1 = new Domain();
+        Domain domain1 = new Domain("1");
         domain1.setPath("/bbb");
-        generalUsage.getDomains().add(domain1);
+        report.getDomains().add(domain1);
 
-        Domain domain2 = new Domain();
+        Domain domain2 = new Domain("2");
         domain2.setPath("/ccc");
-        generalUsage.getDomains().add(domain2);
+        report.getDomains().add(domain2);
 
-        Domain domain3 = new Domain();
+        Domain domain3 = new Domain("3");
         domain3.setPath("/aaa");
-        generalUsage.getDomains().add(domain3);
+        report.getDomains().add(domain3);
 
         // Ascending
-        SortingUtils.sort(generalUsage, SortBy.DOMAIN_PATH, SortOrder.ASC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain3);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain2);
+        SortingUtils.sort(report, SortBy.DOMAIN_PATH, SortOrder.ASC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain3);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain2);
 
         // Descending
-        SortingUtils.sort(generalUsage, SortBy.DOMAIN_PATH, SortOrder.DESC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain2);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain3);
+        SortingUtils.sort(report, SortBy.DOMAIN_PATH, SortOrder.DESC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain2);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain3);
     }
 
     @Test
     public void sortByCpu() {
-        final GeneralUsage generalUsage = new GeneralUsage();
+        final Report report = new Report();
 
-        Domain domain1 = new Domain();
-        domain1.getUsage().getCompute().setCpu(BigDecimal.ONE);
-        generalUsage.getDomains().add(domain1);
+        Domain domain1 = new Domain("1");
+        domain1.getUsage().getCompute().getTotal().addCpu(BigDecimal.ONE);
+        report.getDomains().add(domain1);
 
-        Domain domain2 = new Domain();
-        domain1.getUsage().getCompute().setCpu(BigDecimal.TEN);
-        generalUsage.getDomains().add(domain2);
+        Domain domain2 = new Domain("2");
+        domain2.getUsage().getCompute().getTotal().addCpu(BigDecimal.TEN);
+        report.getDomains().add(domain2);
 
-        Domain domain3 = new Domain();
-        domain1.getUsage().getCompute().setCpu(BigDecimal.ZERO);
-        generalUsage.getDomains().add(domain3);
+        Domain domain3 = new Domain("3");
+        domain3.getUsage().getCompute().getTotal().addCpu(BigDecimal.ZERO);
+        report.getDomains().add(domain3);
 
         // Ascending
-        SortingUtils.sort(generalUsage, SortBy.CPU, SortOrder.ASC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain3);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain2);
+        SortingUtils.sort(report, SortBy.CPU, SortOrder.ASC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain3);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain2);
 
         // Descending
-        SortingUtils.sort(generalUsage, SortBy.CPU, SortOrder.DESC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain2);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain3);
+        SortingUtils.sort(report, SortBy.CPU, SortOrder.DESC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain2);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain3);
     }
 
     @Test
     public void sortByMemory() {
-        final GeneralUsage generalUsage = new GeneralUsage();
+        final Report report = new Report();
 
-        Domain domain1 = new Domain();
-        domain1.getUsage().getCompute().setMemory(BigDecimal.ONE);
-        generalUsage.getDomains().add(domain1);
+        Domain domain1 = new Domain("1");
+        domain1.getUsage().getCompute().getTotal().addMemory(BigDecimal.ONE);
+        report.getDomains().add(domain1);
 
-        Domain domain2 = new Domain();
-        domain1.getUsage().getCompute().setMemory(BigDecimal.TEN);
-        generalUsage.getDomains().add(domain2);
+        Domain domain2 = new Domain("2");
+        domain2.getUsage().getCompute().getTotal().addMemory(BigDecimal.TEN);
+        report.getDomains().add(domain2);
 
-        Domain domain3 = new Domain();
-        domain1.getUsage().getCompute().setMemory(BigDecimal.ZERO);
-        generalUsage.getDomains().add(domain3);
+        Domain domain3 = new Domain("3");
+        domain3.getUsage().getCompute().getTotal().addMemory(BigDecimal.ZERO);
+        report.getDomains().add(domain3);
 
         // Ascending
-        SortingUtils.sort(generalUsage, SortBy.MEMORY, SortOrder.ASC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain3);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain2);
+        SortingUtils.sort(report, SortBy.MEMORY, SortOrder.ASC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain3);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain2);
 
         // Descending
-        SortingUtils.sort(generalUsage, SortBy.MEMORY, SortOrder.DESC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain2);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain3);
+        SortingUtils.sort(report, SortBy.MEMORY, SortOrder.DESC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain2);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain3);
     }
 
     @Test
     public void sortByStorage() {
-        final GeneralUsage generalUsage = new GeneralUsage();
+        final Report report = new Report();
 
-        Domain domain1 = new Domain();
-        domain1.getUsage().setStorage(BigDecimal.ONE);
-        generalUsage.getDomains().add(domain1);
+        Domain domain1 = new Domain("1");
+        domain1.getUsage().getStorage().addTotal(BigDecimal.ONE);
+        report.getDomains().add(domain1);
 
-        Domain domain2 = new Domain();
-        domain1.getUsage().setStorage(BigDecimal.TEN);
-        generalUsage.getDomains().add(domain2);
+        Domain domain2 = new Domain("2");
+        domain2.getUsage().getStorage().addTotal(BigDecimal.TEN);
+        report.getDomains().add(domain2);
 
-        Domain domain3 = new Domain();
-        domain1.getUsage().setStorage(BigDecimal.ZERO);
-        generalUsage.getDomains().add(domain3);
+        Domain domain3 = new Domain("3");
+        domain3.getUsage().getStorage().addTotal(BigDecimal.ZERO);
+        report.getDomains().add(domain3);
 
         // Ascending
-        SortingUtils.sort(generalUsage, SortBy.STORAGE, SortOrder.ASC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain3);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain2);
+        SortingUtils.sort(report, SortBy.VOLUME, SortOrder.ASC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain3);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain2);
 
         // Descending
-        SortingUtils.sort(generalUsage, SortBy.STORAGE, SortOrder.DESC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain2);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain3);
+        SortingUtils.sort(report, SortBy.VOLUME, SortOrder.DESC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain2);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain3);
     }
 
     @Test
-    public void sortByIpAddress() {
-        final GeneralUsage generalUsage = new GeneralUsage();
+    public void sortByPublicIp() {
+        final Report report = new Report();
 
-        Domain domain1 = new Domain();
-        domain1.getUsage().getNetwork().setPublicIps(BigDecimal.ONE);
-        generalUsage.getDomains().add(domain1);
+        Domain domain1 = new Domain("1");
+        domain1.getUsage().getNetworking().getTotal().addPublicIps(BigDecimal.ONE);
+        report.getDomains().add(domain1);
 
-        Domain domain2 = new Domain();
-        domain1.getUsage().getNetwork().setPublicIps(BigDecimal.TEN);
-        generalUsage.getDomains().add(domain2);
+        Domain domain2 = new Domain("2");
+        domain2.getUsage().getNetworking().getTotal().addPublicIps(BigDecimal.TEN);
+        report.getDomains().add(domain2);
 
-        Domain domain3 = new Domain();
-        domain1.getUsage().getNetwork().setPublicIps(BigDecimal.ZERO);
-        generalUsage.getDomains().add(domain3);
+        Domain domain3 = new Domain("3");
+        domain3.getUsage().getNetworking().getTotal().addPublicIps(BigDecimal.ZERO);
+        report.getDomains().add(domain3);
 
         // Ascending
-        SortingUtils.sort(generalUsage, SortBy.IP_ADDRESS, SortOrder.ASC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain3);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain2);
+        SortingUtils.sort(report, SortBy.PUBLIC_IP, SortOrder.ASC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain3);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain2);
 
         // Descending
-        SortingUtils.sort(generalUsage, SortBy.IP_ADDRESS, SortOrder.DESC);
-        Assertions.assertThat(generalUsage.getDomains().get(0)).isEqualTo(domain2);
-        Assertions.assertThat(generalUsage.getDomains().get(1)).isEqualTo(domain1);
-        Assertions.assertThat(generalUsage.getDomains().get(2)).isEqualTo(domain3);
+        SortingUtils.sort(report, SortBy.PUBLIC_IP, SortOrder.DESC);
+        Assertions.assertThat(report.getDomains().get(0)).isEqualTo(domain2);
+        Assertions.assertThat(report.getDomains().get(1)).isEqualTo(domain1);
+        Assertions.assertThat(report.getDomains().get(2)).isEqualTo(domain3);
     }
 
 }

@@ -30,14 +30,14 @@ Build a Docker image for the Cosmic Config Server:
 
 Start a Docker container running the Cosmic Config Server:
 
-    docker run --rm \
+    docker run -it --rm \
         --network cosmic-network \
         --name cosmic-config-server \
         missioncriticalcloud/cosmic-config-server
 
 Alternatively, if you want to access the container locally:
 
-    docker run --rm -p 7001:8080 -p 8001:8000 \
+    docker run -it --rm -p 7001:8080 -p 8001:8000 \
         --network cosmic-network \
         --name cosmic-config-server \
         missioncriticalcloud/cosmic-config-server
@@ -48,7 +48,7 @@ One-liner:
 
     mvn clean package \
         -P local -DskipTests && \
-    docker run --rm -p 7001:8080 -p 8001:8000 \
+    docker run -it --rm -p 7001:8080 -p 8001:8000 \
         --network cosmic-network \
         --name cosmic-config-server \
         missioncriticalcloud/cosmic-config-server

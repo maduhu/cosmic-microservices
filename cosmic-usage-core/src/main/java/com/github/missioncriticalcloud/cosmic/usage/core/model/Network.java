@@ -1,24 +1,34 @@
 package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
-import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
-import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
+import java.util.LinkedList;
+import java.util.List;
 
-import java.math.BigDecimal;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.NetworkType;
 
-public class Network {
+public class Network extends Resource {
 
-    private BigDecimal publicIps = BigDecimal.ZERO;
+    private String name;
+    private NetworkType type;
+    private List<PublicIp> publicIps = new LinkedList<>();
 
-    public BigDecimal getPublicIps() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public NetworkType getType() {
+        return type;
+    }
+
+    public void setType(final NetworkType type) {
+        this.type = type;
+    }
+
+    public List<PublicIp> getPublicIps() {
         return publicIps;
-    }
-
-    public void setPublicIps(final BigDecimal publicIps) {
-        this.publicIps = publicIps.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
-    }
-
-    public void addPublicIps(final BigDecimal amountToAdd) {
-        publicIps = publicIps.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
 }

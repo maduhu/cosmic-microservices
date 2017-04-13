@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import org.joda.time.DateTime;
 
 public class Metric {

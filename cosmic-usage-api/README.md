@@ -22,14 +22,14 @@ Build a Docker image for the Cosmic Usage API:
 
 Start a Docker container running the Cosmic Usage API:
 
-    docker run --rm \
+    docker run -it --rm \
         --network cosmic-network \
         --name cosmic-usage-api \
         missioncriticalcloud/cosmic-usage-api
 
 Alternatively, if you want to access the container locally:
 
-    docker run --rm -p 7003:8080 -p 8003:8000 \
+    docker run -it --rm -p 7003:8080 -p 8003:8000 \
         --network cosmic-network \
         --name cosmic-usage-api \
         missioncriticalcloud/cosmic-usage-api
@@ -40,7 +40,7 @@ One-liner:
 
     mvn clean package \
         -P local -DskipTests && \
-    docker run --rm -p 7003:8080 -p 8003:8000 \
+    docker run -it --rm -p 7003:8080 -p 8003:8000 \
         --network cosmic-network \
         --name cosmic-usage-api \
         missioncriticalcloud/cosmic-usage-api

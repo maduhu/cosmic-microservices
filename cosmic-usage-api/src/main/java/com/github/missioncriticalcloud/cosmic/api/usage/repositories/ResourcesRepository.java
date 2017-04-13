@@ -1,12 +1,13 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
-import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import org.joda.time.DateTime;
 
 public interface ResourcesRepository {
 
-    void list(Map<String, Domain> domainsMap, DateTime from, DateTime to);
+    List<DomainAggregation> list(Set<String> domainUuids, DateTime from, DateTime to);
 
 }

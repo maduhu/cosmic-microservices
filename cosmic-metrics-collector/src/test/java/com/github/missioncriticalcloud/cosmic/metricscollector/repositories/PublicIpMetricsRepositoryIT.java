@@ -17,10 +17,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("local")
-public class VirtualMachineMetricsRepositoryIT extends MetricsRepositoryIT {
+public class PublicIpMetricsRepositoryIT extends MetricsRepositoryIT {
 
     @Autowired
-    @Qualifier("virtualMachineMetricsRepository")
+    @Qualifier("publicIpMetricsRepository")
     private MetricsRepository metricsRepository;
 
     @Test
@@ -32,7 +32,7 @@ public class VirtualMachineMetricsRepositoryIT extends MetricsRepositoryIT {
     }
 
     @Test
-    @Sql(value = {"/test-schema.sql", "/test-virtual-machine-data.sql"})
+    @Sql(value = {"/test-schema.sql", "/test-public-ip-data.sql"})
     public void testNonEmptyDatabase() {
         final List<Metric> metrics = metricsRepository.getMetrics();
         assertMetrics(metrics);

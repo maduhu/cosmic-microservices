@@ -1,10 +1,10 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.services;
 
-import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import org.joda.time.DateTime;
 
 public interface UsageService {
 
-    GeneralUsage calculateGeneralUsage(DateTime from, DateTime to, String path);
+    Report calculateGeneralUsage(DateTime from, DateTime to, String path);
 
 }

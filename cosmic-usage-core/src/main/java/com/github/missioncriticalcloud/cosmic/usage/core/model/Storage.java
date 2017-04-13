@@ -4,32 +4,24 @@ import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtil
 import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Storage extends Resource {
+public class Storage {
 
-    private BigDecimal storageSum = BigDecimal.ZERO;
+    private List<Volume> volumes = new LinkedList<>();
+    private BigDecimal total = BigDecimal.ZERO;
 
-    public Storage() {
-        // Empty constructor
+    public List<Volume> getVolumes() {
+        return volumes;
     }
 
-    public Storage(
-            final String uuid,
-            final BigDecimal sampleCount,
-            final BigDecimal storageSum
-    ) {
-        setUuid(uuid);
-        setSampleCount(sampleCount);
-        setStorageSum(storageSum);
+    public BigDecimal getTotal() {
+        return total;
     }
 
-
-    public BigDecimal getStorageSum() {
-        return storageSum;
-    }
-
-    public void setStorageSum(final BigDecimal storageSum) {
-        this.storageSum = storageSum.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    public void addTotal(final BigDecimal amountToAdd) {
+        total = total.add(amountToAdd).setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
 }

@@ -6,7 +6,7 @@ import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.GeneralUsage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,17 +27,17 @@ public class MainController {
     }
 
     @RequestMapping("/general")
-    public GeneralUsage general(
+    public Report general(
             @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime from,
             @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime to,
             @RequestParam final String path,
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
     ) {
-        final GeneralUsage generalUsage = usageService.calculateGeneralUsage(from, to, path);
-        SortingUtils.sort(generalUsage, sortBy, sortOrder);
+        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        SortingUtils.sort(report, sortBy, sortOrder);
 
-        return generalUsage;
+        return report;
     }
 
 }
