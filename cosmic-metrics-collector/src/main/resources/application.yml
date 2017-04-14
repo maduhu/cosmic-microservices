@@ -1,0 +1,7 @@
+cosmic:
+
+  metrics-collector:
+    enable-collectors: true
+    scan-interval: "0 */15 * * * *"
+    broker-exchange: cosmic-metrics-exchange
+    broker-exchange-key: cosmic-metrics-key

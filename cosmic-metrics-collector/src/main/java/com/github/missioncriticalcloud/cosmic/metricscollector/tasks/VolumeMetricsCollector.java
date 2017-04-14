@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Component
-@ConditionalOnExpression("${cosmic.metrics-collector.enabled-collectors:true}")
+@ConditionalOnExpression("${cosmic.metrics-collector.enable-collectors}")
 public class VolumeMetricsCollector implements MetricsCollector {
 
     private static final Logger LOG = Logger.getLogger(VolumeMetricsCollector.class.getName());
