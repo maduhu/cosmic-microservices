@@ -38,7 +38,7 @@ public class MainController {
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
     ) {
-        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        final Report report = usageService.calculate(from, to, path, false);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;
@@ -53,7 +53,7 @@ public class MainController {
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
     ) {
-        final Report report = usageService.calculateDetailedUsage(from, to, path);
+        final Report report = usageService.calculate(from, to, path, true);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;

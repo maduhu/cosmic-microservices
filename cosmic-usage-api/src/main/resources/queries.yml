@@ -10,3 +10,25 @@ domains-repository:
       removed IS NULL
     AND
       path LIKE :path
+
+virtual-machines-repository:
+  get-virtual-machine: |
+    SELECT
+      vm.uuid uuid,
+      vm.instance_name hostname,
+      (
+        CASE
+          WHEN LOWER(vt.name) LIKE '%win%' THEN 'WINDOWS'
+          WHEN LOWER(vt.name) LIKE '%rhel%' THEN 'RED_HAT'
+          WHEN LOWER(vt.name) LIKE '%redhat%' THEN 'RED_HAT'
+          ELSE 'OPEN_SOURCE'
+        END
+      ) AS osType
+    FROM
+      vm_instance vm
+    JOIN
+      vm_template vt
+      ON
+        vt.id = vm.vm_template_id
+    WHERE
+      vm.uuid = :uuid

@@ -57,7 +57,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = null;
 
-        usageService.calculateGeneralUsage(from, to, path);
+        usageService.calculate(from, to, path, false);
     }
 
     @Test(expected = NoMetricsFoundException.class)
@@ -69,7 +69,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2000-01-01");
         final String path = null;
 
-        usageService.calculateGeneralUsage(from, to, path);
+        usageService.calculate(from, to, path, false);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/";
 
-        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        final Report report = usageService.calculate(from, to, path, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -102,7 +102,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1";
 
-        final Report report = usageService.calculateGeneralUsage(from, to, path);
+        final Report report = usageService.calculate(from, to, path, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -122,7 +122,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1/level2";
 
-        usageService.calculateGeneralUsage(from, to, path);
+        usageService.calculate(from, to, path, false);
     }
 
     private void setupIndex() throws IOException {
@@ -150,9 +150,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "1")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid1")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VIRTUAL_MACHINE.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "1")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid1")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("cpu", 192)
@@ -166,9 +166,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "2")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid2")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VIRTUAL_MACHINE.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "2")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid2")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("cpu", 384)
@@ -182,9 +182,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "1")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid1")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VOLUME.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "3")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid3")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("size", 144000)
@@ -197,9 +197,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "2")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid2")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.VOLUME.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "4")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid4")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("size", 288000)
@@ -212,9 +212,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "1")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid1")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "5")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid5")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("state", "Allocated")
@@ -227,9 +227,9 @@ public class UsageServiceIT {
                                 new Index.Builder(
                                         XContentFactory.jsonBuilder()
                                         .startObject()
-                                                .field(DOMAIN_UUID_FIELD, "2")
+                                                .field(DOMAIN_UUID_FIELD, "domain_uuid2")
                                                 .field(RESOURCE_TYPE_FIELD, ResourceType.PUBLIC_IP.getValue())
-                                                .field(RESOURCE_UUID_FIELD, "6")
+                                                .field(RESOURCE_UUID_FIELD, "vm_instance_uuid6")
                                                 .field(TIMESTAMP_FIELD, timestamp.toDate())
                                                 .startObject("payload")
                                                         .field("state", "Allocated")
