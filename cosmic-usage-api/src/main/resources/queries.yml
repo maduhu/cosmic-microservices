@@ -15,7 +15,12 @@ virtual-machines-repository:
   get-virtual-machine: |
     SELECT
       vm.uuid uuid,
-      vm.instance_name hostname,
+      (
+        CASE
+          WHEN vm.host_name IS NULL THEN vm.instance_name
+          ELSE vm.host_name
+        END
+      ) AS hostname,
       (
         CASE
           WHEN LOWER(vt.name) LIKE '%win%' THEN 'WINDOWS'
