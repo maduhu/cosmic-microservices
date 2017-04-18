@@ -15,7 +15,7 @@ public class VolumeMetricsMapper extends MetricsMapper {
         final Metric metric = super.mapRow(resultSet, i);
 
         metric.setResourceType(ResourceType.VOLUME);
-        metric.getPayload().put("size", resultSet.getString("size"));
+        metric.getPayload().put("size", resultSet.getLong("size"));
 
         return metric;
     }
