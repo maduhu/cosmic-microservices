@@ -19,6 +19,7 @@ const app = {
     // Components
     errorMessageContainer: '#ui-error-message',
     monthSelectorComponent: '#ui-month-selector',
+    untilTodayCheckbox: '#ui-month-today-checkbox',
     domainPathField: '#ui-domain-path',
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
@@ -77,9 +78,16 @@ const app = {
         const from = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
             .format(this.API_DATE_FORMAT);
 
-        const to = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
-            .add(1, 'months')
-            .format(this.API_DATE_FORMAT);
+        var to = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
+            .add(1, 'months');
+
+        const now = moment();
+
+        if (now.isBefore(to) && $(this.untilTodayCheckbox).prop('checked')) {
+            to = now.format(this.API_DATE_FORMAT);
+        } else {
+            to = to.format(this.API_DATE_FORMAT);
+        }
 
         const path = $(this.domainPathField).val();
 

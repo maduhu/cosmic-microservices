@@ -7,8 +7,13 @@ body {
 }
 
 #ui-month-selector {
-    margin-left: 25px;
+    margin: auto;
     font-size: 115%;
+}
+
+#ui-month-today-checkbox {
+    margin-left: 25px;
+    font-size: 120%;
 }
 
 #ui-form {
