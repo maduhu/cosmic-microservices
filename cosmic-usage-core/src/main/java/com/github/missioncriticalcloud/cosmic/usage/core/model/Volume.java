@@ -5,9 +5,15 @@ import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtil
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
+
 public class Volume extends Resource {
 
+    @JsonView(DetailedView.class)
     private String name;
+
+    @JsonView(DetailedView.class)
     private BigDecimal size = BigDecimal.ZERO;
 
     public String getName() {
@@ -19,11 +25,11 @@ public class Volume extends Resource {
     }
 
     public BigDecimal getSize() {
-        return size;
+        return size.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setSize(final BigDecimal size) {
-        this.size = size.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.size = size;
     }
 
 }

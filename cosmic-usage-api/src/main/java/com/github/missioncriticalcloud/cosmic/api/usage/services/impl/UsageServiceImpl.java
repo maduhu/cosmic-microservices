@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachineRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Compute;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import org.springframework.util.StringUtils;
 public class UsageServiceImpl implements UsageService {
 
     private final DomainsRepository domainsRepository;
+    private final VirtualMachineRepository virtualMachineRepository;
 
     private ResourcesRepository computeRepository;
     private ResourcesRepository storageRepository;
@@ -44,20 +48,24 @@ public class UsageServiceImpl implements UsageService {
     @Autowired
     public UsageServiceImpl(
             final DomainsRepository domainsRepository,
+            final VirtualMachineRepository virtualMachineRepository,
             @Qualifier("computeRepository") final ResourcesRepository computeRepository,
             @Qualifier("storageRepository") final ResourcesRepository storageRepository,
             @Qualifier("networkingRepository") final ResourcesRepository networkingRepository,
             @Value("${cosmic.usage-api.scan-interval}") final String scanInterval
     ) {
         this.domainsRepository = domainsRepository;
+        this.virtualMachineRepository = virtualMachineRepository;
+
         this.computeRepository = computeRepository;
         this.storageRepository = storageRepository;
         this.networkingRepository = networkingRepository;
+
         this.scanInterval = scanInterval;
     }
 
     @Override
-    public Report calculateGeneralUsage(final DateTime from, final DateTime to, final String path) {
+    public Report calculate(final DateTime from, final DateTime to, final String path, final boolean detailed) {
         final Map<String, Domain> domainsMap = getDomainsMap(path);
         final Set<String> domainUuids = domainsMap.keySet();
 
@@ -67,10 +75,10 @@ public class UsageServiceImpl implements UsageService {
 
         final BigDecimal expectedSampleCount = calculateExpectedSampleCount(from, to);
 
-        mergeComputeDomainAggregations(domainsMap, expectedSampleCount, computeDomainAggregations);
-        mergeStorageDomainAggregations(domainsMap, expectedSampleCount, storageDomainAggregations);
-        mergeNetworkingDomainAggregations(domainsMap, expectedSampleCount, networkingDomainAggregations);
-        cleanUpEmptyDomains(domainsMap);
+        mergeComputeDomainAggregations(domainsMap, expectedSampleCount, computeDomainAggregations, detailed);
+        mergeStorageDomainAggregations(domainsMap, expectedSampleCount, storageDomainAggregations, detailed);
+        mergeNetworkingDomainAggregations(domainsMap, expectedSampleCount, networkingDomainAggregations, detailed);
+        removeEmptyDomains(domainsMap);
 
         if (domainsMap.isEmpty()) {
             throw new NoMetricsFoundException();
@@ -115,31 +123,36 @@ public class UsageServiceImpl implements UsageService {
     private void mergeComputeDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
-            final List<DomainAggregation> computeDomainAggregations
+            final List<DomainAggregation> computeDomainAggregations,
+            final boolean detailed
     ) {
         computeDomainAggregations.forEach(domainAggregation -> {
             final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
                     ? domainsMap.get(domainAggregation.getUuid())
                     : new Domain(domainAggregation.getUuid());
 
-            domainAggregation.getVirtualMachineAggregations().forEach(
-                    virtualMachine -> {
-                        domain.getUsage()
-                              .getCompute()
-                              .getTotal()
-                              .addCpu(virtualMachine.getCpuAverage()
-                                                    .multiply(virtualMachine.getSampleCount())
-                                                    .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                              );
-                        domain.getUsage()
-                              .getCompute()
-                              .getTotal()
-                              .addMemory(virtualMachine.getMemoryAverage()
-                                                       .multiply(virtualMachine.getSampleCount())
-                                                       .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                              );
-                    }
-            );
+            final Compute compute = domain.getUsage().getCompute();
+            final Compute.Total total = compute.getTotal();
+
+            domainAggregation.getVirtualMachineAggregations().forEach(vmAggregation -> {
+                final BigDecimal cpu = vmAggregation.getCpuAverage()
+                                                    .multiply(vmAggregation.getSampleCount())
+                                                    .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+
+                final BigDecimal memory = vmAggregation.getMemoryAverage()
+                                                       .multiply(vmAggregation.getSampleCount())
+                                                       .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+
+                if (detailed) {
+                    final VirtualMachine virtualMachine = virtualMachineRepository.get(vmAggregation.getUuid());
+                    virtualMachine.setCpu(cpu);
+                    virtualMachine.setMemory(memory);
+                    compute.getVirtualMachines().add(virtualMachine);
+                }
+
+                total.addCpu(cpu);
+                total.addMemory(memory);
+            });
 
             domainsMap.put(domainAggregation.getUuid(), domain);
         });
@@ -148,7 +161,8 @@ public class UsageServiceImpl implements UsageService {
     private void mergeStorageDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
-            final List<DomainAggregation> storageDomainAggregations
+            final List<DomainAggregation> storageDomainAggregations,
+            final boolean detailed
     ) {
         storageDomainAggregations.forEach(domainAggregation -> {
             final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
@@ -171,7 +185,8 @@ public class UsageServiceImpl implements UsageService {
     private void mergeNetworkingDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
-            final List<DomainAggregation> networkDomainAggregations
+            final List<DomainAggregation> networkDomainAggregations,
+            final boolean detailed
     ) {
         networkDomainAggregations.forEach(domainAggregation -> {
             final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
@@ -192,7 +207,7 @@ public class UsageServiceImpl implements UsageService {
         });
     }
 
-    private void cleanUpEmptyDomains(final Map<String, Domain> domainsMap) {
+    private void removeEmptyDomains(final Map<String, Domain> domainsMap) {
         final Set<String> uuidsToRemove = new HashSet<>();
         domainsMap.forEach((uuid, domain) -> {
             if (domain.getUsage().isEmpty()) {

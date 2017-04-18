@@ -10,6 +10,9 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public abstract class ResourcesEsRepository {
 
+    public static final int MAX_DOMAIN_AGGREGATIONS = 250;
+    public static final int MAX_RESOURCE_AGGREGATIONS = 2500;
+
     public static final String DOMAINS_AGGREGATION = "domains";
     public static final String RESOURCES_AGGREGATION = "resources";
 

@@ -1,10 +1,15 @@
 package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
 
 public class PublicIp extends Resource {
 
+    @JsonView(DetailedView.class)
     private String value;
+
+    @JsonView(DetailedView.class)
     private State state;
 
     public String getValue() {

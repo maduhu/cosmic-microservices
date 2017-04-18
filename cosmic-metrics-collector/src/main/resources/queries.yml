@@ -3,17 +3,8 @@ virtual-machine-metrics-repository:
     SELECT
       d.uuid domainUuid,
       vm.uuid resourceUuid,
-      vm.state state,
       so.cpu cpu,
-      so.ram_size memory,
-      (
-        CASE
-          WHEN LOWER( vt.name ) LIKE '%win%' then 'Windows'
-          WHEN LOWER( vt.name ) LIKE '%rhel%' then 'RedHat'
-          WHEN LOWER( vt.name ) LIKE '%redhat%' then 'RedHat'
-          ELSE 'OpenSource'
-        END
-      ) AS osType
+      so.ram_size memory
     FROM
       vm_instance vm
     JOIN
@@ -24,10 +15,6 @@ virtual-machine-metrics-repository:
       service_offering so
     ON
       so.id = vm.service_offering_id
-    JOIN
-      vm_template vt
-    ON
-      vt.id = vm.vm_template_id
     WHERE
       vm.type = 'User'
     AND

@@ -5,13 +5,22 @@ import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtil
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.types.OsType;
+import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
 
 public class VirtualMachine extends Resource {
 
+    @JsonView(DetailedView.class)
     private String hostname;
+
+    @JsonView(DetailedView.class)
     private OsType osType;
+
+    @JsonView(DetailedView.class)
     private BigDecimal cpu = BigDecimal.ZERO;
+
+    @JsonView(DetailedView.class)
     private BigDecimal memory = BigDecimal.ZERO;
 
     public String getHostname() {
@@ -31,19 +40,19 @@ public class VirtualMachine extends Resource {
     }
 
     public BigDecimal getCpu() {
-        return cpu;
+        return cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setCpu(final BigDecimal cpu) {
-        this.cpu = cpu.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.cpu = cpu;
     }
 
     public BigDecimal getMemory() {
-        return memory;
+        return memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
     public void setMemory(final BigDecimal memory) {
-        this.memory = memory.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        this.memory = memory;
     }
 
 }

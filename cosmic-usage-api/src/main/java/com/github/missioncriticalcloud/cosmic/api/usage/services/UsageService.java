@@ -5,6 +5,6 @@ import org.joda.time.DateTime;
 
 public interface UsageService {
 
-    Report calculateGeneralUsage(DateTime from, DateTime to, String path);
+    Report calculate(DateTime from, DateTime to, String path, boolean detailed);
 
 }

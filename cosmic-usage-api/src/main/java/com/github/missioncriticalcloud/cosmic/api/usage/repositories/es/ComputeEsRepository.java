@@ -26,12 +26,12 @@ import org.springframework.stereotype.Repository;
 @Repository("computeRepository")
 public class ComputeEsRepository extends ResourcesEsRepository implements ResourcesRepository {
 
-    private VirtualMachineParser vmParser;
+    private VirtualMachineParser virtualMachineParser;
 
     @Autowired
-    public ComputeEsRepository(final JestClient client, final VirtualMachineParser vmParser) {
+    public ComputeEsRepository(final JestClient client, final VirtualMachineParser virtualMachineParser) {
         super(client);
-        this.vmParser = vmParser;
+        this.virtualMachineParser = virtualMachineParser;
     }
 
     @Override
@@ -54,10 +54,10 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
         searchBuilder.query(queryBuilder)
                      .aggregation(terms(DOMAINS_AGGREGATION)
                              .field(DOMAIN_UUID_FIELD)
-                             .size(250)
+                             .size(MAX_DOMAIN_AGGREGATIONS)
                              .subAggregation(terms(RESOURCES_AGGREGATION)
                                      .field(RESOURCE_UUID_FIELD)
-                                     .size(2500)
+                                     .size(MAX_RESOURCE_AGGREGATIONS)
                                      .subAggregation(avg(CPU_AVERAGE_AGGREGATION)
                                              .field(PAYLOAD_CPU_FIELD)
                                      )
@@ -68,7 +68,7 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
                      );
 
         final SearchResult result = search(searchBuilder);
-        return vmParser.parse(result);
+        return virtualMachineParser.parse(result);
     }
 
 }
