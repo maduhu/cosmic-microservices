@@ -44,6 +44,12 @@
                             Project monthly bill
                         </label>
                     </div>
+                    <div>
+                        <label>
+                            <input id="ui-detailed-view-checkbox" type="checkbox" value="">
+                            Detailed view
+                        </label>
+                    </div>
                 </div>
                 <div class="col-md-9">
                     <form id="ui-form" class="form-horizontal">
@@ -183,6 +189,167 @@
                         <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
                     </td>
                 </tr>
+            {{/ domains }}
+            {{^ domains }}
+                <tr>
+                    <td id="ui-domains-list-no-data" class="text-center" colspan="6">No data</td>
+                </tr>
+            {{/ domains }}
+        <%={{ }}=%>
+        </script>
+
+        <script id="ui-domains-detailed-list-template" type="x-tmpl-mustache">
+        {{=<% %>=}}
+            {{# domains }}
+                <tr class="success">
+                    <td>
+                        <strong>{{ path }}</strong><br>
+                        {{ uuid }}
+                    </td>
+                    <td>
+                        <strong>{{ costs.compute.cpu }} &euro;</strong><br>
+                        {{ usage.compute.total.cpu }} units
+                    </td>
+                    <td>
+                        <strong>{{ costs.compute.memory }} &euro;</strong><br>
+                        {{ usage.compute.total.memory }} MB
+                    </td>
+                    <td>
+                        <strong>{{ costs.storage }} &euro;</strong><br>
+                        {{ usage.storage.total }} GB
+                    </td>
+                    <td>
+                        <strong>{{ costs.networking.publicIps }} &euro;</strong><br>
+                        {{ usage.networking.total.publicIps }} units
+                    </td>
+                    <td>
+                        <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="left"><strong>Virtual Machines</strong></span><span class="right"><strong>Hostname</strong></span>​
+                    </td>
+                    <td>
+                        <strong>CPU</strong>
+                    </td>
+                    <td>
+                        <strong>Memory</strong>
+                    </td>
+                    <td>
+                        <strong>OS Type</strong>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                {{# usage.compute.virtualMachines }}
+                    <tr>
+                        <td id="ui-name-uuid">
+                            <strong>{{ hostname }}</strong><br>
+                            {{ uuid }}
+                        </td>
+                        <td>
+                            <strong>{{ cpu }}</strong><br>
+                        </td>
+                        <td>
+                            <strong>{{ memory }}</strong><br>
+                        </td>
+                        <td>
+                            <strong>{{ osType }}</strong><br>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                {{/ usage.compute.virtualMachines }}
+                {{^ usage.compute.virtualMachines }}
+                    <tr>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No virtual machines</td>
+                    </tr>
+                {{/ usage.compute.virtualMachines }}
+                <tr>
+                    <td>
+                        <span class="left"><strong>Volumes</strong></span><span class="right"><strong>Name</strong></span>​
+                    </td>
+                    <td>
+                        <strong>Size</strong>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                {{# usage.storage.volumes }}
+                    <tr>
+                        <td id="ui-name-uuid">
+                            <strong>{{ name }}</strong><br>
+                            {{ uuid }}
+                        </td>
+                        <td>
+                            <strong>{{ size }}</strong><br>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                {{/ usage.storage.volumes }}
+                {{^ usage.storage.volumes }}
+                <tr>
+                    <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No volumes</td>
+                </tr>
+                {{/ usage.storage.volumes }}
+                <tr>
+                    <td>
+                        <span class="left"><strong>Public Ipaddresses</strong></span><span class="right"><strong>Name</strong></span>​
+                    </td>
+                    <td>
+                        <strong>Count</strong>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                {{# usage.networking.networks }}
+                    <tr>
+                        <td id="ui-name-uuid">
+                            <strong>{{ name }}</strong><br>
+                            {{ uuid }}
+                        </td>
+                        <td>
+                            <strong>{{ count }}</strong><br>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                {{/ usage.networking.networks }}
+                {{^ usage.networking.networks }}
+                <tr>
+                    <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No public ipaddresses</td>
+                </tr>
+                {{/ usage.networking.networks }}
             {{/ domains }}
             {{^ domains }}
                 <tr>
