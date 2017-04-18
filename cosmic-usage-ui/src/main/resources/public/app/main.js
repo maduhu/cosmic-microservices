@@ -8,7 +8,9 @@ const app = {
     MONTH_SELECTOR_FORMAT: 'YYYY-MM',
     SELECTED_MONTH_HUMAN_FORMAT: 'MMMM YYYY',
     USAGE_API_BASE_URL: undefined,
-    GENERAL_USAGE_PATH: '/general?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}',
+    GENERAL_USAGE_PATH: '/general',
+    DETAILED_USAGE_PATH: '/detailed',
+    DEFAULT_USAGE_PATH: '?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
 
     // Sorting
@@ -25,12 +27,15 @@ const app = {
 
     // Templates
     domainsListTemplate: '#ui-domains-list-template',
+    domainsDetailedListTemplate: '#ui-domains-detailed-list-template',
     printingHeadersTemplate: '#ui-printing-headers-template',
     errorMessageTemplate: '#ui-error-message-template',
 
     // Components
     errorMessageContainer: '#ui-error-message',
     monthSelectorComponent: '#ui-month-selector',
+    untilTodayCheckbox: '#ui-month-today-checkbox',
+    detailedViewCheckbox: '#ui-detailed-view-checkbox',
     domainPathField: '#ui-domain-path',
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
@@ -52,9 +57,15 @@ const app = {
         this.renderPrintingHeaders();
         this.renderDomainTableHeaders();
         this.renderDomainsList();
+        this.renderCheckboxes();
 
         $(this.generateReportButton).on('click', this.generateReportButtonOnClick);
         $(this.domainsTableHeaders, this.domainsTable).on('click', this.domainsTableHeaderOnClick);
+    },
+
+    renderCheckboxes: function() {
+        $(this.untilTodayCheckbox).on('click', this.generateSortableReport);
+        $(this.detailedViewCheckbox).on('click', this.generateSortableReport);
     },
 
     renderPrintingHeaders: function() {
@@ -94,7 +105,13 @@ const app = {
     },
 
     renderDomainsList: function(domains) {
-        const html = $(this.domainsListTemplate).html();
+        var html = '';
+        if ($(this.detailedViewCheckbox).prop('checked')) {
+            html = $(this.domainsDetailedListTemplate).html();
+        } else {
+            html = $(this.domainsListTemplate).html();
+        }
+
         const rendered = Mustache.render(html, { domains: domains });
         $('tbody', this.domainsTable).html(rendered);
     },
@@ -113,7 +130,15 @@ const app = {
 
         const path = $(this.domainPathField).val();
 
-        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.GENERAL_USAGE_PATH, {
+        var url = '';
+
+        if ($(this.detailedViewCheckbox).prop('checked')) {
+            url = this.DETAILED_USAGE_PATH + this.DEFAULT_USAGE_PATH
+        } else {
+            url = this.GENERAL_USAGE_PATH + this.DEFAULT_USAGE_PATH
+        }
+
+        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + url, {
             from: from.format(this.API_DATE_FORMAT),
             to: to.format(this.API_DATE_FORMAT),
             path: path,
