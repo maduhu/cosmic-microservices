@@ -13,8 +13,8 @@ public class VirtualMachineMetricsMapper extends MetricsMapper {
     @Override
     public Metric mapRow(final ResultSet resultSet, final int i) throws SQLException {
         final Metric metric = super.mapRow(resultSet, i);
-
         metric.setResourceType(ResourceType.VIRTUAL_MACHINE);
+
         metric.getPayload().put("cpu", resultSet.getShort("cpu"));
         metric.getPayload().put("memory", resultSet.getLong("memory"));
 

@@ -35,7 +35,7 @@ public class PublicIpMetricsRepositoryIT extends MetricsRepositoryIT {
     @Sql(value = {"/test-schema.sql", "/test-public-ip-data.sql"})
     public void testNonEmptyDatabase() {
         final List<Metric> metrics = metricsRepository.getMetrics();
-        assertMetrics(metrics);
+        assertMetricsWithoutPayload(metrics);
     }
 
 }

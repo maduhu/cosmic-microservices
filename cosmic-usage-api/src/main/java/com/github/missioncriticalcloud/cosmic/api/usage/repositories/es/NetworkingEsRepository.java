@@ -58,9 +58,6 @@ public class NetworkingEsRepository extends ResourcesEsRepository implements Res
                              .subAggregation(terms(RESOURCES_AGGREGATION)
                                      .field(RESOURCE_UUID_FIELD)
                                      .size(MAX_RESOURCE_AGGREGATIONS)
-                                     .subAggregation(count(PUBLIC_IPS_COUNT_AGGREGATION)
-                                             .field(PAYLOAD_STATE_FIELD)
-                                     )
                              )
                      );
 

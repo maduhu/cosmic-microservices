@@ -197,8 +197,7 @@ public class UsageServiceImpl implements UsageService {
                     publicIp -> domain.getUsage()
                                       .getNetworking()
                                       .getTotal()
-                                      .addPublicIps(publicIp.getCount()
-                                                            .multiply(publicIp.getSampleCount())
+                                      .addPublicIps(publicIp.getSampleCount()
                                                             .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
                                       )
             );
