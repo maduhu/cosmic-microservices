@@ -15,12 +15,16 @@ import java.util.stream.Collectors;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.PublicIpsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachinesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VolumesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Compute;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Network;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Networking;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.PublicIp;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Storage;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
@@ -40,8 +44,9 @@ import org.springframework.util.StringUtils;
 public class UsageServiceImpl implements UsageService {
 
     private final DomainsRepository domainsRepository;
-    private final VirtualMachinesRepository virtualMachineRepository;
+    private final VirtualMachinesRepository virtualMachinesRepository;
     private final VolumesRepository volumesRepository;
+    private final PublicIpsRepository publicIpsRepository;
 
     private ResourcesRepository computeRepository;
     private ResourcesRepository storageRepository;
@@ -54,14 +59,16 @@ public class UsageServiceImpl implements UsageService {
             final DomainsRepository domainsRepository,
             final VirtualMachinesRepository virtualMachinesRepository,
             final VolumesRepository volumesRepository,
+            final PublicIpsRepository publicIpsRepository,
             @Qualifier("computeRepository") final ResourcesRepository computeRepository,
             @Qualifier("storageRepository") final ResourcesRepository storageRepository,
             @Qualifier("networkingRepository") final ResourcesRepository networkingRepository,
             @Value("${cosmic.usage-api.scan-interval}") final String scanInterval
     ) {
         this.domainsRepository = domainsRepository;
-        this.virtualMachineRepository = virtualMachinesRepository;
+        this.virtualMachinesRepository = virtualMachinesRepository;
         this.volumesRepository = volumesRepository;
+        this.publicIpsRepository = publicIpsRepository;
 
         this.computeRepository = computeRepository;
         this.storageRepository = storageRepository;
@@ -133,9 +140,8 @@ public class UsageServiceImpl implements UsageService {
             final boolean detailed
     ) {
         computeDomainAggregations.forEach(domainAggregation -> {
-            final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
-                    ? domainsMap.get(domainAggregation.getUuid())
-                    : new Domain(domainAggregation.getUuid());
+            final String domainAggregationUuid = domainAggregation.getUuid();
+            final Domain domain = domainsMap.getOrDefault(domainAggregationUuid, new Domain(domainAggregationUuid));
 
             final Compute compute = domain.getUsage().getCompute();
             final Compute.Total total = compute.getTotal();
@@ -150,7 +156,7 @@ public class UsageServiceImpl implements UsageService {
                                                        .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
                 if (detailed) {
-                    final VirtualMachine virtualMachine = virtualMachineRepository.get(vmAggregation.getUuid());
+                    final VirtualMachine virtualMachine = virtualMachinesRepository.get(vmAggregation.getUuid());
                     virtualMachine.setCpu(cpu);
                     virtualMachine.setMemory(memory);
                     compute.getVirtualMachines().add(virtualMachine);
@@ -171,9 +177,8 @@ public class UsageServiceImpl implements UsageService {
             final boolean detailed
     ) {
         storageDomainAggregations.forEach(domainAggregation -> {
-            final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
-                    ? domainsMap.get(domainAggregation.getUuid())
-                    : new Domain(domainAggregation.getUuid());
+            final String domainAggregationUuid = domainAggregation.getUuid();
+            final Domain domain = domainsMap.getOrDefault(domainAggregationUuid, new Domain(domainAggregationUuid));
 
             final Storage storage = domain.getUsage().getStorage();
 
@@ -202,20 +207,35 @@ public class UsageServiceImpl implements UsageService {
             final boolean detailed
     ) {
         networkDomainAggregations.forEach(domainAggregation -> {
-            final Domain domain = domainsMap.containsKey(domainAggregation.getUuid())
-                    ? domainsMap.get(domainAggregation.getUuid())
-                    : new Domain(domainAggregation.getUuid());
+            final String domainAggregationUuid = domainAggregation.getUuid();
+            final Domain domain = domainsMap.getOrDefault(domainAggregationUuid, new Domain(domainAggregationUuid));
 
-            domainAggregation.getPublicIpAggregations().forEach(
-                    publicIp -> domain.getUsage()
-                                      .getNetworking()
-                                      .getTotal()
-                                      .addPublicIps(publicIp.getSampleCount()
-                                                            .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                                      )
-            );
+            final Networking networking = domain.getUsage().getNetworking();
+            final Networking.Total total = networking.getTotal();
 
-            domainsMap.put(domainAggregation.getUuid(), domain);
+            final Map<String, Network> networksMap = new HashMap<>();
+            domainAggregation.getPublicIpAggregations().forEach(publicIpAggregation -> {
+                domain.getUsage()
+                      .getNetworking()
+                      .getTotal()
+                      .addPublicIps(publicIpAggregation.getSampleCount()
+                                                       .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
+                      );
+
+                if (detailed) {
+                    final PublicIp publicIp = publicIpsRepository.get(publicIpAggregation.getUuid());
+                    final Network publicIpNetwork = publicIp.getNetwork();
+
+                    final Network network = networksMap.getOrDefault(publicIpNetwork.getUuid(), publicIpNetwork);
+                    network.getPublicIps().add(publicIp);
+                    networksMap.put(network.getUuid(), network);
+                }
+
+                total.addPublicIps(BigDecimal.ONE);
+            });
+
+            networking.getNetworks().addAll(networksMap.values());
+            domainsMap.put(domainAggregationUuid, domain);
         });
     }
 

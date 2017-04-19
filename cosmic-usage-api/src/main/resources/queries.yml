@@ -38,9 +38,8 @@ virtual-machines-repository:
     WHERE
       vm.uuid = :uuid
 
-
 volumes-repository:
-  get-volume:
+  get-volume: |
     SELECT
       v.uuid uuid,
       v.size size,
@@ -58,3 +57,25 @@ volumes-repository:
       v.removed IS NULL
     AND
       v.uuid = :uuid
+
+public-ips-repository:
+  get-public-ip: |
+    SELECT
+      ip.uuid uuid,
+      ip.public_ip_address ip,
+      n.uuid networkUuid,
+      n.name networkName,
+      vpc.uuid vpcUuid,
+      vpc.name vpcName
+    FROM
+      user_ip_address ip
+    LEFT JOIN
+      networks n
+    ON
+      n.id = ip.network_id
+    LEFT JOIN
+      vpc vpc
+    ON
+      vpc.id = ip.vpc_id
+    WHERE
+      ip.uuid = :uuid
