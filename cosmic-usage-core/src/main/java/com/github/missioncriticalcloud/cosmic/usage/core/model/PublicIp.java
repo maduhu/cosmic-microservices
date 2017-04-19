@@ -1,5 +1,10 @@
 package com.github.missioncriticalcloud.cosmic.usage.core.model;
 
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_ROUNDING_MODE;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_SCALE;
+
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -12,6 +17,9 @@ public class PublicIp extends Resource {
 
     @JsonView(DetailedView.class)
     private State state;
+
+    @JsonView(DetailedView.class)
+    private BigDecimal amount;
 
     @JsonIgnore
     private Network network;
@@ -30,6 +38,14 @@ public class PublicIp extends Resource {
 
     public void setState(final State state) {
         this.state = state;
+    }
+
+    public BigDecimal getAmount() {
+        return amount.setScale(DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+    }
+
+    public void setAmount(final BigDecimal amount) {
+        this.amount = amount;
     }
 
     public Network getNetwork() {

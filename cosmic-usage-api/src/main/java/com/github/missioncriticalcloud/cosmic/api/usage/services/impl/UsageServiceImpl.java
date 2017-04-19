@@ -185,9 +185,9 @@ public class UsageServiceImpl implements UsageService {
             final Storage storage = domain.getUsage().getStorage();
 
             domainAggregation.getVolumeAggregations().forEach(volumeAggregation -> {
-                BigDecimal size = volumeAggregation.getSize()
-                                                   .multiply(volumeAggregation.getSampleCount())
-                                                   .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+                final BigDecimal size = volumeAggregation.getSize()
+                                                         .multiply(volumeAggregation.getSampleCount())
+                                                         .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
                 if (detailed) {
                     final Volume volume = volumesRepository.get(volumeAggregation.getUuid());
@@ -219,25 +219,22 @@ public class UsageServiceImpl implements UsageService {
 
             final Map<String, Network> networksMap = new HashMap<>();
             domainAggregation.getPublicIpAggregations().forEach(publicIpAggregation -> {
-                domain.getUsage()
-                      .getNetworking()
-                      .getTotal()
-                      .addPublicIps(publicIpAggregation.getSampleCount()
-                                                       .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                      );
+                final BigDecimal amount = publicIpAggregation.getSampleCount()
+                                                             .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
                 if (detailed) {
                     final PublicIp publicIp = publicIpsRepository.get(publicIpAggregation.getUuid());
                     if (publicIp != null) {
-                        final Network publicIpNetwork = publicIp.getNetwork();
+                        publicIp.setAmount(amount);
 
+                        final Network publicIpNetwork = publicIp.getNetwork();
                         final Network network = networksMap.getOrDefault(publicIpNetwork.getUuid(), publicIpNetwork);
                         network.getPublicIps().add(publicIp);
                         networksMap.put(network.getUuid(), network);
                     }
                 }
 
-                total.addPublicIps(BigDecimal.ONE);
+                total.addPublicIps(amount);
             });
 
             networking.getNetworks().addAll(networksMap.values());
