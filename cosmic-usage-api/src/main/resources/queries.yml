@@ -52,10 +52,6 @@ volumes-repository:
     ON
       vm.id = v.instance_id
     WHERE
-      v.state IN ('Ready', 'Allocated')
-    AND
-      v.removed IS NULL
-    AND
       v.uuid = :uuid
 
 public-ips-repository:
