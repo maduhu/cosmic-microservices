@@ -23,7 +23,7 @@ virtual-machine-metrics-repository:
       vm.removed IS NULL
 
 volume-metrics-repository:
-  get-metrics:
+  get-metrics: |
     SELECT
       d.uuid domainUuid,
       v.uuid resourceUuid,
