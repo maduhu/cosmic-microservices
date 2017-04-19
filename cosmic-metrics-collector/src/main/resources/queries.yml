@@ -42,6 +42,8 @@ volume-metrics-repository:
     WHERE
       v.state IN ('Ready', 'Allocated')
     AND
+      (vm.type IS NULL OR vm.type = 'User')
+    AND
       v.removed IS NULL
 
 public-ip-metrics-repository:
