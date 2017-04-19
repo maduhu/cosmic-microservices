@@ -146,20 +146,22 @@ public class UsageServiceImpl implements UsageService {
             final Compute compute = domain.getUsage().getCompute();
             final Compute.Total total = compute.getTotal();
 
-            domainAggregation.getVirtualMachineAggregations().forEach(vmAggregation -> {
-                final BigDecimal cpu = vmAggregation.getCpuAverage()
-                                                    .multiply(vmAggregation.getSampleCount())
-                                                    .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+            domainAggregation.getVirtualMachineAggregations().forEach(virtualMachineAggregation -> {
+                final BigDecimal cpu = virtualMachineAggregation.getCpuAverage()
+                                                                .multiply(virtualMachineAggregation.getSampleCount())
+                                                                .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
-                final BigDecimal memory = vmAggregation.getMemoryAverage()
-                                                       .multiply(vmAggregation.getSampleCount())
-                                                       .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+                final BigDecimal memory = virtualMachineAggregation.getMemoryAverage()
+                                                                   .multiply(virtualMachineAggregation.getSampleCount())
+                                                                   .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
                 if (detailed) {
-                    final VirtualMachine virtualMachine = virtualMachinesRepository.get(vmAggregation.getUuid());
-                    virtualMachine.setCpu(cpu);
-                    virtualMachine.setMemory(memory);
-                    compute.getVirtualMachines().add(virtualMachine);
+                    final VirtualMachine virtualMachine = virtualMachinesRepository.get(virtualMachineAggregation.getUuid());
+                    if (virtualMachine != null) {
+                        virtualMachine.setCpu(cpu);
+                        virtualMachine.setMemory(memory);
+                        compute.getVirtualMachines().add(virtualMachine);
+                    }
                 }
 
                 total.addCpu(cpu);
@@ -184,13 +186,15 @@ public class UsageServiceImpl implements UsageService {
 
             domainAggregation.getVolumeAggregations().forEach(volumeAggregation -> {
                 BigDecimal size = volumeAggregation.getSize()
-                                        .multiply(volumeAggregation.getSampleCount())
-                                        .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+                                                   .multiply(volumeAggregation.getSampleCount())
+                                                   .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
 
                 if (detailed) {
                     final Volume volume = volumesRepository.get(volumeAggregation.getUuid());
-                    volume.setSize(size);
-                    storage.getVolumes().add(volume);
+                    if (volume != null) {
+                        volume.setSize(size);
+                        storage.getVolumes().add(volume);
+                    }
                 }
 
                 storage.addTotal(size);
@@ -224,11 +228,13 @@ public class UsageServiceImpl implements UsageService {
 
                 if (detailed) {
                     final PublicIp publicIp = publicIpsRepository.get(publicIpAggregation.getUuid());
-                    final Network publicIpNetwork = publicIp.getNetwork();
+                    if (publicIp != null) {
+                        final Network publicIpNetwork = publicIp.getNetwork();
 
-                    final Network network = networksMap.getOrDefault(publicIpNetwork.getUuid(), publicIpNetwork);
-                    network.getPublicIps().add(publicIp);
-                    networksMap.put(network.getUuid(), network);
+                        final Network network = networksMap.getOrDefault(publicIpNetwork.getUuid(), publicIpNetwork);
+                        network.getPublicIps().add(publicIp);
+                        networksMap.put(network.getUuid(), network);
+                    }
                 }
 
                 total.addPublicIps(BigDecimal.ONE);

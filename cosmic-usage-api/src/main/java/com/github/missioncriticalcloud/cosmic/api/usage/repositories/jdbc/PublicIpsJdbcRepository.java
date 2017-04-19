@@ -7,6 +7,7 @@ import com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc.mapper
 import com.github.missioncriticalcloud.cosmic.usage.core.model.PublicIp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -31,11 +32,15 @@ public class PublicIpsJdbcRepository implements PublicIpsRepository {
 
     @Override
     public PublicIp get(final String uuid) {
-        return jdbcTemplate.queryForObject(
-                queries.getProperty("public-ips-repository.get-public-ip"),
-                new MapSqlParameterSource("uuid", uuid),
-                publicIpMapper
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    queries.getProperty("public-ips-repository.get-public-ip"),
+                    new MapSqlParameterSource("uuid", uuid),
+                    publicIpMapper
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
 }
