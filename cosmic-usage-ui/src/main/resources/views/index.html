@@ -167,7 +167,7 @@
                 <tr>
                     <td>
                         <strong>{{ path }}</strong><br>
-                        {{ uuid }}
+                        <span class="uuid">{{ uuid }}</span>
                     </td>
                     <td>
                         <strong>{{ costs.compute.cpu }} &euro;</strong><br>
@@ -204,7 +204,7 @@
                 <tr class="success">
                     <td>
                         <strong>{{ path }}</strong><br>
-                        {{ uuid }}
+                        <span class="uuid">{{ uuid }}</span>
                     </td>
                     <td>
                         <strong>{{ costs.compute.cpu }} &euro;</strong><br>
@@ -231,13 +231,10 @@
                         <span class="left"><strong>Virtual Machines</strong></span><span class="right"><strong>Hostname</strong></span>​
                     </td>
                     <td>
-                        <strong>CPU</strong>
                     </td>
                     <td>
-                        <strong>Memory</strong>
                     </td>
                     <td>
-                        <strong>OS Type</strong>
                     </td>
                     <td>
                     </td>
@@ -245,25 +242,68 @@
                     </td>
                 </tr>
                 {{# usage.compute.virtualMachines }}
-                    <tr>
+                    <tr class="warning">
                         <td id="ui-name-uuid">
                             <strong>{{ hostname }}</strong><br>
-                            {{ uuid }}
+                            <span class="uuid">{{ uuid }}</span>
                         </td>
                         <td>
-                            <strong>{{ cpu }}</strong><br>
+                            <strong>{{ cpu }} units</strong><br>
+                            CPU
                         </td>
                         <td>
-                            <strong>{{ memory }}</strong><br>
+                            <strong>{{ memory }} MB</strong><br>
+                            Memory
                         </td>
                         <td>
                             <strong>{{ osType }}</strong><br>
+                            OS Type
                         </td>
                         <td>
                         </td>
                         <td>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <span class="left"><strong>Attached volumes</strong></span><span class="right"><strong>Name</strong></span>​
+                        </td>
+                        <td>
+                            <strong>Size</strong>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    {{# volumes }}
+                        <tr>
+                            <td>
+                            </td>
+                            <td id="ui-name-uuid">
+                                <strong>{{ name }}</strong><br>
+                                <span class="uuid">{{ uuid }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ size }} GB</strong><br>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    {{/ volumes }}
+                    {{^ volumes }}
+                    <tr>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No volumes attached</td>
+                    </tr>
+                    {{/ volumes }}
                 {{/ usage.compute.virtualMachines }}
                 {{^ usage.compute.virtualMachines }}
                     <tr>
@@ -286,14 +326,15 @@
                     <td>
                     </td>
                 </tr>
+
                 {{# usage.storage.volumes }}
                     <tr>
                         <td id="ui-name-uuid">
                             <strong>{{ name }}</strong><br>
-                            {{ uuid }}
+                            <span class="uuid">{{ uuid }}</span>
                         </td>
                         <td>
-                            <strong>{{ size }}</strong><br>
+                            <strong>{{ size }} GB</strong><br>
                         </td>
                         <td>
                         </td>
@@ -330,7 +371,7 @@
                     <tr>
                         <td id="ui-name-uuid">
                             <strong>{{ name }}</strong><br>
-                            {{ uuid }}
+                            <span class="uuid">{{ uuid }}</span>
                         </td>
                         <td>
                             <strong>{{ count }}</strong><br>

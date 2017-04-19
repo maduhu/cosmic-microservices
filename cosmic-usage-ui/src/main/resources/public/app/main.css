@@ -49,10 +49,15 @@ body {
     text-align: right;
 }
 
-.right{
+.right {
     float:right;
 }
 
-.left{
+.left {
     float:left;
+}
+
+.uuid {
+    font-size: 80%;
+    font-family: Consolas, monaco, monospace;
 }
