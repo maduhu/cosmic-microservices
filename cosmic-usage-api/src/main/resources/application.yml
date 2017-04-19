@@ -1,0 +1,9 @@
+spring:
+
+  jackson:
+    default-property-inclusion: non_null
+
+cosmic:
+
+  usage-api:
+    scan-interval: "0 */15 * * * *"

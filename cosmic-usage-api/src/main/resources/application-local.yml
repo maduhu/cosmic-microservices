@@ -9,8 +9,3 @@ spring:
   elasticsearch:
     jest:
       uris: http://localhost:9200
-
-cosmic:
-
-  usage-api:
-    scan-interval: "0 */15 * * * *"

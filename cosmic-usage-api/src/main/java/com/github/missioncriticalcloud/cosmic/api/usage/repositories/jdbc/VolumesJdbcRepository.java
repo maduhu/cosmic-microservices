@@ -7,6 +7,7 @@ import com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc.mapper
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -31,11 +32,15 @@ public class VolumesJdbcRepository implements VolumesRepository {
 
     @Override
     public Volume get(final String uuid) {
-        return jdbcTemplate.queryForObject(
-                queries.getProperty("volumes-repository.get-volume"),
-                new MapSqlParameterSource("uuid", uuid),
-                volumeMapper
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    queries.getProperty("volumes-repository.get-volume"),
+                    new MapSqlParameterSource("uuid", uuid),
+                    volumeMapper
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
 }
