@@ -16,12 +16,15 @@ import java.util.stream.Collectors;
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachineRepository;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachinesRepository;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VolumesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Compute;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Storage;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Volume;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -37,7 +40,8 @@ import org.springframework.util.StringUtils;
 public class UsageServiceImpl implements UsageService {
 
     private final DomainsRepository domainsRepository;
-    private final VirtualMachineRepository virtualMachineRepository;
+    private final VirtualMachinesRepository virtualMachineRepository;
+    private final VolumesRepository volumesRepository;
 
     private ResourcesRepository computeRepository;
     private ResourcesRepository storageRepository;
@@ -48,14 +52,16 @@ public class UsageServiceImpl implements UsageService {
     @Autowired
     public UsageServiceImpl(
             final DomainsRepository domainsRepository,
-            final VirtualMachineRepository virtualMachineRepository,
+            final VirtualMachinesRepository virtualMachinesRepository,
+            final VolumesRepository volumesRepository,
             @Qualifier("computeRepository") final ResourcesRepository computeRepository,
             @Qualifier("storageRepository") final ResourcesRepository storageRepository,
             @Qualifier("networkingRepository") final ResourcesRepository networkingRepository,
             @Value("${cosmic.usage-api.scan-interval}") final String scanInterval
     ) {
         this.domainsRepository = domainsRepository;
-        this.virtualMachineRepository = virtualMachineRepository;
+        this.virtualMachineRepository = virtualMachinesRepository;
+        this.volumesRepository = volumesRepository;
 
         this.computeRepository = computeRepository;
         this.storageRepository = storageRepository;
@@ -169,14 +175,21 @@ public class UsageServiceImpl implements UsageService {
                     ? domainsMap.get(domainAggregation.getUuid())
                     : new Domain(domainAggregation.getUuid());
 
-            domainAggregation.getVolumeAggregations().forEach(
-                    volume -> domain.getUsage()
-                                    .getStorage()
-                                    .addTotal(volume.getSize()
-                                                    .multiply(volume.getSampleCount())
-                                                    .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
-                                    )
-            );
+            final Storage storage = domain.getUsage().getStorage();
+
+            domainAggregation.getVolumeAggregations().forEach(volumeAggregation -> {
+                BigDecimal size = volumeAggregation.getSize()
+                                        .multiply(volumeAggregation.getSampleCount())
+                                        .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+
+                if (detailed) {
+                    final Volume volume = volumesRepository.get(volumeAggregation.getUuid());
+                    volume.setSize(size);
+                    storage.getVolumes().add(volume);
+                }
+
+                storage.addTotal(size);
+            });
 
             domainsMap.put(domainAggregation.getUuid(), domain);
         });

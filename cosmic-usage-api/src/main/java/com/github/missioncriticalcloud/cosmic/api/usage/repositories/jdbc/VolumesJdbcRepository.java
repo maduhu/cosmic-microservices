@@ -2,9 +2,9 @@ package com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc;
 
 import java.util.Properties;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachinesRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc.mappers.VirtualMachineMapper;
-import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VolumesRepository;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc.mappers.VolumeMapper;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -12,29 +12,29 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class VirtualMachinesJdbcRepository implements VirtualMachinesRepository {
+public class VolumesJdbcRepository implements VolumesRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final Properties queries;
-    private final VirtualMachineMapper virtualMachineMapper;
+    private final VolumeMapper volumeMapper;
 
     @Autowired
-    public VirtualMachinesJdbcRepository(
+    public VolumesJdbcRepository(
             final NamedParameterJdbcTemplate jdbcTemplate,
             @Qualifier("queries") final Properties queries,
-            final VirtualMachineMapper virtualMachineMapper
+            final VolumeMapper volumeMapper
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
-        this.virtualMachineMapper = virtualMachineMapper;
+        this.volumeMapper = volumeMapper;
     }
 
     @Override
-    public VirtualMachine get(final String uuid) {
+    public Volume get(final String uuid) {
         return jdbcTemplate.queryForObject(
-                queries.getProperty("virtual-machines-repository.get-virtual-machine"),
+                queries.getProperty("volumes-repository.get-volume"),
                 new MapSqlParameterSource("uuid", uuid),
-                virtualMachineMapper
+                volumeMapper
         );
     }
 

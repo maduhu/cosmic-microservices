@@ -16,6 +16,9 @@ public class Volume extends Resource {
     @JsonView(DetailedView.class)
     private BigDecimal size = BigDecimal.ZERO;
 
+    @JsonView(DetailedView.class)
+    private String attachedTo;
+
     public String getName() {
         return name;
     }
@@ -30,6 +33,14 @@ public class Volume extends Resource {
 
     public void setSize(final BigDecimal size) {
         this.size = size;
+    }
+
+    public void setAttachedTo(final String attachedTo) {
+        this.attachedTo = attachedTo;
+    }
+
+    public String getAttachedTo() {
+        return attachedTo;
     }
 
 }
