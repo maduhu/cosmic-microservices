@@ -1,7 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers;
 
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.DOMAINS_AGGREGATION;
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.PUBLIC_IPS_COUNT_AGGREGATION;
 import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.RESOURCES_AGGREGATION;
 
 import java.math.BigDecimal;
@@ -12,7 +11,6 @@ import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.Doma
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.PublicIpAggregation;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.TermsAggregation;
-import io.searchbox.core.search.aggregation.ValueCountAggregation;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,9 +34,6 @@ public class PublicIpParser implements Parser {
                 final PublicIpAggregation publicIpAggregation = new PublicIpAggregation();
                 publicIpAggregation.setUuid(resourceBucket.getKey());
                 publicIpAggregation.setSampleCount(BigDecimal.valueOf(resourceBucket.getCount()));
-
-                final ValueCountAggregation count = resourceBucket.getValueCountAggregation(PUBLIC_IPS_COUNT_AGGREGATION);
-                publicIpAggregation.setCount(BigDecimal.valueOf(count.getValueCount()));
 
                 domainAggregation.getPublicIpAggregations().add(publicIpAggregation);
             });

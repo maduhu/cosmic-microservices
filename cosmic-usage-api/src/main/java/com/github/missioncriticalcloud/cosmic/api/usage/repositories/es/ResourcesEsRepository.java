@@ -19,7 +19,6 @@ public abstract class ResourcesEsRepository {
     public static final String CPU_AVERAGE_AGGREGATION = "cpuAverage";
     public static final String MEMORY_AVERAGE_AGGREGATION = "memoryAverage";
     public static final String VOLUME_AVERAGE_AGGREGATION = "volumeAverage";
-    public static final String PUBLIC_IPS_COUNT_AGGREGATION = "publicIpsCount";
 
     public static final String TIMESTAMP_FIELD = "@timestamp";
     public static final String RESOURCE_TYPE_FIELD = "resourceType";
@@ -29,7 +28,6 @@ public abstract class ResourcesEsRepository {
     static final String PAYLOAD_CPU_FIELD = "payload.cpu";
     static final String PAYLOAD_MEMORY_FIELD = "payload.memory";
     static final String PAYLOAD_SIZE_FIELD = "payload.size";
-    static final String PAYLOAD_STATE_FIELD = "payload.state";
 
     private final JestClient client;
 

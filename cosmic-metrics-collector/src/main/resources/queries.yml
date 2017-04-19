@@ -48,8 +48,7 @@ public-ip-metrics-repository:
   get-metrics: |
     SELECT
       d.uuid domainUuid,
-      ip.uuid resourceUuid,
-      ip.state state
+      ip.uuid resourceUuid
     FROM
       user_ip_address ip
     JOIN

@@ -13,8 +13,8 @@ public class VolumeMetricsMapper extends MetricsMapper {
     @Override
     public Metric mapRow(final ResultSet resultSet, final int i) throws SQLException {
         final Metric metric = super.mapRow(resultSet, i);
-
         metric.setResourceType(ResourceType.VOLUME);
+
         metric.getPayload().put("size", resultSet.getLong("size"));
 
         return metric;

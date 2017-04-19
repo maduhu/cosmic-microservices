@@ -24,4 +24,20 @@ abstract class MetricsRepositoryIT {
         });
     }
 
+    void assertMetricsWithoutPayload(final List<Metric> metrics) {
+        assertThat(metrics).isNotNull();
+        assertThat(metrics).isNotEmpty();
+        assertThat(metrics).hasSize(1);
+
+        metrics.forEach(metric -> {
+            assertThat(metric).isNotNull();
+            assertThat(metric.getDomainUuid()).isNotNull();
+            assertThat(metric.getResourceUuid()).isNotNull();
+            assertThat(metric.getResourceType()).isNotNull();
+            assertThat(metric.getTimestamp()).isNotNull();
+            assertThat(metric.getPayload()).isNotNull();
+            assertThat(metric.getPayload()).isEmpty();
+        });
+    }
+
 }
