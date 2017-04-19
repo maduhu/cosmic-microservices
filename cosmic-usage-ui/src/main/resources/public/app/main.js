@@ -170,12 +170,50 @@ const app = {
         var html = '';
         if ($(this.detailedViewCheckbox).prop('checked')) {
             html = $(this.domainsDetailedListTemplate).html();
+            this.parseDomainsDetailedView(domains);
         } else {
             html = $(this.domainsListTemplate).html();
         }
 
         const rendered = Mustache.render(html, { domains: domains });
+
         $('tbody', this.domainsTable).html(rendered);
+    },
+
+    parseDomainsDetailedView: function (domains) {
+        _.each(domains, function (domain) {
+            console.log("");
+            const unattachedVolumes = [];
+            _.each(domain.usage.storage.volumes, function (volume) {
+                if (volume.attachedTo) {
+                    // var that = domains;
+                    var vm = _.find(domain.usage.compute.virtualMachines, function(vm){ return vm.uuid === volume.attachedTo; });
+
+                    if (!vm) {
+                        // Fix until storage metrics are cleaned.
+                        return;
+                    }
+
+                    if (!vm.volumes) {
+                        vm.volumes = [ volume ];
+                    } else {
+                        vm.volumes.push(volume);
+                    }
+
+                    // domain.usage.storage.volumes.splice(
+                    //     _.indexOf(domain.usage.storage.volumes, volume), 1
+                    // );
+
+
+                    console.log("");
+                } else {
+                    unattachedVolumes.push(volume);
+                }
+                console.log("");
+            });
+            domain.usage.storage.volumes = unattachedVolumes;
+            console.log("");
+        });
     },
 
     generateReportButtonOnClick: function(event) {
