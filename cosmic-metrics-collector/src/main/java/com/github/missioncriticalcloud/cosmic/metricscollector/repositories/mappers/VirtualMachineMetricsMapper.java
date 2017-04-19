@@ -15,8 +15,8 @@ public class VirtualMachineMetricsMapper extends MetricsMapper {
         final Metric metric = super.mapRow(resultSet, i);
 
         metric.setResourceType(ResourceType.VIRTUAL_MACHINE);
-        metric.getPayload().put("cpu", resultSet.getInt("cpu"));
-        metric.getPayload().put("memory", resultSet.getInt("memory"));
+        metric.getPayload().put("cpu", resultSet.getShort("cpu"));
+        metric.getPayload().put("memory", resultSet.getLong("memory"));
 
         return metric;
     }
