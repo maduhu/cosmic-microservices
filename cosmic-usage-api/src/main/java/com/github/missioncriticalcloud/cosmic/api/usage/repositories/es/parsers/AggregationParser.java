@@ -5,7 +5,7 @@ import java.util.List;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import io.searchbox.core.SearchResult;
 
-public interface Parser {
+public interface AggregationParser {
 
     List<DomainAggregation> parse(SearchResult searchResult);
 

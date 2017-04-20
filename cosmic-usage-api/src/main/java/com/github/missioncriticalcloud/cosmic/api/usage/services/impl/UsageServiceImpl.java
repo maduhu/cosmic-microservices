@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.MetricsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.PublicIpsRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VirtualMachinesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.VolumesRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
@@ -37,8 +37,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 @Service
 public class UsageServiceImpl implements UsageService {
@@ -48,9 +46,9 @@ public class UsageServiceImpl implements UsageService {
     private final VolumesRepository volumesRepository;
     private final PublicIpsRepository publicIpsRepository;
 
-    private ResourcesRepository computeRepository;
-    private ResourcesRepository storageRepository;
-    private ResourcesRepository networkingRepository;
+    private MetricsRepository computeRepository;
+    private MetricsRepository storageRepository;
+    private MetricsRepository networkingRepository;
 
     private final String scanInterval;
 
@@ -60,9 +58,9 @@ public class UsageServiceImpl implements UsageService {
             final VirtualMachinesRepository virtualMachinesRepository,
             final VolumesRepository volumesRepository,
             final PublicIpsRepository publicIpsRepository,
-            @Qualifier("computeRepository") final ResourcesRepository computeRepository,
-            @Qualifier("storageRepository") final ResourcesRepository storageRepository,
-            @Qualifier("networkingRepository") final ResourcesRepository networkingRepository,
+            @Qualifier("computeRepository") final MetricsRepository computeRepository,
+            @Qualifier("storageRepository") final MetricsRepository storageRepository,
+            @Qualifier("networkingRepository") final MetricsRepository networkingRepository,
             @Value("${cosmic.usage-api.scan-interval}") final String scanInterval
     ) {
         this.domainsRepository = domainsRepository;
@@ -91,7 +89,7 @@ public class UsageServiceImpl implements UsageService {
         mergeComputeDomainAggregations(domainsMap, expectedSampleCount, computeDomainAggregations, detailed);
         mergeStorageDomainAggregations(domainsMap, expectedSampleCount, storageDomainAggregations, detailed);
         mergeNetworkingDomainAggregations(domainsMap, expectedSampleCount, networkingDomainAggregations, detailed);
-        removeEmptyDomains(domainsMap);
+        removeDomainsWithoutUsage(domainsMap);
 
         if (domainsMap.isEmpty()) {
             throw new NoMetricsFoundException();
@@ -104,17 +102,13 @@ public class UsageServiceImpl implements UsageService {
     }
 
     private Map<String, Domain> getDomainsMap(final String path) {
-        final Map<String, Domain> domainsMap = new HashMap<>();
-
-        if (StringUtils.hasText(path)) {
-            final List<Domain> domains = domainsRepository.list(path);
-
-            if (CollectionUtils.isEmpty(domains)) {
-                throw new NoMetricsFoundException();
-            }
-
-            domainsMap.putAll(domains.stream().collect(Collectors.toMap(Domain::getUuid, Function.identity())));
+        final List<Domain> domains = domainsRepository.list(path);
+        if (domains.isEmpty()) {
+            throw new NoMetricsFoundException();
         }
+
+        final Map<String, Domain> domainsMap = new HashMap<>();
+        domainsMap.putAll(domains.stream().collect(Collectors.toMap(Domain::getUuid, Function.identity())));
 
         return domainsMap;
     }
@@ -242,7 +236,7 @@ public class UsageServiceImpl implements UsageService {
         });
     }
 
-    private void removeEmptyDomains(final Map<String, Domain> domainsMap) {
+    private void removeDomainsWithoutUsage(final Map<String, Domain> domainsMap) {
         final Set<String> uuidsToRemove = new HashSet<>();
         domainsMap.forEach((uuid, domain) -> {
             if (domain.getUsage().isEmpty()) {

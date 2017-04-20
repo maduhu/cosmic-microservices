@@ -1,7 +1,7 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers;
 
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.DOMAINS_AGGREGATION;
-import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.ResourcesEsRepository.RESOURCES_AGGREGATION;
+import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.MetricsEsRepository.DOMAINS_AGGREGATION;
+import static com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.MetricsEsRepository.RESOURCES_AGGREGATION;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PublicIpParser implements Parser {
+public class PublicIpAggregationParser implements AggregationParser {
 
     public List<DomainAggregation> parse(final SearchResult searchResult) {
         final List<DomainAggregation> domainAggregations = new LinkedList<>();

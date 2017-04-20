@@ -41,11 +41,11 @@ public class PublicIpMetricsCollector implements MetricsCollector {
         this.metricsRepository = metricsRepository;
         this.amqpTemplate = amqpTemplate;
         this.metricWriter = metricWriter;
-
         this.brokerExchange = brokerExchange;
         this.brokerExchangeKey = brokerExchangeKey;
     }
 
+    @Override
     @Scheduled(cron = "${cosmic.metrics-collector.scan-interval}")
     public void run() {
         final StopWatch stopWatch = new StopWatch(PublicIpMetricsCollector.class.getSimpleName());
