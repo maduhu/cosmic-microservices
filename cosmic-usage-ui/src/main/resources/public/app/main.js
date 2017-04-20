@@ -10,12 +10,18 @@ const app = {
     USAGE_API_BASE_URL: undefined,
     GENERAL_USAGE_PATH: '/general?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
+
+    // Sorting
     ASCENDING: 'ASC',
     DESCENDING: 'DESC',
-    ASCENDING_HTML: '&#9650',
-    DESCENDING_HTML: '&#9660',
-    DEFAULT_SORT_BY: 'DOMAIN_PATH',
-    DEFAULT_SORT_ORDER: 'ASC',
+    ASCENDING_ICON: '<i class="fa fa-chevron-up" aria-hidden="true"></i>',
+    DESCENDING_ICON: '<i class="fa fa-chevron-down" aria-hidden="true"></i>',
+
+    // Data attributes
+    DATA_LABEL: 'data-label',
+    DATA_SORT_BY: 'data-sort-by',
+    DATA_SORT_ORDER: 'data-sort-order',
+    DATA_SELECTED: 'data-selected',
 
     // Templates
     domainsListTemplate: '#ui-domains-list-template',
@@ -25,7 +31,6 @@ const app = {
     // Components
     errorMessageContainer: '#ui-error-message',
     monthSelectorComponent: '#ui-month-selector',
-    untilTodayCheckbox: '#ui-month-today-checkbox',
     domainPathField: '#ui-domain-path',
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
@@ -34,14 +39,8 @@ const app = {
     generateReportButton: '#ui-generate-report-btn',
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
-
-    // Attributes
-    domainTableHeaderDataState: 'state',
-    domainTableHeaderDataLabel: 'label',
-    domainTableHeaderDataSortBy: 'sortby',
-
-    // Classes
-    tableHeaderSortable: '.table-header-sortable',
+    domainsTableHeaders: 'thead tr th.ui-domains-table-header',
+    selectedDomainsTableHeader: 'thead tr th.ui-domains-table-header[data-selected="true"]',
 
     init: function(baseUrl) {
         this.USAGE_API_BASE_URL = baseUrl;
@@ -55,87 +54,11 @@ const app = {
         this.renderDomainsList();
 
         $(this.generateReportButton).on('click', this.generateReportButtonOnClick);
-    },
-
-    sortDomainTableByHeader: function(e) {
-        const header = $(e.target)
-
-        var currState = header.data(this.domainTableHeaderDataState);
-
-        this.clearAllSortingSigns();
-
-        this.flipSortingSign(header, currState);
-
-        this.generateSortableReport();
-    },
-
-    clearAllSortingSigns: function() {
-        var that = this;
-        $(this.tableHeaderSortable).each(function() {
-            that.flipSortingSign($(this), that.DESCENDING);
-        });
-    },
-
-    flipSortingSign: function(e, state) {
-        const header = $(e);
-
-        if (!state) {
-            state = ''
-        }
-
-        switch (state) {
-            case '':
-                header.html(header.data(this.domainTableHeaderDataLabel) + this.ASCENDING_HTML);
-                header.data(this.domainTableHeaderDataState, this.ASCENDING);
-                break;
-            case this.ASCENDING:
-                header.html(header.data(this.domainTableHeaderDataLabel) + this.DESCENDING_HTML);
-                header.data(this.domainTableHeaderDataState, this.DESCENDING);
-                break;
-            case this.DESCENDING:
-                header.html(header.data(this.domainTableHeaderDataLabel));
-                header.data(this.domainTableHeaderDataState, '');
-                break;
-            default:
-                console.error('Error! Sortable header is in unknown state.');
-        }
-    },
-
-    getCurrentSorting: function() {
-        var that = this;
-        var sortBy = '';
-        var sortOrder = '';
-
-        $(this.tableHeaderSortable).each(function() {
-            if (_.contains([that.ASCENDING, that.DESCENDING], $(this).data(that.domainTableHeaderDataState))) {
-                sortBy = $(this).data(that.domainTableHeaderDataSortBy);
-                sortOrder = $(this).data(that.domainTableHeaderDataState);
-            }
-        });
-
-        if (!sortBy) {
-            sortBy = this.DEFAULT_SORT_BY;
-        }
-        if (!sortOrder) {
-            sortOrder = this.DEFAULT_SORT_ORDER;
-        }
-
-        return {
-            sortBy: sortBy,
-            sortOrder: sortOrder
-        };
-    },
-
-    renderDomainTableHeaders: function() {
-        var that = this;
-        $(this.tableHeaderSortable).each(function() {
-            $(this).html($(this).data(that.domainTableHeaderDataLabel));
-            $(this).on('click', that.sortDomainTableByHeader);
-        });
+        $(this.domainsTableHeaders, this.domainsTable).on('click', this.domainsTableHeaderOnClick);
     },
 
     renderPrintingHeaders: function() {
-        var selectedMonth = $(this.monthSelectorComponent).datepicker('getFormattedDate');
+        const selectedMonth = $(this.monthSelectorComponent).datepicker('getFormattedDate');
 
         const selectedMonthFormatted = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
             .format(this.SELECTED_MONTH_HUMAN_FORMAT);
@@ -156,6 +79,20 @@ const app = {
         $(this.printingHeadersContainer).html(rendered);
     },
 
+    renderDomainTableHeaders: function() {
+        $(this.domainsTableHeaders, this.domainsTable).each(function() {
+            const header = $(this);
+            var label = header.attr(app.DATA_LABEL);
+            if (_.isEqual(header.attr(app.DATA_SELECTED), 'true')) {
+                const sortIcon = _.isEqual(header.attr(app.DATA_SORT_ORDER), app.DESCENDING)
+                    ? app.DESCENDING_ICON
+                    : app.ASCENDING_ICON;
+                label += ' ' + sortIcon;
+            }
+            header.html(label);
+        });
+    },
+
     renderDomainsList: function(domains) {
         const html = $(this.domainsListTemplate).html();
         const rendered = Mustache.render(html, { domains: domains });
@@ -165,39 +102,42 @@ const app = {
     generateReportButtonOnClick: function(event) {
         event.preventDefault();
 
-        this.generateSortableReport();
-    },
-
-    generateSortableReport: function() {
-        var currentSorting = this.getCurrentSorting();
-
         const selectedMonth = $(this.monthSelectorComponent).datepicker('getFormattedDate');
+        const selectedDomainsTableHeader = $(this.selectedDomainsTableHeader, this.domainsTable);
 
-        const from = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
-            .format(this.API_DATE_FORMAT);
-
-        var to = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT)
-            .add(1, 'months');
-
+        const from = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT);
         const now = moment();
-
-        if (now.isBefore(to) && $(this.untilTodayCheckbox).prop('checked')) {
-            to = now.format(this.API_DATE_FORMAT);
-        } else {
-            to = to.format(this.API_DATE_FORMAT);
-        }
+        const to = _.isEqual(from.month(), now.month())
+            ? now
+            : moment(selectedMonth, this.MONTH_SELECTOR_FORMAT).add(1, 'months');
 
         const path = $(this.domainPathField).val();
 
         const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.GENERAL_USAGE_PATH, {
-            from: from,
-            to: to,
+            from: from.format(this.API_DATE_FORMAT),
+            to: to.format(this.API_DATE_FORMAT),
             path: path,
-            sortBy: currentSorting.sortBy,
-            sortOrder: currentSorting.sortOrder
+            sortBy: selectedDomainsTableHeader.attr(this.DATA_SORT_BY),
+            sortOrder: selectedDomainsTableHeader.attr(this.DATA_SORT_ORDER)
         });
 
         $.get(renderedUrl, this.parseDomainsResult).fail(this.parseErrorResponse);
+    },
+
+    domainsTableHeaderOnClick: function(event) {
+        event.preventDefault();
+
+        const header = $(event.currentTarget);
+        const sortOrder = _.isEqual(header.attr(this.DATA_SELECTED), 'true') && _.isEqual(header.attr(this.DATA_SORT_ORDER), this.ASCENDING)
+            ? this.DESCENDING
+            : this.ASCENDING;
+        header.attr(this.DATA_SORT_ORDER, sortOrder);
+
+        $(this.domainsTableHeaders, this.domainsTable).attr(this.DATA_SELECTED, false);
+        header.attr(this.DATA_SELECTED, true);
+
+        this.renderDomainTableHeaders();
+        $(this.generateReportButton).click();
     },
 
     parseDomainsResult: function(data) {
@@ -261,4 +201,5 @@ const app = {
         const rendered = Mustache.render(html, { errorMessage: errorMessage });
         $(this.errorMessageContainer).html(rendered);
     }
+
 };
