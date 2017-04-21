@@ -5,14 +5,12 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
-import static org.elasticsearch.search.aggregations.AggregationBuilders.count;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 
 import java.util.List;
 import java.util.Set;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.PublicIpParser;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.PublicIpAggregationParser;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
@@ -24,21 +22,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("networkingRepository")
-public class NetworkingEsRepository extends ResourcesEsRepository implements ResourcesRepository {
+public class NetworkingEsRepository extends MetricsEsRepository {
 
-    private PublicIpParser publicIpParser;
+    private PublicIpAggregationParser publicIpAggregationParser;
 
     @Autowired
-    public NetworkingEsRepository(final JestClient client, final PublicIpParser publicIpParser) {
+    public NetworkingEsRepository(final JestClient client, final PublicIpAggregationParser publicIpAggregationParser) {
         super(client);
-        this.publicIpParser = publicIpParser;
+        this.publicIpAggregationParser = publicIpAggregationParser;
     }
 
     @Override
     public List<DomainAggregation> list(final Set<String> domainUuids, final DateTime from, final DateTime to) {
 
-        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
-        searchBuilder.size(0);
+        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder().size(0);
 
         final BoolQueryBuilder queryBuilder = boolQuery()
                 .must(rangeQuery(TIMESTAMP_FIELD)
@@ -62,7 +59,7 @@ public class NetworkingEsRepository extends ResourcesEsRepository implements Res
                      );
 
         final SearchResult result = search(searchBuilder);
-        return publicIpParser.parse(result);
+        return publicIpAggregationParser.parse(result);
     }
 
 }

@@ -27,24 +27,34 @@ public class SortingUtils {
             switch (sortBy) {
                 case DOMAIN_PATH:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? domain2.getPath().compareToIgnoreCase(domain1.getPath())
-                            : domain1.getPath().compareToIgnoreCase(domain2.getPath());
+                            ? domain2.getPath()
+                                     .compareToIgnoreCase(domain1.getPath())
+                            : domain1.getPath()
+                                     .compareToIgnoreCase(domain2.getPath());
                 case CPU:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getCompute().getTotal().getCpu().compareTo(usage1.getCompute().getTotal().getCpu())
-                            : usage1.getCompute().getTotal().getCpu().compareTo(usage2.getCompute().getTotal().getCpu());
+                            ? usage2.getCompute().getTotal().getCpu()
+                                    .compareTo(usage1.getCompute().getTotal().getCpu())
+                            : usage1.getCompute().getTotal().getCpu()
+                                    .compareTo(usage2.getCompute().getTotal().getCpu());
                 case MEMORY:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getCompute().getTotal().getMemory().compareTo(usage1.getCompute().getTotal().getMemory())
-                            : usage1.getCompute().getTotal().getMemory().compareTo(usage2.getCompute().getTotal().getMemory());
+                            ? usage2.getCompute().getTotal().getMemory()
+                                    .compareTo(usage1.getCompute().getTotal().getMemory())
+                            : usage1.getCompute().getTotal().getMemory()
+                                    .compareTo(usage2.getCompute().getTotal().getMemory());
                 case VOLUME:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getStorage().getTotal().compareTo(usage1.getStorage().getTotal())
-                            : usage1.getStorage().getTotal().compareTo(usage2.getStorage().getTotal());
+                            ? usage2.getStorage().getTotal()
+                                    .compareTo(usage1.getStorage().getTotal())
+                            : usage1.getStorage().getTotal()
+                                    .compareTo(usage2.getStorage().getTotal());
                 case PUBLIC_IP:
                     return (SortOrder.DESC.equals(sortOrder))
-                            ? usage2.getNetworking().getTotal().getPublicIps().compareTo(usage1.getNetworking().getTotal().getPublicIps())
-                            : usage1.getNetworking().getTotal().getPublicIps().compareTo(usage2.getNetworking().getTotal().getPublicIps());
+                            ? usage2.getNetworking().getTotal().getPublicIps()
+                                    .compareTo(usage1.getNetworking().getTotal().getPublicIps())
+                            : usage1.getNetworking().getTotal().getPublicIps()
+                                    .compareTo(usage2.getNetworking().getTotal().getPublicIps());
                 default:
                     return 0;
             }

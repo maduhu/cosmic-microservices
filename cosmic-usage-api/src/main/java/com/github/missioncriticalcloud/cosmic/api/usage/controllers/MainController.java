@@ -1,6 +1,6 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.controllers;
 
-import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DATE_FORMATTER_STRING;
+import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_DATE_FORMAT;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
@@ -32,8 +32,8 @@ public class MainController {
     @RequestMapping("/general")
     @JsonView(GeneralView.class)
     public Report general(
-            @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime from,
-            @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime to,
+            @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime from,
+            @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime to,
             @RequestParam final String path,
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
@@ -47,8 +47,8 @@ public class MainController {
     @RequestMapping("/detailed")
     @JsonView(DetailedView.class)
     public Report detailed(
-            @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime from,
-            @RequestParam @DateTimeFormat(pattern = DATE_FORMATTER_STRING) final DateTime to,
+            @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime from,
+            @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime to,
             @RequestParam final String path,
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder

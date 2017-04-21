@@ -2,16 +2,17 @@ package com.github.missioncriticalcloud.cosmic.api.usage.repositories.es;
 
 import java.io.IOException;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.UnableToSearchIndexException;
+import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.UnableToSearchMetricsException;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.MetricsRepository;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-public abstract class ResourcesEsRepository {
+public abstract class MetricsEsRepository implements MetricsRepository {
 
-    public static final int MAX_DOMAIN_AGGREGATIONS = 250;
-    public static final int MAX_RESOURCE_AGGREGATIONS = 2500;
+    static final int MAX_DOMAIN_AGGREGATIONS = 250;
+    static final int MAX_RESOURCE_AGGREGATIONS = 2500;
 
     public static final String DOMAINS_AGGREGATION = "domains";
     public static final String RESOURCES_AGGREGATION = "resources";
@@ -31,7 +32,7 @@ public abstract class ResourcesEsRepository {
 
     private final JestClient client;
 
-    public ResourcesEsRepository(final JestClient client) {
+    public MetricsEsRepository(final JestClient client) {
         this.client = client;
     }
 
@@ -44,7 +45,7 @@ public abstract class ResourcesEsRepository {
                             .build()
             );
         } catch (IOException e) {
-            throw new UnableToSearchIndexException(e.getMessage(), e);
+            throw new UnableToSearchMetricsException(e.getMessage(), e);
         }
     }
 

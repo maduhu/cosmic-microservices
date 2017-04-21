@@ -11,8 +11,7 @@ import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 import java.util.List;
 import java.util.Set;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.VirtualMachineParser;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.VirtualMachineAggregationParser;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
@@ -24,21 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("computeRepository")
-public class ComputeEsRepository extends ResourcesEsRepository implements ResourcesRepository {
+public class ComputeEsRepository extends MetricsEsRepository {
 
-    private VirtualMachineParser virtualMachineParser;
+    private VirtualMachineAggregationParser virtualMachineAggregationParser;
 
     @Autowired
-    public ComputeEsRepository(final JestClient client, final VirtualMachineParser virtualMachineParser) {
+    public ComputeEsRepository(final JestClient client, final VirtualMachineAggregationParser virtualMachineAggregationParser) {
         super(client);
-        this.virtualMachineParser = virtualMachineParser;
+        this.virtualMachineAggregationParser = virtualMachineAggregationParser;
     }
 
     @Override
     public List<DomainAggregation> list(final Set<String> domainUuids, final DateTime from, final DateTime to) {
 
-        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
-        searchBuilder.size(0);
+        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder().size(0);
 
         final BoolQueryBuilder queryBuilder = boolQuery()
                 .must(rangeQuery(TIMESTAMP_FIELD)
@@ -68,7 +66,7 @@ public class ComputeEsRepository extends ResourcesEsRepository implements Resour
                      );
 
         final SearchResult result = search(searchBuilder);
-        return virtualMachineParser.parse(result);
+        return virtualMachineAggregationParser.parse(result);
     }
 
 }

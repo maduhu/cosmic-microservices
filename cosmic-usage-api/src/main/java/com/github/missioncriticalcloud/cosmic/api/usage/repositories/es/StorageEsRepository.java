@@ -11,8 +11,7 @@ import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
 import java.util.List;
 import java.util.Set;
 
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.ResourcesRepository;
-import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.VolumeParser;
+import com.github.missioncriticalcloud.cosmic.api.usage.repositories.es.parsers.VolumeAggregationParser;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
@@ -24,21 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("storageRepository")
-public class StorageEsRepository extends ResourcesEsRepository implements ResourcesRepository {
+public class StorageEsRepository extends MetricsEsRepository {
 
-    private VolumeParser volumeParser;
+    private VolumeAggregationParser volumeAggregationParser;
 
     @Autowired
-    public StorageEsRepository(final JestClient client, final VolumeParser volumeParser) {
+    public StorageEsRepository(final JestClient client, final VolumeAggregationParser volumeAggregationParser) {
         super(client);
-        this.volumeParser = volumeParser;
+        this.volumeAggregationParser = volumeAggregationParser;
     }
 
     @Override
     public List<DomainAggregation> list(final Set<String> domainUuids, final DateTime from, final DateTime to) {
 
-        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
-        searchBuilder.size(0);
+        final SearchSourceBuilder searchBuilder = new SearchSourceBuilder().size(0);
 
         final BoolQueryBuilder queryBuilder = boolQuery()
                 .must(rangeQuery(TIMESTAMP_FIELD)
@@ -65,7 +63,7 @@ public class StorageEsRepository extends ResourcesEsRepository implements Resour
                      );
 
         final SearchResult result = search(searchBuilder);
-        return volumeParser.parse(result);
+        return volumeAggregationParser.parse(result);
     }
 
 }

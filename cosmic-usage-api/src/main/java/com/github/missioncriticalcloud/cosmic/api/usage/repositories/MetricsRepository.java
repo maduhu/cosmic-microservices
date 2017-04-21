@@ -6,7 +6,7 @@ import java.util.Set;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
 import org.joda.time.DateTime;
 
-public interface ResourcesRepository {
+public interface MetricsRepository {
 
     List<DomainAggregation> list(Set<String> domainUuids, DateTime from, DateTime to);
 

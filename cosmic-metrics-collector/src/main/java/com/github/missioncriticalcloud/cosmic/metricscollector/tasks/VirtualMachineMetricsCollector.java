@@ -45,6 +45,7 @@ public class VirtualMachineMetricsCollector implements MetricsCollector {
         this.brokerExchangeKey = brokerExchangeKey;
     }
 
+    @Override
     @Scheduled(cron = "${cosmic.metrics-collector.scan-interval}")
     public void run() {
         final StopWatch stopWatch = new StopWatch(VirtualMachineMetricsCollector.class.getSimpleName());

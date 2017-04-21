@@ -32,7 +32,11 @@ public class DomainsJdbcRepository implements DomainsRepository {
 
     @Override
     public List<Domain> list(final String path) {
-        return jdbcTemplate.query(queries.getProperty("domains-repository.list-domains"), new MapSqlParameterSource("path", path + "%"), domainMapper);
+        return jdbcTemplate.query(
+                queries.getProperty("domains-repository.list-domains"),
+                new MapSqlParameterSource("path", path + "%"),
+                domainMapper
+        );
     }
 
 }
