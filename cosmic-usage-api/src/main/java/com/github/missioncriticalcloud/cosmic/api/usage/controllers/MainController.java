@@ -3,7 +3,7 @@ package com.github.missioncriticalcloud.cosmic.api.usage.controllers;
 import static com.github.missioncriticalcloud.cosmic.usage.core.utils.FormatUtils.DEFAULT_DATE_FORMAT;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageService;
+import com.github.missioncriticalcloud.cosmic.api.usage.services.UsageCalculator;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class MainController {
 
-    private final UsageService usageService;
+    private final UsageCalculator usageCalculator;
 
     @Autowired
-    public MainController(final UsageService usageService) {
-        this.usageService = usageService;
+    public MainController(final UsageCalculator usageCalculator) {
+        this.usageCalculator = usageCalculator;
     }
 
     @RequestMapping("/general")
@@ -40,7 +40,7 @@ public class MainController {
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder,
             @RequestParam(required = false, defaultValue = Unit.DEFAULT) final Unit unit
     ) {
-        final Report report = usageService.calculate(from, to, path, unit, false);
+        final Report report = usageCalculator.calculate(from, to, path, unit, false);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;
@@ -56,7 +56,7 @@ public class MainController {
             @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder,
             @RequestParam(required = false, defaultValue = Unit.DEFAULT) final Unit unit
     ) {
-        final Report report = usageService.calculate(from, to, path, unit, true);
+        final Report report = usageCalculator.calculate(from, to, path, unit, true);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;
