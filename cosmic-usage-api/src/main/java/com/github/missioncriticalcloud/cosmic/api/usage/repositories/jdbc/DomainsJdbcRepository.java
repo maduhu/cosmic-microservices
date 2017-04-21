@@ -1,8 +1,13 @@
 package com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.github.missioncriticalcloud.cosmic.api.usage.exceptions.NoMetricsFoundException;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.DomainsRepository;
 import com.github.missioncriticalcloud.cosmic.api.usage.repositories.jdbc.mappers.DomainMapper;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
@@ -37,6 +42,19 @@ public class DomainsJdbcRepository implements DomainsRepository {
                 new MapSqlParameterSource("path", path + "%"),
                 domainMapper
         );
+    }
+
+    @Override
+    public Map<String, Domain> map(final String path) {
+        final List<Domain> domains = list(path);
+        if (domains.isEmpty()) {
+            throw new NoMetricsFoundException();
+        }
+
+        final Map<String, Domain> domainsMap = new HashMap<>();
+        domainsMap.putAll(domains.stream().collect(Collectors.toMap(Domain::getUuid, Function.identity())));
+
+        return domainsMap;
     }
 
 }

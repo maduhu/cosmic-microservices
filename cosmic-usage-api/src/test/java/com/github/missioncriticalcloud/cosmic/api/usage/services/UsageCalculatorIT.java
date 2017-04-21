@@ -42,13 +42,13 @@ import org.springframework.util.FileCopyUtils;
 @SpringBootTest
 @ActiveProfiles("local")
 @Sql(value = {"/test-schema.sql", "/test-data.sql"})
-public class UsageServiceIT {
+public class UsageCalculatorIT {
 
     @Autowired
     private JestClient client;
 
     @Autowired
-    private UsageService usageService;
+    private UsageCalculator usageCalculator;
 
     @Test(expected = NoMetricsFoundException.class)
     public void testNoMetricsInterval1() throws IOException {
@@ -58,7 +58,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = null;
 
-        usageService.calculate(from, to, path, Unit.BYTES, false);
+        usageCalculator.calculate(from, to, path, Unit.BYTES, false);
     }
 
     @Test(expected = NoMetricsFoundException.class)
@@ -70,7 +70,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2000-01-01");
         final String path = null;
 
-        usageService.calculate(from, to, path, Unit.BYTES, false);
+        usageCalculator.calculate(from, to, path, Unit.BYTES, false);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/";
 
-        final Report report = usageService.calculate(from, to, path, Unit.BYTES, false);
+        final Report report = usageCalculator.calculate(from, to, path, Unit.BYTES, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -103,7 +103,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1";
 
-        final Report report = usageService.calculate(from, to, path, Unit.BYTES, false);
+        final Report report = usageCalculator.calculate(from, to, path, Unit.BYTES, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -123,7 +123,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1/level2";
 
-        usageService.calculate(from, to, path, Unit.BYTES, false);
+        usageCalculator.calculate(from, to, path, Unit.BYTES, false);
     }
 
     private void setupIndex() throws IOException {
