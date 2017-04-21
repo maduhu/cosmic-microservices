@@ -38,8 +38,6 @@
                                                         "leftArrow": "<i class=\"fa fa-chevron-left\" aria-hidden=\"true\"></i>",
                                                         "rightArrow": "<i class=\"fa fa-chevron-right\" aria-hidden=\"true\"></i>"
                                                     }'></div>
-<<<<<<< HEAD
-=======
                     <div>
                         <label>
                             <input id="ui-month-today-checkbox" type="checkbox" value="">
@@ -52,7 +50,6 @@
                             Detailed view
                         </label>
                     </div>
->>>>>>> Add detailed view to UI
                 </div>
                 <div class="col-md-9">
                     <form id="ui-form" class="form-horizontal">
@@ -97,6 +94,22 @@
                                                             value="1.00">
                             </div>
                         </div>
+                        <div class="form-group form-group-sm">
+                            <label class="col-sm-3 control-label" for="ui-service-fee-percentage">Service Fee (percentage)</label>
+                            <div class="col-sm-3">
+                                <input id="ui-service-fee-percentage" class="form-control"
+                                       type="text"
+                                       placeholder="Service Fee (percentage)"
+                                       value="10.00">
+                            </div>
+                            <label class="col-sm-3 control-label" for="ui-innovation-fee-percentage">Innovation Fee (percentage)</label>
+                            <div class="col-sm-3">
+                                <input id="ui-innovation-fee-percentage" class="form-control"
+                                       type="text"
+                                       placeholder="Innovation Fee (percentage)"
+                                       value="10.00">
+                            </div>
+                        </div>
                         <input id="ui-generate-report-btn" class="btn btn-primary btn-lg pull-right"
                                                            type="submit"
                                                            value="Generate report">
@@ -130,6 +143,7 @@
                                     data-label="Public IPs"
                                     data-sort-by="PUBLIC_IP"></th>
                                 <th class="text-uppercase">Total</th>
+                                <th class="text-uppercase">Grand Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,11 +217,14 @@
                     <td>
                         <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
                     </td>
+                    <td>
+                        <strong class="ui-domain-total">{{ costs.totalInclFees }} &euro;</strong>
+                    </td>
                 </tr>
             {{/ domains }}
             {{^ domains }}
                 <tr>
-                    <td id="ui-domains-list-no-data" class="text-center" colspan="6">No data</td>
+                    <td id="ui-domains-list-no-data" class="text-center" colspan="7">No data</td>
                 </tr>
             {{/ domains }}
         <%={{ }}=%>
@@ -240,21 +257,20 @@
                     <td>
                         <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
                     </td>
+                    <td>
+                        <strong class="ui-domain-total">{{ costs.total }} &euro;</strong>
+                    </td>
                 </tr>
                 <tr>
                     <td>
                         <span class="left"><strong>Virtual Machines</strong></span><span class="right"><strong>Hostname</strong></span>​
                     </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 {{# usage.compute.virtualMachines }}
                     <tr class="warning">
@@ -274,9 +290,12 @@
                             <strong>{{ osType }}</strong><br>
                             OS Type
                         </td>
+                        <td></td>
                         <td>
+                            <strong>{{ pricing.price }} &euro;</strong>
                         </td>
                         <td>
+                            <strong>{{ pricing.priceInclFees }} &euro;</strong>
                         </td>
                     </tr>
                     <tr>
@@ -288,12 +307,10 @@
                         <td>
                             <strong>Size</strong>
                         </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     {{# volumes }}
                         <tr>
@@ -306,23 +323,41 @@
                             <td>
                                 <strong>{{ size }} GB</strong><br>
                             </td>
+                            <td></td>
+                            <td></td>
                             <td>
+                                <strong>{{ pricing.price }} &euro;</strong>
                             </td>
                             <td>
-                            </td>
-                            <td>
+                                <strong>{{ pricing.priceInclFees }} &euro;</strong>
                             </td>
                         </tr>
                     {{/ volumes }}
                     {{^ volumes }}
                     <tr>
-                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No volumes attached</td>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="7">No volumes attached</td>
                     </tr>
                     {{/ volumes }}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>Total VM incl. Volumes</strong>
+                        </td>
+                        <td>
+                            <strong>{{ pricing.totalPrice }} &euro;</strong>
+                        </td>
+                        <td>
+                            <strong>{{ pricing.totalPriceInclFees }} &euro;</strong>
+                        </td>
+                    </tr>
+                    <tr><td id="ui-domains-list-detailed-spacer" colspan="7"></td></tr>
                 {{/ usage.compute.virtualMachines }}
                 {{^ usage.compute.virtualMachines }}
                     <tr>
-                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No virtual machines</td>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="7">No virtual machines</td>
                     </tr>
                 {{/ usage.compute.virtualMachines }}
                 <tr>
@@ -332,16 +367,16 @@
                     <td>
                         <strong>Size</strong>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>
+                        <strong>Total</strong>
                     </td>
                     <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
+                        <strong>Grand Total</strong>
                     </td>
                 </tr>
-
                 {{# usage.storage.volumes }}
                     <tr>
                         <td id="ui-name-uuid">
@@ -349,67 +384,112 @@
                             <span class="uuid">{{ uuid }}</span>
                         </td>
                         <td>
-                            <strong>{{ size }} GB</strong><br>
+                            <strong>{{ size }} GB</strong>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>{{ pricing.price }} &euro;</strong>
                         </td>
                         <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
+                            <strong>{{ pricing.priceInclFees }} &euro;</strong>
                         </td>
                     </tr>
                 {{/ usage.storage.volumes }}
                 {{^ usage.storage.volumes }}
-                <tr>
-                    <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No volumes</td>
-                </tr>
+                    <tr>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="7">No volumes</td>
+                    </tr>
                 {{/ usage.storage.volumes }}
+                <tr><td id="ui-domains-list-detailed-spacer" colspan="7"></td></tr>
                 <tr>
                     <td>
-                        <span class="left"><strong>Public Ipaddresses</strong></span><span class="right"><strong>Name</strong></span>​
+                        <span class="left"><strong>Networks</strong></span><span class="right"><strong>Name</strong></span>​
                     </td>
                     <td>
-                        <strong>Count</strong>
+                        <strong>Type</strong>
                     </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 {{# usage.networking.networks }}
-                    <tr>
+                    <tr class="warning">
                         <td id="ui-name-uuid">
                             <strong>{{ name }}</strong><br>
                             <span class="uuid">{{ uuid }}</span>
                         </td>
                         <td>
-                            <strong>{{ count }}</strong><br>
+                            <strong>{{ type }}</strong><br>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>Total</strong><br>
+                            <strong>{{ pricing.price }} &euro;</strong>
                         </td>
                         <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
+                            <strong>Grand Total</strong><br>
+                            <strong>{{ pricing.priceInclFees }} &euro;</strong>
                         </td>
                     </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <span class="left"><strong>Public ipaddresses</strong></span><span class="right"><strong>Name</strong></span>​
+                        </td>
+                        <td>
+                            <strong>State</strong>
+                        </td>
+                        <td>
+                            <strong>Amount</strong>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {{# publicIps }}
+                        <tr>
+                            <td></td>
+                            <td id="ui-name-uuid">
+                                <strong>{{ value }}</strong><br>
+                                <span class="uuid">{{ uuid }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ state }}</strong><br>
+                            </td>
+                            <td>
+                                <strong>{{ amount }}</strong><br>
+                            </td>
+                            <td></td>
+                            <td>
+                                <strong>{{ pricing.price }} &euro;</strong>
+                            </td>
+                            <td>
+                                <strong>{{ pricing.priceInclFees }} &euro;</strong>
+                            </td>
+                        </tr>
+                    {{/ publicIps }}
+                    {{^ publicIps }}
+                        <tr>
+                            <td id="ui-domains-list-no-data-small" class="text-center" colspan="7">No public ipaddresses</td>
+                        </tr>
+                    {{/ publicIps }}
+                    <tr><td id="ui-domains-list-detailed-spacer" colspan="7"></td></tr>
                 {{/ usage.networking.networks }}
                 {{^ usage.networking.networks }}
-                <tr>
-                    <td id="ui-domains-list-no-data-small" class="text-center" colspan="6">No public ipaddresses</td>
-                </tr>
+                    <tr>
+                        <td id="ui-domains-list-no-data-small" class="text-center" colspan="7">No public ipaddresses</td>
+                    </tr>
                 {{/ usage.networking.networks }}
             {{/ domains }}
             {{^ domains }}
                 <tr>
-                    <td id="ui-domains-list-no-data" class="text-center" colspan="6">No data</td>
+                    <td id="ui-domains-list-no-data" class="text-center" colspan="7">No data</td>
                 </tr>
             {{/ domains }}
         <%={{ }}=%>
@@ -423,7 +503,9 @@
         <script src="public/libs/numeral/min/numeral.min.js"></script>
         <script src="public/libs/numeral/min/locales/nl-nl.min.js"></script>
         <script src="public/libs/underscore/underscore-min.js"></script>
+        <script src="public/app/class.js"></script>
+        <script src="public/app/costCalculator.js"></script>
         <script src="public/app/main.js"></script>
-        <script>$(function() { app.init("{{{ baseUrl }}}") })</script>
+        <script>$(function() { new app("{{{ baseUrl }}}"); })</script>
     </body>
 </html>

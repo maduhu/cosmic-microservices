@@ -49,6 +49,10 @@ body {
     font-size: 150%;
 }
 
+#ui-domains-list-detailed-spacer {
+    background-color: #ddd;
+}
+
 #ui-name-uuid {
     text-align: right;
 }

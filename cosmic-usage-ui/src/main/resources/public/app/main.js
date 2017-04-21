@@ -1,6 +1,6 @@
 'use strict';
 
-const app = {
+const app = Class({
 
     // Constants
     DECIMAL_FORMAT: '0,0.00',
@@ -10,7 +10,7 @@ const app = {
     USAGE_API_BASE_URL: undefined,
     GENERAL_USAGE_PATH: '/general',
     DETAILED_USAGE_PATH: '/detailed',
-    DEFAULT_USAGE_PATH: '?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}',
+    DEFAULT_USAGE_PATH: '?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}&unit=MB',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
 
     // Sorting
@@ -41,17 +41,30 @@ const app = {
     memoryPriceField: '#ui-memory-price',
     storagePriceField: '#ui-storage-price',
     publicIpPriceField: '#ui-public-ip-price',
+    serviceFeePercentageField: '#ui-service-fee-percentage',
+    innovationFeePercentageField: '#ui-innovation-fee-percentage',
     generateReportButton: '#ui-generate-report-btn',
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
     domainsTableHeaders: 'thead tr th.ui-domains-table-header',
     selectedDomainsTableHeader: 'thead tr th.ui-domains-table-header[data-selected="true"]',
 
-    init: function(baseUrl) {
+    costCalcLocal: undefined,
+
+    initialize: function(baseUrl) {
         this.USAGE_API_BASE_URL = baseUrl;
 
         numeral.defaultFormat(this.DECIMAL_FORMAT);
         _.bindAll(this, ... _.functions(this));
+
+        this.costCalcLocal = new costCalculator(
+            this.cpuPriceField,
+            this.memoryPriceField,
+            this.storagePriceField,
+            this.publicIpPriceField,
+            this.serviceFeePercentageField,
+            this.innovationFeePercentageField
+        );
 
         $(this.monthSelectorComponent).datepicker('setDate', new Date());
         this.renderPrintingHeaders();
@@ -64,8 +77,8 @@ const app = {
     },
 
     renderCheckboxes: function() {
-        $(this.untilTodayCheckbox).on('click', this.generateSortableReport);
-        $(this.detailedViewCheckbox).on('click', this.generateSortableReport);
+        $(this.untilTodayCheckbox).on('click', this.checkBoxesOnClick);
+        $(this.detailedViewCheckbox).on('click', this.checkBoxesOnClick);
     },
 
     renderPrintingHeaders: function() {
@@ -91,13 +104,14 @@ const app = {
     },
 
     renderDomainTableHeaders: function() {
+        const that = this;
         $(this.domainsTableHeaders, this.domainsTable).each(function() {
             const header = $(this);
-            var label = header.attr(app.DATA_LABEL);
-            if (_.isEqual(header.attr(app.DATA_SELECTED), 'true')) {
-                const sortIcon = _.isEqual(header.attr(app.DATA_SORT_ORDER), app.DESCENDING)
-                    ? app.DESCENDING_ICON
-                    : app.ASCENDING_ICON;
+            var label = header.attr(that.DATA_LABEL);
+            if (_.isEqual(header.attr(that.DATA_SELECTED), 'true')) {
+                const sortIcon = _.isEqual(header.attr(that.DATA_SORT_ORDER), that.DESCENDING)
+                    ? that.DESCENDING_ICON
+                    : that.ASCENDING_ICON;
                 label += ' ' + sortIcon;
             }
             header.html(label);
@@ -108,7 +122,6 @@ const app = {
         var html = '';
         if ($(this.detailedViewCheckbox).prop('checked')) {
             html = $(this.domainsDetailedListTemplate).html();
-            this.parseDomainsDetailedView(domains);
         } else {
             html = $(this.domainsListTemplate).html();
         }
@@ -116,42 +129,6 @@ const app = {
         const rendered = Mustache.render(html, { domains: domains });
 
         $('tbody', this.domainsTable).html(rendered);
-    },
-
-    parseDomainsDetailedView: function (domains) {
-        _.each(domains, function (domain) {
-            console.log("");
-            const unattachedVolumes = [];
-            _.each(domain.usage.storage.volumes, function (volume) {
-                if (volume.attachedTo) {
-                    // var that = domains;
-                    var vm = _.find(domain.usage.compute.virtualMachines, function(vm){ return vm.uuid === volume.attachedTo; });
-
-                    if (!vm) {
-                        // Fix until storage metrics are cleaned.
-                        return;
-                    }
-
-                    if (!vm.volumes) {
-                        vm.volumes = [ volume ];
-                    } else {
-                        vm.volumes.push(volume);
-                    }
-
-                    // domain.usage.storage.volumes.splice(
-                    //     _.indexOf(domain.usage.storage.volumes, volume), 1
-                    // );
-
-
-                    console.log("");
-                } else {
-                    unattachedVolumes.push(volume);
-                }
-                console.log("");
-            });
-            domain.usage.storage.volumes = unattachedVolumes;
-            console.log("");
-        });
     },
 
     generateReportButtonOnClick: function(event) {
@@ -162,18 +139,21 @@ const app = {
 
         const from = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT);
         const now = moment();
-        const to = _.isEqual(from.month(), now.month())
+        const to = (_.isEqual(from.month(), now.month()) && $(this.untilTodayCheckbox).prop('checked'))
             ? now
             : moment(selectedMonth, this.MONTH_SELECTOR_FORMAT).add(1, 'months');
 
         const path = $(this.domainPathField).val();
 
         var url = '';
+        var parseFunction = undefined;
 
         if ($(this.detailedViewCheckbox).prop('checked')) {
-            url = this.DETAILED_USAGE_PATH + this.DEFAULT_USAGE_PATH
+            url = this.DETAILED_USAGE_PATH + this.DEFAULT_USAGE_PATH;
+            parseFunction = this.parseDomainsResultDetailed;
         } else {
-            url = this.GENERAL_USAGE_PATH + this.DEFAULT_USAGE_PATH
+            url = this.GENERAL_USAGE_PATH + this.DEFAULT_USAGE_PATH;
+            parseFunction = this.parseDomainsResultGeneral;
         }
 
         const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + url, {
@@ -184,7 +164,7 @@ const app = {
             sortOrder: selectedDomainsTableHeader.attr(this.DATA_SORT_ORDER)
         });
 
-        $.get(renderedUrl, this.parseDomainsResult).fail(this.parseErrorResponse);
+        $.get(renderedUrl, parseFunction).fail(this.parseErrorResponse);
     },
 
     domainsTableHeaderOnClick: function(event) {
@@ -203,9 +183,19 @@ const app = {
         $(this.generateReportButton).click();
     },
 
-    parseDomainsResult: function(data) {
+    checkBoxesOnClick: function() {
+        $(this.generateReportButton).click();
+    },
+
+    parseDomainsResultGeneral: function(data) {
         this.renderPrintingHeaders();
-        this.calculateDomainsCosts(data.domains);
+        this.costCalcLocal.calculateDomainsCosts(data.domains, false);
+        this.renderDomainsList(data.domains);
+    },
+
+    parseDomainsResultDetailed: function(data) {
+        this.renderPrintingHeaders();
+        this.costCalcLocal.calculateDomainsCosts(data.domains, true);
         this.renderDomainsList(data.domains);
     },
 
@@ -220,49 +210,10 @@ const app = {
         this.renderErrorMessage(this.DEFAULT_ERROR_MESSAGE);
     },
 
-    calculateDomainsCosts: function(domains) {
-        _.each(domains, this.calculateDomainCosts);
-    },
-
-    calculateDomainCosts: function(domain) {
-        const cpuPrice = numeral($(this.cpuPriceField).val());
-        const memoryPrice = numeral($(this.memoryPriceField).val());
-        const storagePrice = numeral($(this.storagePriceField).val());
-        const publicIpPrice = numeral($(this.publicIpPriceField).val());
-
-        domain.costs = {
-            compute: {
-                cpu: numeral(cpuPrice.value()).multiply(domain.usage.compute.total.cpu),
-                memory: numeral(memoryPrice.value()).multiply(domain.usage.compute.total.memory)
-            },
-            storage: numeral(storagePrice.value()).multiply(domain.usage.storage.total),
-            networking: {
-                publicIps: numeral(publicIpPrice.value()).multiply(domain.usage.networking.total.publicIps)
-            }
-        };
-
-        domain.costs.total = numeral(domain.costs.compute.cpu.value())
-                                .add(domain.costs.compute.memory.value())
-                                .add(domain.costs.storage.value())
-                                .add(domain.costs.networking.publicIps.value());
-
-        domain.usage.compute.total.cpu = numeral(domain.usage.compute.total.cpu).format();
-        domain.usage.compute.total.memory = numeral(domain.usage.compute.total.memory).format();
-        domain.usage.storage.total = numeral(domain.usage.storage.total).format();
-        domain.usage.networking.total.publicIps = numeral(domain.usage.networking.total.publicIps).format();
-
-        domain.costs.compute.cpu = domain.costs.compute.cpu.format();
-        domain.costs.compute.memory = domain.costs.compute.memory.format();
-        domain.costs.storage = domain.costs.storage.format();
-        domain.costs.networking.publicIps = domain.costs.networking.publicIps.format();
-
-        domain.costs.total = domain.costs.total.format();
-    },
-
     renderErrorMessage: function(errorMessage) {
         const html = $(this.errorMessageTemplate).html();
         const rendered = Mustache.render(html, { errorMessage: errorMessage });
         $(this.errorMessageContainer).html(rendered);
     }
 
-};
+});
