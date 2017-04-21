@@ -38,12 +38,6 @@
                                                         "leftArrow": "<i class=\"fa fa-chevron-left\" aria-hidden=\"true\"></i>",
                                                         "rightArrow": "<i class=\"fa fa-chevron-right\" aria-hidden=\"true\"></i>"
                                                     }'></div>
-                    <div>
-                        <label>
-                            <input id="ui-month-today-checkbox" type="checkbox" value="">
-                            Project monthly bill
-                        </label>
-                    </div>
                 </div>
                 <div class="col-md-9">
                     <form id="ui-form" class="form-horizontal">
@@ -103,11 +97,23 @@
                     <table id="ui-domains-table" class="table table-striped">
                         <thead>
                             <tr>
-                                <th data-label="Domain" data-sortby="DOMAIN_PATH" class="text-uppercase table-header-sortable"></th>
-                                <th data-label="CPU" data-sortby="CPU" class="table-header-sortable"></th>
-                                <th data-label="Memory" data-sortby="MEMORY" class="table-header-sortable"></th>
-                                <th data-label="Storage" data-sortby="VOLUME" class="table-header-sortable"></th>
-                                <th data-label="Public IPs" data-sortby="PUBLIC_IP" class="table-header-sortable"></th>
+                                <th class="ui-domains-table-header text-uppercase"
+                                    data-label="Domain"
+                                    data-sort-by="DOMAIN_PATH"
+                                    data-sort-order="ASC"
+                                    data-selected="true"></th>
+                                <th class="ui-domains-table-header"
+                                    data-label="CPU"
+                                    data-sort-by="CPU"></th>
+                                <th class="ui-domains-table-header"
+                                    data-label="Memory"
+                                    data-sort-by="MEMORY"></th>
+                                <th class="ui-domains-table-header"
+                                    data-label="Storage"
+                                    data-sort-by="VOLUME"></th>
+                                <th class="ui-domains-table-header"
+                                    data-label="Public IPs"
+                                    data-sort-by="PUBLIC_IP"></th>
                                 <th class="text-uppercase">Total</th>
                             </tr>
                         </thead>

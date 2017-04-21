@@ -28,6 +28,10 @@ body {
     margin-bottom: 25px;
 }
 
+#ui-domains-table thead tr th.ui-domains-table-header {
+    cursor: pointer;
+}
+
 #ui-domains-list-no-data {
     padding: 50px 0;
 }
