@@ -8,6 +8,7 @@ import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortBy;
 import com.github.missioncriticalcloud.cosmic.api.usage.utils.SortingUtils.SortOrder;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Unit;
 import com.github.missioncriticalcloud.cosmic.usage.core.views.DetailedView;
 import com.github.missioncriticalcloud.cosmic.usage.core.views.GeneralView;
 import org.joda.time.DateTime;
@@ -36,9 +37,10 @@ public class MainController {
             @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime to,
             @RequestParam final String path,
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
-            @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
+            @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder,
+            @RequestParam(required = false, defaultValue = Unit.DEFAULT) final Unit unit
     ) {
-        final Report report = usageService.calculate(from, to, path, false);
+        final Report report = usageService.calculate(from, to, path, unit, false);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;
@@ -51,9 +53,10 @@ public class MainController {
             @RequestParam @DateTimeFormat(pattern = DEFAULT_DATE_FORMAT) final DateTime to,
             @RequestParam final String path,
             @RequestParam(required = false, defaultValue = SortBy.DEFAULT) final SortBy sortBy,
-            @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder
+            @RequestParam(required = false, defaultValue = SortOrder.DEFAULT) final SortOrder sortOrder,
+            @RequestParam(required = false, defaultValue = Unit.DEFAULT) final Unit unit
     ) {
-        final Report report = usageService.calculate(from, to, path, true);
+        final Report report = usageService.calculate(from, to, path, unit, true);
         SortingUtils.sort(report, sortBy, sortOrder);
 
         return report;

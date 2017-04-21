@@ -27,6 +27,7 @@ import com.github.missioncriticalcloud.cosmic.usage.core.model.Networking;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.PublicIp;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Storage;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Unit;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.VirtualMachine;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Volume;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.aggregations.DomainAggregation;
@@ -76,7 +77,13 @@ public class UsageServiceImpl implements UsageService {
     }
 
     @Override
-    public Report calculate(final DateTime from, final DateTime to, final String path, final boolean detailed) {
+    public Report calculate(
+            final DateTime from,
+            final DateTime to,
+            final String path,
+            final Unit unit,
+            final boolean detailed
+    ) {
         final Map<String, Domain> domainsMap = getDomainsMap(path);
         final Set<String> domainUuids = domainsMap.keySet();
 
@@ -86,9 +93,9 @@ public class UsageServiceImpl implements UsageService {
 
         final BigDecimal expectedSampleCount = calculateExpectedSampleCount(from, to);
 
-        mergeComputeDomainAggregations(domainsMap, expectedSampleCount, computeDomainAggregations, detailed);
-        mergeStorageDomainAggregations(domainsMap, expectedSampleCount, storageDomainAggregations, detailed);
-        mergeNetworkingDomainAggregations(domainsMap, expectedSampleCount, networkingDomainAggregations, detailed);
+        mergeComputeDomainAggregations(domainsMap, expectedSampleCount, unit, computeDomainAggregations, detailed);
+        mergeStorageDomainAggregations(domainsMap, expectedSampleCount, unit, storageDomainAggregations, detailed);
+        mergeNetworkingDomainAggregations(domainsMap, expectedSampleCount, unit, networkingDomainAggregations, detailed);
         removeDomainsWithoutUsage(domainsMap);
 
         if (domainsMap.isEmpty()) {
@@ -130,6 +137,7 @@ public class UsageServiceImpl implements UsageService {
     private void mergeComputeDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
+            final Unit unit,
             final List<DomainAggregation> computeDomainAggregations,
             final boolean detailed
     ) {
@@ -144,10 +152,11 @@ public class UsageServiceImpl implements UsageService {
                 final BigDecimal cpu = virtualMachineAggregation.getCpuAverage()
                                                                 .multiply(virtualMachineAggregation.getSampleCount())
                                                                 .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
-
-                final BigDecimal memory = virtualMachineAggregation.getMemoryAverage()
-                                                                   .multiply(virtualMachineAggregation.getSampleCount())
-                                                                   .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+                final BigDecimal memory = unit.convert(
+                        virtualMachineAggregation.getMemoryAverage()
+                                                 .multiply(virtualMachineAggregation.getSampleCount())
+                                                 .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
+                );
 
                 if (detailed) {
                     final VirtualMachine virtualMachine = virtualMachinesRepository.get(virtualMachineAggregation.getUuid());
@@ -169,6 +178,7 @@ public class UsageServiceImpl implements UsageService {
     private void mergeStorageDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
+            final Unit unit,
             final List<DomainAggregation> storageDomainAggregations,
             final boolean detailed
     ) {
@@ -179,9 +189,11 @@ public class UsageServiceImpl implements UsageService {
             final Storage storage = domain.getUsage().getStorage();
 
             domainAggregation.getVolumeAggregations().forEach(volumeAggregation -> {
-                final BigDecimal size = volumeAggregation.getSize()
-                                                         .multiply(volumeAggregation.getSampleCount())
-                                                         .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE);
+                final BigDecimal size = unit.convert(
+                        volumeAggregation.getSize()
+                                         .multiply(volumeAggregation.getSampleCount())
+                                         .divide(expectedSampleCount, DEFAULT_ROUNDING_MODE)
+                );
 
                 if (detailed) {
                     final Volume volume = volumesRepository.get(volumeAggregation.getUuid());
@@ -201,6 +213,7 @@ public class UsageServiceImpl implements UsageService {
     private void mergeNetworkingDomainAggregations(
             final Map<String, Domain> domainsMap,
             final BigDecimal expectedSampleCount,
+            final Unit unit,
             final List<DomainAggregation> networkDomainAggregations,
             final boolean detailed
     ) {

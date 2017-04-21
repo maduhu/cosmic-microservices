@@ -16,6 +16,7 @@ import com.github.missioncriticalcloud.cosmic.usage.core.model.Compute;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Domain;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Networking;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Report;
+import com.github.missioncriticalcloud.cosmic.usage.core.model.Unit;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.Usage;
 import com.github.missioncriticalcloud.cosmic.usage.core.model.types.ResourceType;
 import io.searchbox.client.JestClient;
@@ -57,7 +58,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = null;
 
-        usageService.calculate(from, to, path, false);
+        usageService.calculate(from, to, path, Unit.BYTES, false);
     }
 
     @Test(expected = NoMetricsFoundException.class)
@@ -69,7 +70,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2000-01-01");
         final String path = null;
 
-        usageService.calculate(from, to, path, false);
+        usageService.calculate(from, to, path, Unit.BYTES, false);
     }
 
     @Test
@@ -81,7 +82,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/";
 
-        final Report report = usageService.calculate(from, to, path, false);
+        final Report report = usageService.calculate(from, to, path, Unit.BYTES, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -102,7 +103,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1";
 
-        final Report report = usageService.calculate(from, to, path, false);
+        final Report report = usageService.calculate(from, to, path, Unit.BYTES, false);
         assertThat(report).isNotNull();
 
         final List<Domain> domains = report.getDomains();
@@ -122,7 +123,7 @@ public class UsageServiceIT {
         final DateTime to = DATE_FORMATTER.parseDateTime("2017-01-02");
         final String path = "/level1/level2";
 
-        usageService.calculate(from, to, path, false);
+        usageService.calculate(from, to, path, Unit.BYTES, false);
     }
 
     private void setupIndex() throws IOException {
