@@ -26,7 +26,7 @@ public class ResourcesJdbcRepositoryIT {
     private PublicIpsJdbcRepository publicIpsRepository;
 
     @Test
-    @Sql(value = {"/test-schema.sql", "/test-virtual-machines-repository-data.sql"})
+    @Sql(value = {"/test-schema.sql", "/virtual-machines-repository-test-data.sql"})
     public void testVirtualMachineRepository() {
         VirtualMachine virtualMachine = virtualMachinesRepository.get("uuid_not_exists");
         assertThat(virtualMachine).isNull();
@@ -37,7 +37,7 @@ public class ResourcesJdbcRepositoryIT {
     }
 
     @Test
-    @Sql(value = {"/test-schema.sql", "/test-volumes-repository-data.sql"})
+    @Sql(value = {"/test-schema.sql", "/volumes-repository-test-data.sql"})
     public void testVolumesRepository() {
         Volume volume = volumesRepository.get("uuid_not_exists");
         assertThat(volume).isNull();
@@ -48,7 +48,7 @@ public class ResourcesJdbcRepositoryIT {
     }
 
     @Test
-    @Sql(value = {"/test-schema.sql", "/test-public-ips-repository-data.sql"})
+    @Sql(value = {"/test-schema.sql", "/public-ips-repository-test-data.sql"})
     public void testPublicIpsRepository() {
         PublicIp publicIp = publicIpsRepository.get("uuid_not_exists");
         assertThat(publicIp).isNull();
