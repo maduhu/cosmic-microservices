@@ -1,6 +1,6 @@
 'use strict';
 
-const app = Class({
+const Main = Class({
 
     // Constants
     DECIMAL_FORMAT: '0,0.00',
@@ -49,7 +49,7 @@ const app = Class({
     domainsTableHeaders: 'thead tr th.ui-domains-table-header',
     selectedDomainsTableHeader: 'thead tr th.ui-domains-table-header[data-selected="true"]',
 
-    costCalcLocal: undefined,
+    costCalculator: undefined,
 
     initialize: function(baseUrl) {
         this.USAGE_API_BASE_URL = baseUrl;
@@ -57,13 +57,13 @@ const app = Class({
         numeral.defaultFormat(this.DECIMAL_FORMAT);
         _.bindAll(this, ... _.functions(this));
 
-        this.costCalcLocal = new costCalculator(
-            this.cpuPriceField,
-            this.memoryPriceField,
-            this.storagePriceField,
-            this.publicIpPriceField,
-            this.serviceFeePercentageField,
-            this.innovationFeePercentageField
+        this.costCalculator = new CostCalculator(
+            $(this.cpuPriceField).val(),
+            $(this.memoryPriceField).val(),
+            $(this.storagePriceField).val(),
+            $(this.publicIpPriceField).val(),
+            $(this.serviceFeePercentageField).val(),
+            $(this.innovationFeePercentageField).val()
         );
 
         $(this.monthSelectorComponent).datepicker('setDate', new Date());
@@ -171,7 +171,8 @@ const app = Class({
         event.preventDefault();
 
         const header = $(event.currentTarget);
-        const sortOrder = _.isEqual(header.attr(this.DATA_SELECTED), 'true') && _.isEqual(header.attr(this.DATA_SORT_ORDER), this.ASCENDING)
+        const sortOrder = _.isEqual(header.attr(this.DATA_SELECTED), 'true') &&
+                          _.isEqual(header.attr(this.DATA_SORT_ORDER), this.ASCENDING)
             ? this.DESCENDING
             : this.ASCENDING;
         header.attr(this.DATA_SORT_ORDER, sortOrder);
@@ -189,13 +190,13 @@ const app = Class({
 
     parseDomainsResultGeneral: function(data) {
         this.renderPrintingHeaders();
-        this.costCalcLocal.calculateDomainsCosts(data.domains, false);
+        this.costCalculator.calculateDomainCosts(data.domains, false);
         this.renderDomainsList(data.domains);
     },
 
     parseDomainsResultDetailed: function(data) {
         this.renderPrintingHeaders();
-        this.costCalcLocal.calculateDomainsCosts(data.domains, true);
+        this.costCalculator.calculateDomainCosts(data.domains, true);
         this.renderDomainsList(data.domains);
     },
 
