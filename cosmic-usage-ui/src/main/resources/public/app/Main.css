@@ -7,7 +7,7 @@ body {
 }
 
 #ui-month-selector {
-    margin: auto;
+    margin: 20px 30px;
     font-size: 115%;
 }
 
@@ -33,39 +33,115 @@ body {
     margin-bottom: 25px;
 }
 
-#ui-domains-table thead tr th.ui-domains-table-header {
+#ui-domains-table > thead > tr > th {
+    border-bottom: 2px solid #333;
+}
+
+#ui-domains-table > thead > tr > th.ui-domains-table-header {
     cursor: pointer;
 }
 
-#ui-domains-list-no-data {
-    padding: 50px 0;
+#ui-domains-table > tbody {
+    border-left: 2px solid #333;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
 }
 
-#ui-domains-list-no-data-small {
-    padding: 10px 0;
+#ui-domains-table > tbody > tr > td.ui-domain-title {
+    background-color: #333;
+    color: #fff;
+    font-size: 125%;
 }
 
-#ui-domains-list-template .ui-domain-total {
-    font-size: 150%;
+#ui-domains-table > tbody > tr.ui-domain-row {
+    background-color: #f7f7f7;
 }
 
-#ui-domains-list-detailed-spacer {
-    background-color: #ddd;
+#ui-domains-table > tbody > tr > td.ui-virtual-machines-cell {
+    border-top: 1px solid #333;
 }
 
-#ui-name-uuid {
-    text-align: right;
+#ui-domains-table > tbody > tr > td.ui-virtual-machines-cell > h4 {
+    color: #369;
 }
 
-.right {
-    float:right;
+table.ui-virtual-machines-table > tbody {
+    border: 2px solid #369;
 }
 
-.left {
-    float:left;
+table.ui-virtual-machines-table > tbody > tr.ui-virtual-machine-row {
+    background-color: #e5eaf5;
+    color: #369;
 }
 
-.uuid {
-    font-size: 80%;
-    font-family: Consolas, monaco, monospace;
+table.ui-virtual-machines-table > tbody > tr.ui-virtual-machine-row > td {
+    border-top: 1px solid #369;
 }
+
+table.ui-virtual-machines-table > tbody > tr > td.ui-virtual-machine-volumes-cell {
+    border-top: 1px solid #369;
+}
+
+table.ui-virtual-machine-volumes-table > tbody {
+    border: 2px solid #ccc;
+    background-color: #f7f7f7;
+}
+
+table.ui-virtual-machine-volumes-table > tbody > td {
+    border-top: 1px solid #ccc;
+}
+
+#ui-domains-table > tbody > tr > td.ui-volumes-cell {
+    border-top: 1px solid #333;
+}
+
+#ui-domains-table > tbody > tr > td.ui-volumes-cell > h4 {
+    color: #c90;
+}
+
+table.ui-volumes-table > tbody {
+    border: 2px solid #c90;
+}
+
+table.ui-volumes-table > tbody > tr.ui-volumes-row {
+    background-color: #faf5e5;
+}
+
+table.ui-volumes-table > tbody > tr.ui-volumes-row td {
+    border-top: 1px solid #c90;
+}
+
+#ui-domains-table > tbody > tr > td.ui-networks-cell {
+    border-top: 1px solid #333;
+}
+
+#ui-domains-table > tbody > tr > td.ui-networks-cell h4 {
+    color: #390;
+}
+
+table.ui-networks-table > tbody {
+    border: 2px solid #390;
+}
+
+table.ui-networks-table > tbody > tr.ui-network-row {
+    background-color: #e0ebcc;
+    color: #390;
+}
+
+table.ui-networks-table > tbody > tr.ui-network-row > td {
+    border-top: 1px solid #390;
+}
+
+table.ui-networks-table > tbody > tr > td.ui-network-public-ips-cell {
+    border-top: 1px solid #390;
+}
+
+table.ui-network-public-ips-table > tbody {
+    border: 2px solid #ccc;
+    background-color: #f7f7f7;
+}
+
+table.ui-network-public-ips-table > tbody > td {
+    border-top: 1px solid #ccc;
+}
+

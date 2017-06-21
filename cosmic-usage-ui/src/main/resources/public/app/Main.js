@@ -70,15 +70,9 @@ const Main = Class({
         this.renderPrintingHeaders();
         this.renderDomainTableHeaders();
         this.renderDomainsList();
-        this.renderCheckboxes();
 
         $(this.generateReportButton).on('click', this.generateReportButtonOnClick);
         $(this.domainsTableHeaders, this.domainsTable).on('click', this.domainsTableHeaderOnClick);
-    },
-
-    renderCheckboxes: function() {
-        $(this.untilTodayCheckbox).on('click', this.checkBoxesOnClick);
-        $(this.detailedViewCheckbox).on('click', this.checkBoxesOnClick);
     },
 
     renderPrintingHeaders: function() {
@@ -121,8 +115,10 @@ const Main = Class({
     renderDomainsList: function(domains) {
         var html = '';
         if ($(this.detailedViewCheckbox).prop('checked')) {
+            $(this.domainsTable).removeClass('table-striped');
             html = $(this.domainsDetailedListTemplate).html();
         } else {
+            $(this.domainsTable).addClass('table-striped');
             html = $(this.domainsListTemplate).html();
         }
 
@@ -181,10 +177,6 @@ const Main = Class({
         header.attr(this.DATA_SELECTED, true);
 
         this.renderDomainTableHeaders();
-        $(this.generateReportButton).click();
-    },
-
-    checkBoxesOnClick: function() {
         $(this.generateReportButton).click();
     },
 
