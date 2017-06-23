@@ -1,6 +1,6 @@
 'use strict';
 
-const app = {
+const Main = Class({
 
     // Constants
     DECIMAL_FORMAT: '0,0.00',
@@ -8,7 +8,9 @@ const app = {
     MONTH_SELECTOR_FORMAT: 'YYYY-MM',
     SELECTED_MONTH_HUMAN_FORMAT: 'MMMM YYYY',
     USAGE_API_BASE_URL: undefined,
-    GENERAL_USAGE_PATH: '/general?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}',
+    GENERAL_USAGE_PATH: '/general',
+    DETAILED_USAGE_PATH: '/detailed',
+    DEFAULT_USAGE_PATH: '?from={{& from }}&to={{& to }}&path={{& path }}&sortBy={{& sortBy }}&sortOrder={{& sortOrder }}&unit=MB',
     DEFAULT_ERROR_MESSAGE: 'Unable to communicate with the Usage API. Please contact your system administrator.',
 
     // Sorting
@@ -25,28 +27,44 @@ const app = {
 
     // Templates
     domainsListTemplate: '#ui-domains-list-template',
+    domainsDetailedListTemplate: '#ui-domains-detailed-list-template',
     printingHeadersTemplate: '#ui-printing-headers-template',
     errorMessageTemplate: '#ui-error-message-template',
 
     // Components
     errorMessageContainer: '#ui-error-message',
     monthSelectorComponent: '#ui-month-selector',
+    untilTodayCheckbox: '#ui-month-today-checkbox',
+    detailedViewCheckbox: '#ui-detailed-view-checkbox',
     domainPathField: '#ui-domain-path',
     cpuPriceField: '#ui-cpu-price',
     memoryPriceField: '#ui-memory-price',
     storagePriceField: '#ui-storage-price',
     publicIpPriceField: '#ui-public-ip-price',
+    serviceFeePercentageField: '#ui-service-fee-percentage',
+    innovationFeePercentageField: '#ui-innovation-fee-percentage',
     generateReportButton: '#ui-generate-report-btn',
     printingHeadersContainer: '#ui-printing-headers',
     domainsTable: '#ui-domains-table',
     domainsTableHeaders: 'thead tr th.ui-domains-table-header',
     selectedDomainsTableHeader: 'thead tr th.ui-domains-table-header[data-selected="true"]',
 
-    init: function(baseUrl) {
+    costCalculator: undefined,
+
+    initialize: function(baseUrl) {
         this.USAGE_API_BASE_URL = baseUrl;
 
         numeral.defaultFormat(this.DECIMAL_FORMAT);
         _.bindAll(this, ... _.functions(this));
+
+        this.costCalculator = new CostCalculator(
+            $(this.cpuPriceField).val(),
+            $(this.memoryPriceField).val(),
+            $(this.storagePriceField).val(),
+            $(this.publicIpPriceField).val(),
+            $(this.serviceFeePercentageField).val(),
+            $(this.innovationFeePercentageField).val()
+        );
 
         $(this.monthSelectorComponent).datepicker('setDate', new Date());
         this.renderPrintingHeaders();
@@ -80,13 +98,14 @@ const app = {
     },
 
     renderDomainTableHeaders: function() {
+        const that = this;
         $(this.domainsTableHeaders, this.domainsTable).each(function() {
             const header = $(this);
-            var label = header.attr(app.DATA_LABEL);
-            if (_.isEqual(header.attr(app.DATA_SELECTED), 'true')) {
-                const sortIcon = _.isEqual(header.attr(app.DATA_SORT_ORDER), app.DESCENDING)
-                    ? app.DESCENDING_ICON
-                    : app.ASCENDING_ICON;
+            var label = header.attr(that.DATA_LABEL);
+            if (_.isEqual(header.attr(that.DATA_SELECTED), 'true')) {
+                const sortIcon = _.isEqual(header.attr(that.DATA_SORT_ORDER), that.DESCENDING)
+                    ? that.DESCENDING_ICON
+                    : that.ASCENDING_ICON;
                 label += ' ' + sortIcon;
             }
             header.html(label);
@@ -94,8 +113,17 @@ const app = {
     },
 
     renderDomainsList: function(domains) {
-        const html = $(this.domainsListTemplate).html();
+        var html = '';
+        if ($(this.detailedViewCheckbox).prop('checked')) {
+            $(this.domainsTable).removeClass('table-striped');
+            html = $(this.domainsDetailedListTemplate).html();
+        } else {
+            $(this.domainsTable).addClass('table-striped');
+            html = $(this.domainsListTemplate).html();
+        }
+
         const rendered = Mustache.render(html, { domains: domains });
+
         $('tbody', this.domainsTable).html(rendered);
     },
 
@@ -107,13 +135,24 @@ const app = {
 
         const from = moment(selectedMonth, this.MONTH_SELECTOR_FORMAT);
         const now = moment();
-        const to = _.isEqual(from.month(), now.month())
+        const to = (_.isEqual(from.month(), now.month()) && $(this.untilTodayCheckbox).prop('checked'))
             ? now
             : moment(selectedMonth, this.MONTH_SELECTOR_FORMAT).add(1, 'months');
 
         const path = $(this.domainPathField).val();
 
-        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + this.GENERAL_USAGE_PATH, {
+        var url = '';
+        var parseFunction = undefined;
+
+        if ($(this.detailedViewCheckbox).prop('checked')) {
+            url = this.DETAILED_USAGE_PATH + this.DEFAULT_USAGE_PATH;
+            parseFunction = this.parseDomainsResultDetailed;
+        } else {
+            url = this.GENERAL_USAGE_PATH + this.DEFAULT_USAGE_PATH;
+            parseFunction = this.parseDomainsResultGeneral;
+        }
+
+        const renderedUrl = Mustache.render(this.USAGE_API_BASE_URL + url, {
             from: from.format(this.API_DATE_FORMAT),
             to: to.format(this.API_DATE_FORMAT),
             path: path,
@@ -121,14 +160,15 @@ const app = {
             sortOrder: selectedDomainsTableHeader.attr(this.DATA_SORT_ORDER)
         });
 
-        $.get(renderedUrl, this.parseDomainsResult).fail(this.parseErrorResponse);
+        $.get(renderedUrl, parseFunction).fail(this.parseErrorResponse);
     },
 
     domainsTableHeaderOnClick: function(event) {
         event.preventDefault();
 
         const header = $(event.currentTarget);
-        const sortOrder = _.isEqual(header.attr(this.DATA_SELECTED), 'true') && _.isEqual(header.attr(this.DATA_SORT_ORDER), this.ASCENDING)
+        const sortOrder = _.isEqual(header.attr(this.DATA_SELECTED), 'true') &&
+                          _.isEqual(header.attr(this.DATA_SORT_ORDER), this.ASCENDING)
             ? this.DESCENDING
             : this.ASCENDING;
         header.attr(this.DATA_SORT_ORDER, sortOrder);
@@ -140,9 +180,15 @@ const app = {
         $(this.generateReportButton).click();
     },
 
-    parseDomainsResult: function(data) {
+    parseDomainsResultGeneral: function(data) {
         this.renderPrintingHeaders();
-        this.calculateDomainsCosts(data.domains);
+        this.costCalculator.calculateDomainCosts(data.domains, false);
+        this.renderDomainsList(data.domains);
+    },
+
+    parseDomainsResultDetailed: function(data) {
+        this.renderPrintingHeaders();
+        this.costCalculator.calculateDomainCosts(data.domains, true);
         this.renderDomainsList(data.domains);
     },
 
@@ -157,49 +203,10 @@ const app = {
         this.renderErrorMessage(this.DEFAULT_ERROR_MESSAGE);
     },
 
-    calculateDomainsCosts: function(domains) {
-        _.each(domains, this.calculateDomainCosts);
-    },
-
-    calculateDomainCosts: function(domain) {
-        const cpuPrice = numeral($(this.cpuPriceField).val());
-        const memoryPrice = numeral($(this.memoryPriceField).val());
-        const storagePrice = numeral($(this.storagePriceField).val());
-        const publicIpPrice = numeral($(this.publicIpPriceField).val());
-
-        domain.costs = {
-            compute: {
-                cpu: numeral(cpuPrice.value()).multiply(domain.usage.compute.total.cpu),
-                memory: numeral(memoryPrice.value()).multiply(domain.usage.compute.total.memory)
-            },
-            storage: numeral(storagePrice.value()).multiply(domain.usage.storage.total),
-            networking: {
-                publicIps: numeral(publicIpPrice.value()).multiply(domain.usage.networking.total.publicIps)
-            }
-        };
-
-        domain.costs.total = numeral(domain.costs.compute.cpu.value())
-                                .add(domain.costs.compute.memory.value())
-                                .add(domain.costs.storage.value())
-                                .add(domain.costs.networking.publicIps.value());
-
-        domain.usage.compute.total.cpu = numeral(domain.usage.compute.total.cpu).format();
-        domain.usage.compute.total.memory = numeral(domain.usage.compute.total.memory).format();
-        domain.usage.storage.total = numeral(domain.usage.storage.total).format();
-        domain.usage.networking.total.publicIps = numeral(domain.usage.networking.total.publicIps).format();
-
-        domain.costs.compute.cpu = domain.costs.compute.cpu.format();
-        domain.costs.compute.memory = domain.costs.compute.memory.format();
-        domain.costs.storage = domain.costs.storage.format();
-        domain.costs.networking.publicIps = domain.costs.networking.publicIps.format();
-
-        domain.costs.total = domain.costs.total.format();
-    },
-
     renderErrorMessage: function(errorMessage) {
         const html = $(this.errorMessageTemplate).html();
         const rendered = Mustache.render(html, { errorMessage: errorMessage });
         $(this.errorMessageContainer).html(rendered);
     }
 
-};
+});
