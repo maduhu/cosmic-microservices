@@ -57,15 +57,6 @@ const Main = Class({
         numeral.defaultFormat(this.DECIMAL_FORMAT);
         _.bindAll(this, ... _.functions(this));
 
-        this.costCalculator = new CostCalculator(
-            $(this.cpuPriceField).val(),
-            $(this.memoryPriceField).val(),
-            $(this.storagePriceField).val(),
-            $(this.publicIpPriceField).val(),
-            $(this.serviceFeePercentageField).val(),
-            $(this.innovationFeePercentageField).val()
-        );
-
         $(this.monthSelectorComponent).datepicker('setDate', new Date());
         this.renderPrintingHeaders();
         this.renderDomainTableHeaders();
@@ -129,6 +120,15 @@ const Main = Class({
 
     generateReportButtonOnClick: function(event) {
         event.preventDefault();
+
+        this.costCalculator = new CostCalculator(
+            $(this.cpuPriceField).val(),
+            $(this.memoryPriceField).val(),
+            $(this.storagePriceField).val(),
+            $(this.publicIpPriceField).val(),
+            $(this.serviceFeePercentageField).val(),
+            $(this.innovationFeePercentageField).val()
+        );
 
         const selectedMonth = $(this.monthSelectorComponent).datepicker('getFormattedDate');
         const selectedDomainsTableHeader = $(this.selectedDomainsTableHeader, this.domainsTable);
